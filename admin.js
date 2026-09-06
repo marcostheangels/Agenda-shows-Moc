@@ -230,7 +230,7 @@ async function uploadPhotoToGitHub(dataUrl, prefix = 'foto') {
     }
 }
 
-const isImageSrc = src => src && (src.startsWith('data:image') || src.startsWith('http') || src.startsWith('blob:') || src.startsWith('fotos/') || src.startsWith('./fotos/') || src.startsWith('/fotos/') || /\/(fotos\/|\.\.\/)[^\s]+\.(jpe?g|png|webp|gif|avif|svg)(\?.*)?$/i.test(src));
+const isImageSrc = src => src && (src.startsWith('data:image') || src.startsWith('http') || src.startsWith('blob:') || src.startsWith('fotos/') || src.startsWith('./fotos/') || src.startsWith('/fotos/') || /\.(jpe?g|png|webp|gif|avif|svg)(\?.*)?$/i.test(src));
 const thumbStyle = img => {
     if (!img) return 'background:#22223a';
     if (isImageSrc(img)) return `background-image:url("${img}");background-size:cover;background-position:center`;
@@ -414,7 +414,7 @@ function eventForm(ev = {}) {
     const imgVal = ev.img || '';
     const urlVal = imgVal && !isImageSrc(imgVal) ? imgVal : '';
     return `
-        <form id="formEvento" method="post" action="#" onsubmit="handleEventoSubmit(this); return false;" novalidate>
+        <form id="formEvento" method="post" action="?" onsubmit="return false" novalidate>
             <input type="hidden" name="id" value="${ev.id || ''}">
             <div class="form-group">
                 <label>Título do evento *</label>
@@ -486,7 +486,7 @@ function eventForm(ev = {}) {
             </div>
             <div class="form-actions">
                 <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
-                <button type="submit" class="btn-primary">💾 Salvar Evento</button>
+                <button type="button" class="btn-primary" onclick="try{handleEventoSubmit(this.form);}catch(e){console.error(e);}">💾 Salvar Evento</button>
             </div>
         </form>
     `;
@@ -845,7 +845,7 @@ function estForm(e = {}) {
 
             <div class="form-actions">
                 <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
-                <button type="submit" class="btn-primary">💾 Salvar</button>
+                <button type="button" class="btn-primary" onclick="try{handleGenericSubmit(this.form);}catch(e){console.error(e);}">💾 Salvar</button>
             </div>
         </form>
     `;
@@ -906,7 +906,7 @@ function catForm(c = {}) {
             </div>
             <div class="form-actions">
                 <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
-                <button type="submit" class="btn-primary">💾 Salvar</button>
+                <button type="button" class="btn-primary" onclick="try{handleGenericSubmit(this.form);}catch(e){console.error(e);}">💾 Salvar</button>
             </div>
         </form>
     `;
@@ -976,7 +976,7 @@ function blogForm(p = {}) {
             <div class="form-group" style="margin-top:16px"><label>Resumo</label><textarea name="resumo" rows="4">${p.resumo || ''}</textarea></div>
             <div class="form-actions">
                 <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
-                <button type="submit" class="btn-primary">💾 Salvar</button>
+                <button type="button" class="btn-primary" onclick="try{handleGenericSubmit(this.form);}catch(e){console.error(e);}">💾 Salvar</button>
             </div>
         </form>
     `;
@@ -1035,7 +1035,7 @@ function depForm(d = {}) {
             <div class="form-group"><label>Depoimento *</label><textarea name="texto" rows="4" required>${d.texto || ''}</textarea></div>
             <div class="form-actions">
                 <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
-                <button type="submit" class="btn-primary">💾 Salvar</button>
+                <button type="button" class="btn-primary" onclick="try{handleGenericSubmit(this.form);}catch(e){console.error(e);}">💾 Salvar</button>
             </div>
         </form>
     `;
