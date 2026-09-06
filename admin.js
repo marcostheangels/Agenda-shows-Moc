@@ -414,7 +414,7 @@ function eventForm(ev = {}) {
     const imgVal = ev.img || '';
     const urlVal = imgVal && !isImageSrc(imgVal) ? imgVal : '';
     return `
-        <form id="formEvento" method="post" action="#" onsubmit="return false" novalidate>
+        <form id="formEvento" method="post" action="#" onsubmit="handleEventoSubmit(this); return false;" novalidate>
             <input type="hidden" name="id" value="${ev.id || ''}">
             <div class="form-group">
                 <label>Título do evento *</label>
@@ -696,81 +696,81 @@ const resolveImg = (form, fallback) => {
 document.addEventListener('submit', e => {
     if (e.target && e.target.id === 'formEvento') {
         e.preventDefault();
-        const form = e.target;
-        const btn = form.querySelector('button[type="submit"]');
-        if (btn) { btn.disabled = true; btn.textContent = '⏳ Salvando...'; }
-        toast('⏳ Salvando evento...', 1500);
-        try {
-            const fd = new FormData(form);
-            const obj = Object.fromEntries(fd);
-            delete obj.imgUpload;
-            // Validação com balão explicativo (o required sozinho não mostra nada dentro do modal)
-            const obrigatorios = [['titulo', 'Título'], ['cat', 'Categoria'], ['bairro', 'Bairro'], ['data', 'Data'], ['hora', 'Horário'], ['local', 'Local']];
-            for (const [campo, rotulo] of obrigatorios) {
-                if (!obj[campo] || String(obj[campo]).trim() === '') {
-                    toast(`⚠️ Falta preencher: ${rotulo}`, 3500);
-                    const input = form.querySelector(`[name="${campo}"]`);
-                    if (input) input.focus();
-                    if (btn) { btn.disabled = false; btn.textContent = '💾 Salvar Evento'; }
-                    return;
-                }
-            }
-            obj.img = resolveImg(form, obj.img || 'linear-gradient(135deg,#ff3d6e,#ff8a3d)');
-            // TRAVA PRINCIPAL: base64 grande congela stringify + localStorage + GitHub.
-            // Força usar "☁️ Subir p/ pasta fotos" antes de salvar.
-            if (obj.img && obj.img.startsWith('data:image') && obj.img.length > 300 * 1024) {
-                const kb = Math.round(obj.img.length / 1024);
-                toast(`⚠️ Foto com ~${kb} KB trava o salvamento. Clique em "☁️ Subir p/ pasta fotos" primeiro, depois Salvar.`, 6000);
-                console.warn('save bloqueado: base64 pesado', kb + 'KB');
-                if (btn) { btn.disabled = false; btn.textContent = '💾 Salvar Evento'; }
-                return;
-            }
-            if (obj.img && obj.img.length > 900 * 1024) {
-                toast('⚠️ Foto muito pesada para salvar/publicar. Remova a foto ou use fotos/...', 4500);
-                if (btn) { btn.disabled = false; btn.textContent = '💾 Salvar Evento'; }
-                return;
-            }
-            obj.preco = parseFloat(obj.preco) || 0;
-            try { obj.galeria = JSON.parse(obj.galeria || '[]'); } catch { obj.galeria = []; }
-            if (!Array.isArray(obj.galeria)) obj.galeria = [];
-            obj.galeria = obj.galeria.filter(g => g && isImageSrc(g)).slice(0, 6);
-            const pesada = obj.galeria.find(g => String(g).startsWith('data:image') && String(g).length > 300 * 1024);
-            if (pesada) {
-                toast(`⚠️ Uma extra tem ~${Math.round(String(pesada).length / 1024)} KB e trava. Suba p/ fotos/ primeiro.`, 6000);
-                if (btn) { btn.disabled = false; btn.textContent = '💾 Salvar Evento'; }
-                return;
-            }
-            let acao = '';
-            if (obj.id) {
-                const idx = data.eventos.findIndex(x => x.id === +obj.id);
-                obj.id = +obj.id;
-                if (idx > -1) data.eventos[idx] = obj;
-                else data.eventos.push(obj);
-                acao = 'atualizado';
-            } else {
-                obj.id = getNextId('eventos');
-                data.eventos.push(obj);
-                acao = 'adicionado';
-            }
-            if (saveData()) {
-                const kb = Math.round((safeGet(STORAGE_KEY) || '').length / 1024);
-                const gh = getGHConfig();
-                const extra = (gh.enabled && gh.token) ? ' 🚀 Publicando no GitHub...' : ' 💾 Só neste navegador (ative o GitHub em Configurações p/ publicar).';
-                const nFotos = 1 + (obj.galeria || []).length;
-                toast(`✅ Evento ${acao}! ${nFotos} foto(s). Total: ${data.eventos.length} eventos (${kb} KB).${extra}`, 5000);
-                console.log(`✅ Evento ${acao}:`, obj);
-                closeModal();
-                renderEventos();
-                populateFilters();
-            }
-            else if (btn) { btn.disabled = false; btn.textContent = '💾 Salvar Evento'; }
-        } catch (err) {
-            console.error('save evento:', err);
-            toast('❌ Erro ao salvar: ' + (err.message || err), 4000);
-            if (btn) { btn.disabled = false; btn.textContent = '💾 Salvar Evento'; }
-        }
+        handleEventoSubmit(e.target);
     }
 });
+
+function handleEventoSubmit(form) {
+    const btn = form.querySelector('button[type="submit"]');
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Salvando...'; }
+    toast('⏳ Salvando evento...', 1500);
+    try {
+        const fd = new FormData(form);
+        const obj = Object.fromEntries(fd);
+        delete obj.imgUpload;
+        const obrigatorios = [['titulo', 'Título'], ['cat', 'Categoria'], ['bairro', 'Bairro'], ['data', 'Data'], ['hora', 'Horário'], ['local', 'Local']];
+        for (const [campo, rotulo] of obrigatorios) {
+            if (!obj[campo] || String(obj[campo]).trim() === '') {
+                toast(`⚠️ Falta preencher: ${rotulo}`, 3500);
+                const input = form.querySelector(`[name="${campo}"]`);
+                if (input) input.focus();
+                if (btn) { btn.disabled = false; btn.textContent = '💾 Salvar Evento'; }
+                return;
+            }
+        }
+        obj.img = resolveImg(form, obj.img || 'linear-gradient(135deg,#ff3d6e,#ff8a3d)');
+        if (obj.img && obj.img.startsWith('data:image') && obj.img.length > 300 * 1024) {
+            const kb = Math.round(obj.img.length / 1024);
+            toast(`⚠️ Foto com ~${kb} KB trava o salvamento. Clique em "☁️ Subir p/ pasta fotos" primeiro, depois Salvar.`, 6000);
+            console.warn('save bloqueado: base64 pesado', kb + 'KB');
+            if (btn) { btn.disabled = false; btn.textContent = '💾 Salvar Evento'; }
+            return;
+        }
+        if (obj.img && obj.img.length > 900 * 1024) {
+            toast('⚠️ Foto muito pesada para salvar/publicar. Remova a foto ou use fotos/...', 4500);
+            if (btn) { btn.disabled = false; btn.textContent = '💾 Salvar Evento'; }
+            return;
+        }
+        obj.preco = parseFloat(obj.preco) || 0;
+        try { obj.galeria = JSON.parse(obj.galeria || '[]'); } catch { obj.galeria = []; }
+        if (!Array.isArray(obj.galeria)) obj.galeria = [];
+        obj.galeria = obj.galeria.filter(g => g && isImageSrc(g)).slice(0, 6);
+        const pesada = obj.galeria.find(g => String(g).startsWith('data:image') && String(g).length > 300 * 1024);
+        if (pesada) {
+            toast(`⚠️ Uma extra tem ~${Math.round(String(pesada).length / 1024)} KB e trava. Suba p/ fotos/ primeiro.`, 6000);
+            if (btn) { btn.disabled = false; btn.textContent = '💾 Salvar Evento'; }
+            return;
+        }
+        let acao = '';
+        if (obj.id) {
+            const idx = data.eventos.findIndex(x => x.id === +obj.id);
+            obj.id = +obj.id;
+            if (idx > -1) data.eventos[idx] = obj;
+            else data.eventos.push(obj);
+            acao = 'atualizado';
+        } else {
+            obj.id = getNextId('eventos');
+            data.eventos.push(obj);
+            acao = 'adicionado';
+        }
+        if (saveData()) {
+            const kb = Math.round((safeGet(STORAGE_KEY) || '').length / 1024);
+            const gh = getGHConfig();
+            const extra = (gh.enabled && gh.token) ? ' 🚀 Publicando no GitHub...' : ' 💾 Só neste navegador (ative o GitHub em Configurações p/ publicar).';
+            const nFotos = 1 + (obj.galeria || []).length;
+            toast(`✅ Evento ${acao}! ${nFotos} foto(s). Total: ${data.eventos.length} eventos (${kb} KB).${extra}`, 5000);
+            console.log(`✅ Evento ${acao}:`, obj);
+            closeModal();
+            renderEventos();
+            populateFilters();
+        }
+        else if (btn) { btn.disabled = false; btn.textContent = '💾 Salvar Evento'; }
+    } catch (err) {
+        console.error('save evento:', err);
+        toast('❌ Erro ao salvar: ' + (err.message || err), 4000);
+        if (btn) { btn.disabled = false; btn.textContent = '💾 Salvar Evento'; }
+    }
+}
 
 $('#searchEventos').addEventListener('input', renderEventos);
 $('#filterEventCat').addEventListener('change', renderEventos);
@@ -815,7 +815,7 @@ function estForm(e = {}) {
     const imgVal = e.img || '';
     const urlVal = imgVal && !isImageSrc(imgVal) ? imgVal : '';
     return `
-        <form id="formEst" method="post" action="#" onsubmit="return false" novalidate>
+        <form id="formEst" method="post" action="#" onsubmit="handleGenericSubmit(this); return false;" novalidate>
             <input type="hidden" name="id" value="${e.id || ''}">
             <div class="form-group"><label>Nome *</label><input type="text" name="nome" required value="${(e.nome || '').replace(/"/g,'&quot;')}"></div>
             <div class="form-group"><label>Categoria *</label><input type="text" name="cat" required value="${(e.cat || '').replace(/"/g,'&quot;')}"></div>
@@ -884,7 +884,7 @@ window.delCat = id => {
 
 function catForm(c = {}) {
     return `
-        <form id="formCat" method="post" action="#" onsubmit="return false" novalidate>
+        <form id="formCat" method="post" action="#" onsubmit="handleGenericSubmit(this); return false;" novalidate>
             <input type="hidden" name="id" value="${c.id || ''}">
             <div class="form-row">
                 <div class="form-group"><label>Nome *</label><input type="text" name="nome" required value="${c.nome || ''}"></div>
@@ -945,7 +945,7 @@ function blogForm(p = {}) {
     const urlVal = imgVal && !isImageSrc(imgVal) ? '' : imgVal;
     const isExt = imgVal && isImageSrc(imgVal);
     return `
-        <form id="formBlog" method="post" action="#" onsubmit="return false" novalidate>
+        <form id="formBlog" method="post" action="#" onsubmit="handleGenericSubmit(this); return false;" novalidate>
             <input type="hidden" name="id" value="${p.id || ''}">
             <div class="form-group"><label>Título *</label><input type="text" name="titulo" required value="${(p.titulo || '').replace(/"/g,'&quot;')}"></div>
             <div class="form-row">
@@ -1012,7 +1012,7 @@ window.delDep = id => {
 
 function depForm(d = {}) {
     return `
-        <form id="formDep" method="post" action="#" onsubmit="return false" novalidate>
+        <form id="formDep" method="post" action="#" onsubmit="handleGenericSubmit(this); return false;" novalidate>
             <input type="hidden" name="id" value="${d.id || ''}">
             <div class="form-row">
                 <div class="form-group"><label>Nome *</label><input type="text" name="nome" required value="${d.nome || ''}"></div>
@@ -1076,35 +1076,39 @@ document.addEventListener('submit', e => {
     if (!form || !form.id) return;
     if (['formEst','formCat','formBlog','formDep'].includes(form.id)) {
         e.preventDefault();
-        const fd = new FormData(form);
-        const obj = Object.fromEntries(fd);
-        delete obj.imgUpload;
-        if (form.id === 'formEst' || form.id === 'formBlog') {
-            obj.img = resolveImg(form, obj.img || '');
-        }
-        if (form.id === 'formEst') {
-            if (obj.id) { obj.id = +obj.id; data.estabelecimentos[data.estabelecimentos.findIndex(x=>x.id===obj.id)] = obj; toast('✅ Atualizado'); }
-            else { obj.id = getNextId('estabelecimentos'); data.estabelecimentos.push(obj); toast('✅ Adicionado'); }
-            if (saveData()) { closeModal(); renderEst(); }
-        }
-        if (form.id === 'formCat') {
-            if (obj.id) { obj.id = +obj.id; data.categorias[data.categorias.findIndex(x=>x.id===obj.id)] = obj; toast('✅ Atualizada'); }
-            else { obj.id = getNextId('categorias'); data.categorias.push(obj); toast('✅ Adicionada'); }
-            if (saveData()) { closeModal(); renderCat(); populateFilters(); }
-        }
-        if (form.id === 'formBlog') {
-            if (obj.id) { obj.id = +obj.id; data.blog[data.blog.findIndex(x=>x.id===obj.id)] = obj; toast('✅ Atualizado'); }
-            else { obj.id = getNextId('blog'); data.blog.push(obj); toast('✅ Adicionado'); }
-            if (saveData()) { closeModal(); renderBlog(); }
-        }
-        if (form.id === 'formDep') {
-            obj.estrelas = parseInt(obj.estrelas) || 5;
-            if (obj.id) { obj.id = +obj.id; data.depoimentos[data.depoimentos.findIndex(x=>x.id===obj.id)] = obj; toast('✅ Atualizado'); }
-            else { obj.id = getNextId('depoimentos'); data.depoimentos.push(obj); toast('✅ Adicionado'); }
-            if (saveData()) { closeModal(); renderDep(); }
-        }
+        handleGenericSubmit(form);
     }
 });
+
+function handleGenericSubmit(form) {
+    const fd = new FormData(form);
+    const obj = Object.fromEntries(fd);
+    delete obj.imgUpload;
+    if (form.id === 'formEst' || form.id === 'formBlog') {
+        obj.img = resolveImg(form, obj.img || '');
+    }
+    if (form.id === 'formEst') {
+        if (obj.id) { obj.id = +obj.id; data.estabelecimentos[data.estabelecimentos.findIndex(x=>x.id===obj.id)] = obj; toast('✅ Atualizado'); }
+        else { obj.id = getNextId('estabelecimentos'); data.estabelecimentos.push(obj); toast('✅ Adicionado'); }
+        if (saveData()) { closeModal(); renderEst(); }
+    }
+    if (form.id === 'formCat') {
+        if (obj.id) { obj.id = +obj.id; data.categorias[data.categorias.findIndex(x=>x.id===obj.id)] = obj; toast('✅ Atualizada'); }
+        else { obj.id = getNextId('categorias'); data.categorias.push(obj); toast('✅ Adicionada'); }
+        if (saveData()) { closeModal(); renderCat(); populateFilters(); }
+    }
+    if (form.id === 'formBlog') {
+        if (obj.id) { obj.id = +obj.id; data.blog[data.blog.findIndex(x=>x.id===obj.id)] = obj; toast('✅ Atualizado'); }
+        else { obj.id = getNextId('blog'); data.blog.push(obj); toast('✅ Adicionado'); }
+        if (saveData()) { closeModal(); renderBlog(); }
+    }
+    if (form.id === 'formDep') {
+        obj.estrelas = parseInt(obj.estrelas) || 5;
+        if (obj.id) { obj.id = +obj.id; data.depoimentos[data.depoimentos.findIndex(x=>x.id===obj.id)] = obj; toast('✅ Atualizado'); }
+        else { obj.id = getNextId('depoimentos'); data.depoimentos.push(obj); toast('✅ Adicionado'); }
+        if (saveData()) { closeModal(); renderDep(); }
+    }
+}
 
 // ============== MODAL GENÉRICO ==============
 function openModal(title, html) {
