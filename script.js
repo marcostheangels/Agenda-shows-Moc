@@ -52,7 +52,14 @@ const defaultData = {
     depoimentos: []
 };
 
-function loadData() {
+const isImgSrc = s => s && (s.startsWith('data:image') || s.startsWith('http') || s.startsWith('blob:'));
+const bgStyle = img => {
+    if (!img) return 'background:linear-gradient(135deg,#ff3d6e,#ff8a3d)';
+    if (isImgSrc(img)) return `background-image:url("${img}");background-size:cover;background-position:center`;
+    return `background:${img}`;
+};
+
+function loadLocal() {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
         try { return JSON.parse(stored); } catch(e) {}
@@ -60,8 +67,28 @@ function loadData() {
     return null;
 }
 
-let adminData = loadData();
-const useAdmin = adminData !== null;
+let adminData = loadLocal();
+let useAdmin = adminData !== null;
+
+async function loadRemote() {
+    try {
+        const res = await fetch('data.json', { cache: 'no-store' });
+        if (!res.ok) return false;
+        const json = await res.json();
+        if (!json || !json.eventos) return false;
+        adminData = json;
+        useAdmin = true;
+        applyConfig();
+        renderEventosFromAdmin();
+        renderEstabelecimentosFromAdmin();
+        renderCategoriasFromAdmin();
+        renderBlogFromAdmin();
+        renderDepoimentosFromAdmin();
+        renderCalendar();
+        updateCountdown();
+        return true;
+    } catch { return false; }
+}
 
 // ============== APLICAR DADOS DO ADMIN NO SITE ==============
 function applyConfig() {
@@ -117,7 +144,7 @@ function renderEventosFromAdmin() {
             <button class="fav-card" data-fav="${ev.id}" aria-label="Favoritar">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             </button>
-            <div class="event-img" style="background:${ev.img || 'linear-gradient(135deg,#ff3d6e,#ff8a3d)'}">
+            <div class="event-img" style="${bgStyle(ev.img)}">
                 <span class="event-date">${ev.data}</span>
                 ${ev.tag ? `<span class="event-tag tag-${ev.tag.toLowerCase()}">${ev.tag}</span>` : ''}
             </div>
@@ -146,7 +173,7 @@ function renderEstabelecimentosFromAdmin() {
     grids.forEach(grid => {
         grid.innerHTML = adminData.estabelecimentos.map(e => `
             <a href="#" class="est-card">
-                <div class="est-img" style="background:${e.img}">
+                <div class="est-img" style="${bgStyle(e.img)}">
                     <span class="est-cat">${e.cat}</span>
                 </div>
                 <div class="est-info">
@@ -191,7 +218,7 @@ function renderBlogFromAdmin() {
         const isDestaque = i === 0 && adminData.blog.length > 3;
         return `
         <article class="blog-card ${isDestaque ? 'blog-destaque' : ''}">
-            <div class="blog-img" style="background-image:linear-gradient(135deg,rgba(0,0,0,0.3),rgba(0,0,0,0.5)),url('${p.img}')">
+            <div class="blog-img" style="${isImgSrc(p.img) ? `background-image:linear-gradient(135deg,rgba(0,0,0,0.3),rgba(0,0,0,0.5)),url(&quot;${p.img}&quot;);background-size:cover;background-position:center` : `background:${p.img || 'linear-gradient(135deg,#ff3d6e,#7c3aed)'}`}">
                 <span class="blog-cat">${p.cat}</span>
             </div>
             <div class="blog-body">
@@ -550,7 +577,7 @@ const showDayEvents = (year, month, day) => {
     const body = $('#dayModalBody');
     body.innerHTML = eventsOnDay.map(ev => `
         <div class="day-event" data-id="${ev.id}">
-            <div class="day-event-img" style="background:${ev.img}"></div>
+            <div class="day-event-img" style="${bgStyle(ev.img)}"></div>
             <div class="day-event-info">
                 <span class="day-event-cat">${ev.cat}</span>
                 <h4>${ev.titulo}</h4>
@@ -683,6 +710,9 @@ if (useAdmin) {
     renderBlogFromAdmin();
     renderDepoimentosFromAdmin();
 }
+
+// Tenta carregar data.json publicado no GitHub (prioridade para visitantes)
+loadRemote();
 
 console.log('%c🎶 Agenda Shows MOC', 'color:#ff3d6e;font-size:24px;font-weight:bold;');
 console.log('%cA agenda mais completa de MOC!', 'color:#8a8aa3;font-size:14px;');

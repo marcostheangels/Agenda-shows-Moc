@@ -358,11 +358,41 @@
                             <input type="text" name="anuncieTexto">
                         </div>
                     </div>
-                    <div style="display:flex;gap:12px;align-items:center;margin-top:20px">
-                        <button type="submit" class="btn-primary">💾 Salvar Configurações</button>
+                    <div style="display:flex;gap:12px;align-items:center;margin-top:20px;flex-wrap:wrap">
+                        <button type="submit" class="btn-primary" style="width:auto">💾 Salvar Configurações</button>
                         <button type="button" class="btn-secondary" id="btnChangePass">🔐 Alterar Senha</button>
                     </div>
                 </form>
+
+                <div class="config-form" style="margin-top:20px">
+                    <h3 style="margin-bottom:6px">🚀 Publicação automática no GitHub</h3>
+                    <p class="muted" style="margin-bottom:16px">Ao ativar, cada clique em <strong>Salvar</strong> commita o <code>data.json</code> direto no repositório. O site (GitHub Pages) atualiza em ~1 minuto.</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Dono (owner)</label>
+                            <input type="text" id="ghOwner" value="marcostheangels">
+                        </div>
+                        <div class="form-group">
+                            <label>Repositório</label>
+                            <input type="text" id="ghRepo" value="Agenda-shows-Moc">
+                        </div>
+                        <div class="form-group">
+                            <label>Branch</label>
+                            <input type="text" id="ghBranch" value="main">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Token (PAT com permissão <code>repo</code>) — fica só no seu navegador</label>
+                        <input type="password" id="ghToken" placeholder="ghp_... ou github_pat_..." autocomplete="off">
+                    </div>
+                    <label class="gh-toggle"><input type="checkbox" id="ghEnabled"> <span>Ativar commit automático ao salvar</span></label>
+                    <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+                        <button class="btn-primary" style="width:auto" id="btnGHSave">💾 Salvar GitHub</button>
+                        <button class="btn-secondary" id="btnGHNow">🚀 Publicar agora</button>
+                    </div>
+                    <p id="ghStatus" class="muted" style="margin-top:12px">Nunca publicado nesta máquina.</p>
+                    <p class="muted" style="margin-top:8px;font-size:12px">⚠️ Como gerar: GitHub → Settings → Developer settings → Personal access tokens → Fine-grained ou Classic (marque <code>repo</code>) → copie e cole aqui. Nunca commite o token no código.</p>
+                </div>
             </section>
 
         </main>

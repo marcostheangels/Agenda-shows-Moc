@@ -74,8 +74,88 @@ function loadData() {
 }
 
 function saveData() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        scheduleGitHubSync();
+        return true;
+    } catch (e) {
+        toast('⚠️ Armazenamento cheio! Use imagens menores ou URLs externas.');
+        console.error('localStorage quota:', e);
+        return false;
+    }
 }
+
+// ============== GITHUB AUTO-COMMIT ==============
+const GH_KEY = 'agendaShowsMOC_github';
+const getGHConfig = () => {
+    try { return Object.assign({ owner: 'marcostheangels', repo: 'Agenda-shows-Moc', branch: 'main', filePath: 'data.json', token: '', enabled: false }, JSON.parse(localStorage.getItem(GH_KEY) || '{}')); }
+    catch { return { owner: 'marcostheangels', repo: 'Agenda-shows-Moc', branch: 'main', filePath: 'data.json', token: '', enabled: false }; }
+};
+const setGHConfig = cfg => localStorage.setItem(GH_KEY, JSON.stringify(cfg));
+
+let ghTimer = null;
+let ghSyncing = false;
+function scheduleGitHubSync() {
+    const cfg = getGHConfig();
+    if (!cfg.enabled || !cfg.token) return;
+    clearTimeout(ghTimer);
+    ghTimer = setTimeout(() => pushToGitHub('💾 Atualização via painel admin'), 2000);
+}
+
+const b64encode = str => btoa(unescape(encodeURIComponent(str)));
+
+async function pushToGitHub(message) {
+    const cfg = getGHConfig();
+    if (!cfg.token) { toast('⚠️ Configure o token do GitHub primeiro'); return false; }
+    if (ghSyncing) return false;
+    ghSyncing = true;
+    updateGHStatus('⏳ Enviando para o GitHub...');
+    try {
+        const apiBase = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.filePath}`;
+        let sha = null;
+        const getRes = await fetch(`${apiBase}?ref=${cfg.branch}`, { headers: { Authorization: `Bearer ${cfg.token}`, Accept: 'application/vnd.github+json' } });
+        if (getRes.ok) {
+            const j = await getRes.json();
+            sha = j.sha;
+        }
+        const content = b64encode(JSON.stringify(data, null, 2));
+        const body = { message: message || 'Atualização via painel admin', content, branch: cfg.branch };
+        if (sha) body.sha = sha;
+        const putRes = await fetch(apiBase, { method: 'PUT', headers: { Authorization: `Bearer ${cfg.token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        if (!putRes.ok) {
+            const err = await putRes.json().catch(() => ({}));
+            throw new Error(err.message || ('HTTP ' + putRes.status));
+        }
+        const okMsg = '🚀 Publicado no GitHub! Site atualiza em ~1 min.';
+        updateGHStatus('✅ ' + okMsg + ' Último envio: ' + new Date().toLocaleString('pt-BR'));
+        toast(okMsg, 3500);
+        ghSyncing = false;
+        return true;
+    } catch (err) {
+        console.error('GitHub sync:', err);
+        updateGHStatus('❌ Falha: ' + err.message);
+        toast('❌ GitHub: ' + err.message, 4000);
+        ghSyncing = false;
+        return false;
+    }
+}
+
+function updateGHStatus(msg) {
+    const el = document.getElementById('ghStatus');
+    if (el) el.textContent = msg;
+}
+
+const isImageSrc = src => src && (src.startsWith('data:image') || src.startsWith('http') || src.startsWith('blob:'));
+const thumbStyle = img => {
+    if (!img) return 'background:#22223a';
+    if (isImageSrc(img)) return `background-image:url("${img}");background-size:cover;background-position:center`;
+    return `background:${img}`;
+};
+const previewHtml = img => {
+    if (!img) return '<div class="up-empty">Clique ou arraste uma imagem aqui</div>';
+    if (isImageSrc(img)) return `<img src="${img}" alt="preview">`;
+    return `<div class="up-gradient" style="background:${img}"></div><div class="up-empty small">Gradiente atual — clique para trocar por foto</div>`;
+};
 
 function getNextId(key) {
     const ids = data[key].map(i => i.id);
@@ -182,7 +262,7 @@ function renderDashboard() {
     } else {
         list.innerHTML = upcoming.map(ev => `
             <div class="dash-item">
-                <div class="dash-item-img" style="background:${ev.img}"></div>
+                <div class="dash-item-img" style="${thumbStyle(ev.img)}"></div>
                 <div class="dash-item-info">
                     <h4>${ev.titulo}</h4>
                     <span>${ev.data} • ${ev.local}</span>
@@ -209,7 +289,7 @@ function renderEventos() {
     }
     tbody.innerHTML = filtered.map(e => `
         <tr>
-            <td><div class="thumb" style="background:${e.img}"></div></td>
+            <td><div class="thumb" style="${thumbStyle(e.img)}"></div></td>
             <td><strong>${e.titulo}</strong>${e.tag ? ' <span class="cat-pill">' + e.tag + '</span>' : ''}</td>
             <td><span class="cat-pill">${e.cat}</span></td>
             <td>${e.data}</td>
@@ -239,12 +319,14 @@ window.delEvento = id => {
 };
 
 function eventForm(ev = {}) {
+    const imgVal = ev.img || '';
+    const urlVal = imgVal && !isImageSrc(imgVal) ? imgVal : '';
     return `
         <form id="formEvento">
             <input type="hidden" name="id" value="${ev.id || ''}">
             <div class="form-group">
                 <label>Título do evento *</label>
-                <input type="text" name="titulo" required value="${ev.titulo || ''}">
+                <input type="text" name="titulo" required value="${(ev.titulo || '').replace(/"/g,'&quot;')}">
             </div>
             <div class="form-row">
                 <div class="form-group">
@@ -255,17 +337,17 @@ function eventForm(ev = {}) {
                 </div>
                 <div class="form-group">
                     <label>Bairro *</label>
-                    <input type="text" name="bairro" required value="${ev.bairro || ''}">
+                    <input type="text" name="bairro" required value="${(ev.bairro || '').replace(/"/g,'&quot;')}">
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
                     <label>Data (ex: 15 SET) *</label>
-                    <input type="text" name="data" required value="${ev.data || ''}">
+                    <input type="text" name="data" required value="${(ev.data || '').replace(/"/g,'&quot;')}">
                 </div>
                 <div class="form-group">
                     <label>Horário (ex: Sábado, 22h) *</label>
-                    <input type="text" name="hora" required value="${ev.hora || ''}">
+                    <input type="text" name="hora" required value="${(ev.hora || '').replace(/"/g,'&quot;')}">
                 </div>
                 <div class="form-group">
                     <label>Preço (0 = grátis) *</label>
@@ -274,26 +356,33 @@ function eventForm(ev = {}) {
             </div>
             <div class="form-group">
                 <label>Local completo *</label>
-                <input type="text" name="local" required value="${ev.local || ''}">
+                <input type="text" name="local" required value="${(ev.local || '').replace(/"/g,'&quot;')}">
             </div>
             <div class="form-group">
                 <label>Descrição</label>
                 <textarea name="desc" rows="3">${ev.desc || ''}</textarea>
             </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Cor de fundo (gradiente CSS)</label>
-                    <input type="text" name="img" value="${ev.img || 'linear-gradient(135deg,#ff3d6e,#ff8a3d)'}" placeholder="linear-gradient(135deg,#ff3d6e,#ff8a3d)">
+
+            <div class="image-uploader" data-target="img">
+                <label class="up-label">📸 Foto do Flyer / Evento</label>
+                <div class="up-preview">${previewHtml(imgVal)}</div>
+                <input type="file" accept="image/*" class="up-input">
+                <div class="up-actions">
+                    <button type="button" class="btn-secondary up-clear">🗑 Remover imagem</button>
+                    <span class="up-hint">JPG/PNG até ~2MB (comprime sozinho)</span>
                 </div>
-                <div class="form-group">
-                    <label>Tag (HOT / NOVO / VIP / vazio)</label>
-                    <select name="tag">
-                        <option value="" ${!ev.tag ? 'selected' : ''}>Sem tag</option>
-                        <option ${ev.tag === 'HOT' ? 'selected' : ''}>HOT</option>
-                        <option ${ev.tag === 'NOVO' ? 'selected' : ''}>NOVO</option>
-                        <option ${ev.tag === 'VIP' ? 'selected' : ''}>VIP</option>
-                    </select>
-                </div>
+                <input type="hidden" name="imgUpload" class="up-data" value="${isImageSrc(imgVal) ? imgVal : ''}">
+                <input type="text" name="img" class="up-url" placeholder="Ou cole URL da imagem / gradiente CSS" value="${urlVal.replace(/"/g,'&quot;')}">
+            </div>
+
+            <div class="form-group" style="margin-top:16px">
+                <label>Tag (HOT / NOVO / VIP / vazio)</label>
+                <select name="tag">
+                    <option value="" ${!ev.tag ? 'selected' : ''}>Sem tag</option>
+                    <option ${ev.tag === 'HOT' ? 'selected' : ''}>HOT</option>
+                    <option ${ev.tag === 'NOVO' ? 'selected' : ''}>NOVO</option>
+                    <option ${ev.tag === 'VIP' ? 'selected' : ''}>VIP</option>
+                </select>
             </div>
             <button type="submit" class="btn-primary">💾 Salvar Evento</button>
         </form>
@@ -302,24 +391,115 @@ function eventForm(ev = {}) {
 
 $('#btnAddEvento').addEventListener('click', () => openModal('Novo Evento', eventForm()));
 
-$(document).on('submit', '#formEvento', function(e) {
-    e.preventDefault();
-    const fd = new FormData(this);
-    const obj = Object.fromEntries(fd);
-    obj.preco = parseFloat(obj.preco) || 0;
-    if (obj.id) {
-        const idx = data.eventos.findIndex(x => x.id === +obj.id);
-        obj.id = +obj.id;
-        data.eventos[idx] = obj;
-        toast('✅ Evento atualizado');
-    } else {
-        obj.id = getNextId('eventos');
-        data.eventos.push(obj);
-        toast('✅ Evento adicionado');
+// ============== IMAGE UPLOADER ==============
+const compressImage = (file, maxW = 1200, quality = 0.8) => new Promise(res => {
+    const reader = new FileReader();
+    reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let { width, height } = img;
+            if (width > maxW) { height = height * (maxW / width); width = maxW; }
+            canvas.width = width; canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            res(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+});
+
+const bindImageUploader = () => {
+    document.querySelectorAll('.image-uploader').forEach(up => {
+        if (up.dataset.bound) return;
+        up.dataset.bound = '1';
+        const preview = up.querySelector('.up-preview');
+        const input = up.querySelector('.up-input');
+        const urlInput = up.querySelector('.up-url');
+        const dataInput = up.querySelector('.up-data');
+        const clearBtn = up.querySelector('.up-clear');
+
+        const setPreview = (imgSrc, gradVal) => {
+            if (imgSrc && isImageSrc(imgSrc)) {
+                preview.innerHTML = `<img src="${imgSrc}" alt="preview">`;
+            } else if (gradVal) {
+                preview.innerHTML = `<div class="up-gradient" style="background:${gradVal}"></div><div class="up-empty small">Gradiente atual — clique para trocar por foto</div>`;
+            } else {
+                preview.innerHTML = '<div class="up-empty">📸 Clique ou arraste a foto do flyer aqui</div>';
+            }
+        };
+
+        const handleFile = async file => {
+            if (!file || !file.type.startsWith('image/')) { toast('⚠️ Selecione uma imagem válida'); return; }
+            if (file.size > 8 * 1024 * 1024) { toast('⚠️ Imagem muito grande (máx 8MB)'); return; }
+            toast('⏳ Processando imagem...');
+            try {
+                const compressed = await compressImage(file, 1200, 0.82);
+                if (dataInput) dataInput.value = compressed;
+                if (urlInput) urlInput.value = '';
+                setPreview(compressed, '');
+                toast('✅ Foto carregada! Clique em Salvar.');
+            } catch (err) {
+                toast('❌ Erro ao processar imagem');
+            }
+        };
+
+        preview.addEventListener('click', () => input.click());
+        preview.addEventListener('dragover', e => { e.preventDefault(); preview.classList.add('dragover'); });
+        preview.addEventListener('dragleave', () => preview.classList.remove('dragover'));
+        preview.addEventListener('drop', e => {
+            e.preventDefault();
+            preview.classList.remove('dragover');
+            if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+        });
+        input.addEventListener('change', e => { if (e.target.files[0]) handleFile(e.target.files[0]); });
+
+        if (urlInput) urlInput.addEventListener('input', () => {
+            if (urlInput.value.trim() && dataInput) dataInput.value = '';
+            setPreview(dataInput && dataInput.value ? dataInput.value : '', urlInput.value.trim());
+        });
+
+        if (clearBtn) {
+            clearBtn.addEventListener('click', () => {
+                if (urlInput) urlInput.value = '';
+                if (dataInput) dataInput.value = '';
+                input.value = '';
+                setPreview('', '');
+            });
+        }
+    });
+};
+
+const resolveImg = (form, fallback) => {
+    const up = form.querySelector('.up-data');
+    const url = form.querySelector('.up-url');
+    if (up && up.value.trim()) return up.value.trim();
+    if (url && url.value.trim()) return url.value.trim();
+    return fallback || 'linear-gradient(135deg,#ff3d6e,#ff8a3d)';
+};
+
+document.addEventListener('submit', e => {
+    if (e.target && e.target.id === 'formEvento') {
+        e.preventDefault();
+        const form = e.target;
+        const fd = new FormData(form);
+        const obj = Object.fromEntries(fd);
+        delete obj.imgUpload;
+        obj.img = resolveImg(form, obj.img || 'linear-gradient(135deg,#ff3d6e,#ff8a3d)');
+        obj.preco = parseFloat(obj.preco) || 0;
+        if (obj.id) {
+            const idx = data.eventos.findIndex(x => x.id === +obj.id);
+            obj.id = +obj.id;
+            data.eventos[idx] = obj;
+            toast('✅ Evento atualizado');
+        } else {
+            obj.id = getNextId('eventos');
+            data.eventos.push(obj);
+            toast('✅ Evento adicionado');
+        }
+        if (saveData()) { closeModal(); renderEventos(); }
     }
-    saveData();
-    closeModal();
-    renderEventos();
 });
 
 $('#searchEventos').addEventListener('input', renderEventos);
@@ -336,7 +516,7 @@ function renderEst() {
     }
     tbody.innerHTML = filtered.map(e => `
         <tr>
-            <td><div class="thumb" style="background:${e.img}"></div></td>
+            <td><div class="thumb" style="${thumbStyle(e.img)}"></div></td>
             <td><strong>${e.nome}</strong></td>
             <td><span class="cat-pill">${e.cat}</span></td>
             <td>${e.desc}</td>
@@ -362,36 +542,32 @@ window.delEst = id => {
 };
 
 function estForm(e = {}) {
+    const imgVal = e.img || '';
+    const urlVal = imgVal && !isImageSrc(imgVal) ? imgVal : '';
     return `
         <form id="formEst">
             <input type="hidden" name="id" value="${e.id || ''}">
-            <div class="form-group"><label>Nome *</label><input type="text" name="nome" required value="${e.nome || ''}"></div>
-            <div class="form-group"><label>Categoria *</label><input type="text" name="cat" required value="${e.cat || ''}"></div>
+            <div class="form-group"><label>Nome *</label><input type="text" name="nome" required value="${(e.nome || '').replace(/"/g,'&quot;')}"></div>
+            <div class="form-group"><label>Categoria *</label><input type="text" name="cat" required value="${(e.cat || '').replace(/"/g,'&quot;')}"></div>
             <div class="form-group"><label>Descrição</label><textarea name="desc" rows="2">${e.desc || ''}</textarea></div>
-            <div class="form-group"><label>Cor de fundo (gradiente)</label><input type="text" name="img" value="${e.img || 'linear-gradient(135deg,#dc2626,#7c2d12)'}"></div>
-            <button type="submit" class="btn-primary">💾 Salvar</button>
+
+            <div class="image-uploader" data-target="img">
+                <label class="up-label">📸 Foto do Estabelecimento / Fachada</label>
+                <div class="up-preview">${previewHtml(imgVal)}</div>
+                <input type="file" accept="image/*" class="up-input">
+                <div class="up-actions">
+                    <button type="button" class="btn-secondary up-clear">🗑 Remover imagem</button>
+                </div>
+                <input type="hidden" name="imgUpload" class="up-data" value="${isImageSrc(imgVal) ? imgVal : ''}">
+                <input type="text" name="img" class="up-url" placeholder="Ou cole URL / gradiente CSS" value="${urlVal.replace(/"/g,'&quot;')}">
+            </div>
+
+            <button type="submit" class="btn-primary" style="margin-top:16px">💾 Salvar</button>
         </form>
     `;
 }
 
 $('#btnAddEst').addEventListener('click', () => openModal('Novo Estabelecimento', estForm()));
-$(document).on('submit', '#formEst', function(e) {
-    e.preventDefault();
-    const obj = Object.fromEntries(new FormData(this));
-    if (obj.id) {
-        const idx = data.estabelecimentos.findIndex(x => x.id === +obj.id);
-        obj.id = +obj.id;
-        data.estabelecimentos[idx] = obj;
-        toast('✅ Atualizado');
-    } else {
-        obj.id = getNextId('estabelecimentos');
-        data.estabelecimentos.push(obj);
-        toast('✅ Adicionado');
-    }
-    saveData();
-    closeModal();
-    renderEst();
-});
 $('#searchEst').addEventListener('input', renderEst);
 
 // ============== CATEGORIAS ==============
@@ -450,24 +626,6 @@ function catForm(c = {}) {
 }
 
 $('#btnAddCat').addEventListener('click', () => openModal('Nova Categoria', catForm()));
-$(document).on('submit', '#formCat', function(e) {
-    e.preventDefault();
-    const obj = Object.fromEntries(new FormData(this));
-    if (obj.id) {
-        const idx = data.categorias.findIndex(x => x.id === +obj.id);
-        obj.id = +obj.id;
-        data.categorias[idx] = obj;
-        toast('✅ Atualizada');
-    } else {
-        obj.id = getNextId('categorias');
-        data.categorias.push(obj);
-        toast('✅ Adicionada');
-    }
-    saveData();
-    closeModal();
-    renderCat();
-    populateFilters();
-});
 
 // ============== BLOG ==============
 function renderBlog() {
@@ -480,7 +638,7 @@ function renderBlog() {
     }
     tbody.innerHTML = filtered.map(p => `
         <tr>
-            <td><div class="thumb" style="background-image:url(${p.img})"></div></td>
+            <td><div class="thumb" style="${thumbStyle(p.img)}"></div></td>
             <td><strong>${p.titulo}</strong></td>
             <td><span class="cat-pill">${p.cat}</span></td>
             <td>${p.data}</td>
@@ -506,39 +664,34 @@ window.delBlog = id => {
 };
 
 function blogForm(p = {}) {
+    const imgVal = p.img || '';
+    const urlVal = imgVal && !isImageSrc(imgVal) ? '' : imgVal;
+    const isExt = imgVal && isImageSrc(imgVal);
     return `
         <form id="formBlog">
             <input type="hidden" name="id" value="${p.id || ''}">
-            <div class="form-group"><label>Título *</label><input type="text" name="titulo" required value="${p.titulo || ''}"></div>
+            <div class="form-group"><label>Título *</label><input type="text" name="titulo" required value="${(p.titulo || '').replace(/"/g,'&quot;')}"></div>
             <div class="form-row">
-                <div class="form-group"><label>Categoria</label><input type="text" name="cat" value="${p.cat || 'Geral'}"></div>
-                <div class="form-group"><label>Data</label><input type="text" name="data" value="${p.data || new Date().toLocaleDateString('pt-BR')}"></div>
+                <div class="form-group"><label>Categoria</label><input type="text" name="cat" value="${(p.cat || 'Geral').replace(/"/g,'&quot;')}"></div>
+                <div class="form-group"><label>Data</label><input type="text" name="data" value="${(p.data || new Date().toLocaleDateString('pt-BR')).replace(/"/g,'&quot;')}"></div>
             </div>
-            <div class="form-group"><label>URL da Imagem</label><input type="text" name="img" value="${p.img || ''}"></div>
-            <div class="form-group"><label>Resumo</label><textarea name="resumo" rows="4">${p.resumo || ''}</textarea></div>
+            <div class="image-uploader" data-target="img">
+                <label class="up-label">📸 Foto da Matéria</label>
+                <div class="up-preview">${previewHtml(isExt ? imgVal : '')}</div>
+                <input type="file" accept="image/*" class="up-input">
+                <div class="up-actions">
+                    <button type="button" class="btn-secondary up-clear">🗑 Remover imagem</button>
+                </div>
+                <input type="hidden" name="imgUpload" class="up-data" value="${isExt ? imgVal.replace(/"/g,'&quot;') : ''}">
+                <input type="text" name="img" class="up-url" placeholder="Ou cole URL da imagem" value="${!isExt ? (imgVal||'').replace(/"/g,'&quot;') : ''}">
+            </div>
+            <div class="form-group" style="margin-top:16px"><label>Resumo</label><textarea name="resumo" rows="4">${p.resumo || ''}</textarea></div>
             <button type="submit" class="btn-primary">💾 Salvar</button>
         </form>
     `;
 }
 
 $('#btnAddBlog').addEventListener('click', () => openModal('Novo Post', blogForm()));
-$(document).on('submit', '#formBlog', function(e) {
-    e.preventDefault();
-    const obj = Object.fromEntries(new FormData(this));
-    if (obj.id) {
-        const idx = data.blog.findIndex(x => x.id === +obj.id);
-        obj.id = +obj.id;
-        data.blog[idx] = obj;
-        toast('✅ Atualizado');
-    } else {
-        obj.id = getNextId('blog');
-        data.blog.push(obj);
-        toast('✅ Adicionado');
-    }
-    saveData();
-    closeModal();
-    renderBlog();
-});
 $('#searchBlog').addEventListener('input', renderBlog);
 
 // ============== DEPOIMENTOS ==============
@@ -595,24 +748,6 @@ function depForm(d = {}) {
 }
 
 $('#btnAddDep').addEventListener('click', () => openModal('Novo Depoimento', depForm()));
-$(document).on('submit', '#formDep', function(e) {
-    e.preventDefault();
-    const obj = Object.fromEntries(new FormData(this));
-    obj.estrelas = parseInt(obj.estrelas) || 5;
-    if (obj.id) {
-        const idx = data.depoimentos.findIndex(x => x.id === +obj.id);
-        obj.id = +obj.id;
-        data.depoimentos[idx] = obj;
-        toast('✅ Atualizado');
-    } else {
-        obj.id = getNextId('depoimentos');
-        data.depoimentos.push(obj);
-        toast('✅ Adicionado');
-    }
-    saveData();
-    closeModal();
-    renderDep();
-});
 
 // ============== CONFIGURAÇÕES ==============
 function renderConfig() {
@@ -620,6 +755,7 @@ function renderConfig() {
     Object.keys(data.config).forEach(k => {
         if (form[k]) form[k].value = data.config[k] || '';
     });
+    loadGHForm();
 }
 
 $('#configForm').addEventListener('submit', e => {
@@ -651,11 +787,47 @@ function populateFilters() {
     }
 }
 
+document.addEventListener('submit', e => {
+    const form = e.target;
+    if (!form || !form.id) return;
+    if (['formEst','formCat','formBlog','formDep'].includes(form.id)) {
+        e.preventDefault();
+        const fd = new FormData(form);
+        const obj = Object.fromEntries(fd);
+        delete obj.imgUpload;
+        if (form.id === 'formEst' || form.id === 'formBlog') {
+            obj.img = resolveImg(form, obj.img || '');
+        }
+        if (form.id === 'formEst') {
+            if (obj.id) { obj.id = +obj.id; data.estabelecimentos[data.estabelecimentos.findIndex(x=>x.id===obj.id)] = obj; toast('✅ Atualizado'); }
+            else { obj.id = getNextId('estabelecimentos'); data.estabelecimentos.push(obj); toast('✅ Adicionado'); }
+            if (saveData()) { closeModal(); renderEst(); }
+        }
+        if (form.id === 'formCat') {
+            if (obj.id) { obj.id = +obj.id; data.categorias[data.categorias.findIndex(x=>x.id===obj.id)] = obj; toast('✅ Atualizada'); }
+            else { obj.id = getNextId('categorias'); data.categorias.push(obj); toast('✅ Adicionada'); }
+            if (saveData()) { closeModal(); renderCat(); populateFilters(); }
+        }
+        if (form.id === 'formBlog') {
+            if (obj.id) { obj.id = +obj.id; data.blog[data.blog.findIndex(x=>x.id===obj.id)] = obj; toast('✅ Atualizado'); }
+            else { obj.id = getNextId('blog'); data.blog.push(obj); toast('✅ Adicionado'); }
+            if (saveData()) { closeModal(); renderBlog(); }
+        }
+        if (form.id === 'formDep') {
+            obj.estrelas = parseInt(obj.estrelas) || 5;
+            if (obj.id) { obj.id = +obj.id; data.depoimentos[data.depoimentos.findIndex(x=>x.id===obj.id)] = obj; toast('✅ Atualizado'); }
+            else { obj.id = getNextId('depoimentos'); data.depoimentos.push(obj); toast('✅ Adicionado'); }
+            if (saveData()) { closeModal(); renderDep(); }
+        }
+    }
+});
+
 // ============== MODAL GENÉRICO ==============
 function openModal(title, html) {
     $('#modalTitle').textContent = title;
     $('#modalBody').innerHTML = html;
     $('#modal').classList.add('open');
+    bindImageUploader();
 }
 
 function closeModal() {
@@ -708,9 +880,45 @@ $('#btnReset').addEventListener('click', () => {
     }
 });
 
+function loadGHForm() {
+    const cfg = getGHConfig();
+    const o = document.getElementById('ghOwner'); if (o) o.value = cfg.owner || 'marcostheangels';
+    const r = document.getElementById('ghRepo'); if (r) r.value = cfg.repo || 'Agenda-shows-Moc';
+    const b = document.getElementById('ghBranch'); if (b) b.value = cfg.branch || 'main';
+    const t = document.getElementById('ghToken'); if (t) t.value = cfg.token || '';
+    const e = document.getElementById('ghEnabled'); if (e) e.checked = !!cfg.enabled;
+}
+
+function bindGitHubUI() {
+    loadGHForm();
+    const btnSave = document.getElementById('btnGHSave');
+    const btnNow = document.getElementById('btnGHNow');
+    if (btnSave && !btnSave.dataset.bound) {
+        btnSave.dataset.bound = '1';
+        btnSave.addEventListener('click', () => {
+            const cfg = {
+                owner: document.getElementById('ghOwner').value.trim() || 'marcostheangels',
+                repo: document.getElementById('ghRepo').value.trim() || 'Agenda-shows-Moc',
+                branch: document.getElementById('ghBranch').value.trim() || 'main',
+                filePath: 'data.json',
+                token: document.getElementById('ghToken').value.trim(),
+                enabled: document.getElementById('ghEnabled').checked
+            };
+            if (cfg.enabled && !cfg.token) { toast('⚠️ Cole o token para ativar'); return; }
+            setGHConfig(cfg);
+            updateGHStatus(cfg.enabled ? '✅ Auto-commit ativado. Próximo Salvar publica sozinho.' : '⏸️ Auto-commit desativado (só local).');
+            toast('✅ Config GitHub salva');
+        });
+    }
+    if (btnNow && !btnNow.dataset.bound) {
+        btnNow.dataset.bound = '1';
+        btnNow.addEventListener('click', () => pushToGitHub('🚀 Publicação manual via painel admin'));
+    }
+}
+
 // ============== BIND ACTIONS ==============
 function bindActions() {
-    // já feito acima
+    bindGitHubUI();
 }
 
 console.log('%c🔐 Painel Admin', 'color:#ff3d6e;font-size:20px;font-weight:bold;');
