@@ -20,7 +20,7 @@
             </div>
             <h1>Painel Administrativo</h1>
             <p class="login-sub">Agenda Shows MOC</p>
-            <form id="loginForm" method="post" action="#" onsubmit="return false">
+            <form id="loginForm" method="get" action="?" onsubmit="return false" novalidate>
                 <div class="form-group">
                     <label>Usuário</label>
                     <input type="text" id="loginUser" value="markim" autocomplete="username">
@@ -425,6 +425,6 @@
     <script>
         document.addEventListener('submit', function(e){var f=e.target;if(f&&f.id&&f.id.startsWith('form')){e.preventDefault();}e.stopImmediatePropagation();}, true);
     </script>
-    <script src="admin.js?v=15"></script>
+    <script src="admin.js?v=16"></script>
 </body>
 </html>
