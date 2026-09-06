@@ -91,21 +91,6 @@
       "desc": "Roda de samba com clássicos que marcaram época. Participação especial do mestre Cavaco.",
       "img": "linear-gradient(135deg,#0ea5e9,#1e40af)",
       "tag": "VIP"
-    },
-    {
-      "id": 7,
-      "titulo": "Maderada Shows ",
-      "cat": "Casa de Forró",
-      "bairro": "Alterosa",
-      "data": "15 SET",
-      "hora": "DOMINGO AS 22:00",
-      "preco": 15,
-      "local": "Perto Da Feirinha Do Alterosa",
-      "endereco": "avenida queluz 1941",
-      "desc": "",
-      "img": "fotos/evento-1788735121677.jpg",
-      "galeria": [],
-      "tag": "NOVO"
     }
   ],
   "estabelecimentos": [
