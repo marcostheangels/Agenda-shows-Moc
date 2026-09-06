@@ -20,7 +20,7 @@
             </div>
             <h1>Painel Administrativo</h1>
             <p class="login-sub">Agenda Shows MOC</p>
-            <form id="loginForm">
+            <form id="loginForm" method="post" action="#" onsubmit="return false">
                 <div class="form-group">
                     <label>Usuário</label>
                     <input type="text" id="loginUser" value="markim" autocomplete="username">
@@ -300,7 +300,7 @@
 
             <!-- CONFIGURAÇÕES -->
             <section class="admin-section" id="sec-config">
-                <form id="configForm" class="config-form">
+                <form id="configForm" class="config-form" method="post" action="#" onsubmit="return false">
                     <div class="form-row">
                         <div class="form-group">
                             <label>Nome do site</label>
@@ -422,6 +422,6 @@
         }
     }, true);
     </script>
-    <script src="admin.js?v=11"></script>
+    <script src="admin.js?v=12"></script>
 </body>
 </html>
