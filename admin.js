@@ -261,8 +261,8 @@ const toast = (msg, dur = 2500) => {
 };
 
 // ============== LOGIN ==============
-$('#loginForm').addEventListener('submit', e => {
-    e.preventDefault();
+$('#loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('btnLoginSubmit').click(); });
+$('#btnLoginSubmit').addEventListener('click', () => {
     const u = $('#loginUser').value;
     const p = $('#loginPass').value;
     let stored = {};

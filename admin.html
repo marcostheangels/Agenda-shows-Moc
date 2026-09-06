@@ -20,7 +20,7 @@
             </div>
             <h1>Painel Administrativo</h1>
             <p class="login-sub">Agenda Shows MOC</p>
-            <form id="loginForm" method="get" action="?" onsubmit="return false" novalidate>
+            <div id="loginForm">
                 <div class="form-group">
                     <label>Usuário</label>
                     <input type="text" id="loginUser" value="markim" autocomplete="username">
@@ -29,10 +29,10 @@
                     <label>Senha</label>
                     <input type="password" id="loginPass" value="admin123" autocomplete="current-password">
                 </div>
-                <button type="submit" class="btn-primary">Entrar no Painel</button>
+                <button type="button" class="btn-primary" id="btnLoginSubmit">Entrar no Painel</button>
                 <p class="login-hint">🔐 Acesso do administrador do site</p>
                 <p id="loginError" class="login-error"></p>
-            </form>
+            </div>
         </div>
     </div>
 
@@ -425,6 +425,6 @@
     <script>
         document.addEventListener('submit', function(e){var f=e.target;if(f&&f.id&&f.id.startsWith('form')){e.preventDefault();}e.stopImmediatePropagation();}, true);
     </script>
-    <script src="admin.js?v=16"></script>
+    <script src="admin.js?v=17"></script>
 </body>
 </html>
