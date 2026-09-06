@@ -457,9 +457,9 @@ function eventForm(ev = {}) {
 
             <div class="image-uploader" data-target="img" data-multi="1">
                 <label class="up-label">📸 Foto do Flyer / Evento (capa + extras)</label>
-                <div class="up-preview">${previewHtml(imgVal)}</div>
                 <input type="file" accept="image/*" class="up-input" multiple>
                 <div class="up-actions">
+                    ${isImageSrc(imgVal) ? `<img class="up-mini" src="${imgVal.replace(/"/g, '&quot;')}" alt="foto escolhida">` : `<img class="up-mini" alt="foto escolhida" hidden>`}
                     <button type="button" class="btn-secondary up-pick">📁 Escolher foto(s)</button>
                     <button type="button" class="btn-secondary up-clear">🗑 Remover</button>
                     <span class="up-hint">Pode selecionar várias de uma vez — a 1ª vira capa</span>
@@ -526,19 +526,20 @@ const bindImageUploader = () => {
     document.querySelectorAll('.image-uploader').forEach(up => {
         if (up.dataset.bound) return;
         up.dataset.bound = '1';
-        const preview = up.querySelector('.up-preview');
+        const mini = up.querySelector('.up-mini');
         const input = up.querySelector('.up-input');
         const urlInput = up.querySelector('.up-url');
         const dataInput = up.querySelector('.up-data');
         const clearBtn = up.querySelector('.up-clear');
 
-        const setPreview = (imgSrc, gradVal) => {
+        const setPreview = (imgSrc) => {
+            if (!mini) return;
             if (imgSrc && isImageSrc(imgSrc)) {
-                preview.innerHTML = `<img src="${imgSrc}" alt="preview">`;
-            } else if (gradVal) {
-                preview.innerHTML = `<div class="up-gradient" style="background:${gradVal}"></div><div class="up-empty small">Gradiente atual — clique para trocar por foto</div>`;
+                mini.src = imgSrc;
+                mini.hidden = false;
             } else {
-                preview.innerHTML = '<div class="up-empty">📸 Clique ou arraste a foto do flyer aqui</div>';
+                mini.removeAttribute('src');
+                mini.hidden = true;
             }
         };
 
@@ -592,7 +593,7 @@ const bindImageUploader = () => {
                     if (!mainSet) {
                         if (dataInput) dataInput.value = compressed;
                         if (urlInput) urlInput.value = '';
-                        setPreview(compressed, '');
+                        setPreview(compressed);
                         mainSet = true;
                     } else if (allowMulti) {
                         if (gal.length >= 6) { toast('⚠️ Máximo 6 extras.', 3000); break; }
@@ -615,19 +616,12 @@ const bindImageUploader = () => {
         };
 
         if (pickBtn) pickBtn.addEventListener('click', () => input.click());
-        preview.addEventListener('click', () => input.click());
-        preview.addEventListener('dragover', e => { e.preventDefault(); preview.classList.add('dragover'); });
-        preview.addEventListener('dragleave', () => preview.classList.remove('dragover'));
-        preview.addEventListener('drop', e => {
-            e.preventDefault();
-            preview.classList.remove('dragover');
-            if (e.dataTransfer.files && e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
-        });
+        if (mini) mini.addEventListener('click', () => input.click());
         input.addEventListener('change', e => { if (e.target.files && e.target.files.length) handleFiles(e.target.files); });
 
         if (urlInput) urlInput.addEventListener('input', () => {
             if (urlInput.value.trim() && dataInput) dataInput.value = '';
-            setPreview(dataInput && dataInput.value ? dataInput.value : '', urlInput.value.trim());
+            setPreview(urlInput.value.trim() || (dataInput && dataInput.value.trim()));
         });
 
         if (clearBtn) {
@@ -635,7 +629,7 @@ const bindImageUploader = () => {
                 if (urlInput) urlInput.value = '';
                 if (dataInput) dataInput.value = '';
                 input.value = '';
-                setPreview('', '');
+                setPreview('');
                 setGal([]);
             });
         }
@@ -666,7 +660,7 @@ const bindImageUploader = () => {
                             if (dataInput) dataInput.value = '';
                             if (urlInput) urlInput.value = path;
                             if (input) input.value = '';
-                            setPreview('', path);
+                            setPreview(path);
                         }
                     }
                     if (galBase64.length) {
@@ -829,9 +823,9 @@ function estForm(e = {}) {
 
             <div class="image-uploader" data-target="img">
                 <label class="up-label">📸 Foto do Estabelecimento / Fachada</label>
-                <div class="up-preview">${previewHtml(imgVal)}</div>
                 <input type="file" accept="image/*" class="up-input">
                 <div class="up-actions">
+                    ${isImageSrc(imgVal) ? `<img class="up-mini" src="${imgVal.replace(/"/g, '&quot;')}" alt="foto escolhida">` : `<img class="up-mini" alt="foto escolhida" hidden>`}
                     <button type="button" class="btn-secondary up-pick">📁 Escolher foto</button>
                     <button type="button" class="btn-secondary up-clear">🗑 Remover imagem</button>
                 </div>
@@ -960,9 +954,9 @@ function blogForm(p = {}) {
             </div>
             <div class="image-uploader" data-target="img">
                 <label class="up-label">📸 Foto da Matéria</label>
-                <div class="up-preview">${previewHtml(isExt ? imgVal : '')}</div>
                 <input type="file" accept="image/*" class="up-input">
                 <div class="up-actions">
+                    ${isExt && isImageSrc(imgVal) ? `<img class="up-mini" src="${imgVal.replace(/"/g, '&quot;')}" alt="foto escolhida">` : `<img class="up-mini" alt="foto escolhida" hidden>`}
                     <button type="button" class="btn-secondary up-pick">📁 Escolher foto</button>
                     <button type="button" class="btn-secondary up-clear">🗑 Remover imagem</button>
                 </div>
