@@ -52,7 +52,7 @@ const defaultData = {
     depoimentos: []
 };
 
-const isImgSrc = s => s && (s.startsWith('data:image') || s.startsWith('http') || s.startsWith('blob:'));
+const isImgSrc = s => s && (s.startsWith('data:image') || s.startsWith('http') || s.startsWith('blob:') || s.startsWith('fotos/') || s.startsWith('./fotos/') || s.startsWith('/fotos/') || /\.(jpe?g|png|webp|gif|avif|svg)(\?.*)?$/i.test(s));
 const bgStyle = img => {
     if (!img) return 'background:linear-gradient(135deg,#ff3d6e,#ff8a3d)';
     if (isImgSrc(img)) return `background-image:url("${img}");background-size:cover;background-position:center`;
@@ -140,13 +140,14 @@ function renderEventosFromAdmin() {
     const count = $('#eventsCount');
     if (!grid) return false;
     grid.innerHTML = adminData.eventos.map(ev => `
-        <article class="event-card" data-id="${ev.id}" data-cat="${ev.cat}" data-bairro="${ev.bairro}" data-preco="${ev.preco}" data-titulo="${ev.titulo.replace(/"/g,'&quot;')}" data-local="${ev.local.replace(/"/g,'&quot;')}" data-data="${ev.data}" data-hora="${ev.hora}" data-desc="${(ev.desc || '').replace(/"/g,'&quot;')}">
+        <article class="event-card" data-id="${ev.id}" data-cat="${ev.cat}" data-bairro="${ev.bairro}" data-preco="${ev.preco}" data-titulo="${ev.titulo.replace(/"/g,'&quot;')}" data-local="${ev.local.replace(/"/g,'&quot;')}" data-data="${ev.data}" data-hora="${ev.hora}" data-desc="${(ev.desc || '').replace(/"/g,'&quot;')}" data-galeria="${JSON.stringify(ev.galeria || []).replace(/"/g,'&quot;')}">
             <button class="fav-card" data-fav="${ev.id}" aria-label="Favoritar">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             </button>
             <div class="event-img" style="${bgStyle(ev.img)}">
                 <span class="event-date">${ev.data}</span>
                 ${ev.tag ? `<span class="event-tag tag-${ev.tag.toLowerCase()}">${ev.tag}</span>` : ''}
+                ${ev.galeria && ev.galeria.length ? `<span class="event-tag tag-fotos">📷 +${ev.galeria.length}</span>` : ''}
             </div>
             <div class="event-info">
                 <span class="event-cat">${ev.cat}</span>
@@ -260,6 +261,24 @@ function updateFilters() {
         adminData.categorias.map(c => `<option ${current === c.nome ? 'selected' : ''}>${c.nome}</option>`).join('');
 }
 
+function renderModalGallery(card) {
+    const box = $('#modalGallery');
+    if (!box) return;
+    let gal = [];
+    try { gal = JSON.parse(card.dataset.galeria || '[]'); } catch { gal = []; }
+    if (!Array.isArray(gal)) gal = [];
+    gal = gal.filter(g => isImgSrc(g)).slice(0, 6);
+    box.innerHTML = gal.map((g, i) => `<img src="${String(g).replace(/"/g,'&quot;')}" alt="foto ${i + 2}" loading="lazy">`).join('');
+    box.querySelectorAll('img').forEach(img => img.addEventListener('click', () => {
+        const main = $('#modalImg');
+        const cur = main.getAttribute('style');
+        main.setAttribute('style', `background-image:url("${img.src}");background-size:cover;background-position:center`);
+        img.style.outline = '2px solid #ff3d6e';
+        setTimeout(() => img.style.outline = '', 800);
+        void cur;
+    }));
+}
+
 function bindEventActions() {
     $$('.fav-card').forEach(btn => btn.addEventListener('click', e => {
         e.preventDefault();
@@ -282,6 +301,7 @@ function bindEventActions() {
         $('#modalPreco').textContent = '💰 ' + (card.dataset.preco === '0' ? 'Entrada Franca' : 'R$ ' + card.dataset.preco);
         $('#modalDesc').textContent = card.dataset.desc;
         $('#modalImg').setAttribute('style', card.querySelector('.event-img').getAttribute('style'));
+        renderModalGallery(card);
         const url = encodeURIComponent(window.location.href);
         const text = encodeURIComponent(`🎶 ${card.dataset.titulo}\n📅 ${card.dataset.data}\n📍 ${card.dataset.local}\nConfira: `);
         $('#shareWpp').href = `https://wa.me/?text=${text}${url}`;
@@ -424,6 +444,7 @@ openModalBtns.forEach(btn => btn.addEventListener('click', e => {
     $('#modalPreco').textContent = '💰 ' + (card.dataset.preco === '0' ? 'Entrada Franca' : 'R$ ' + card.dataset.preco);
     $('#modalDesc').textContent = card.dataset.desc;
     $('#modalImg').setAttribute('style', card.querySelector('.event-img').getAttribute('style'));
+    renderModalGallery(card);
 
     const url = encodeURIComponent(window.location.href);
     const text = encodeURIComponent(`🎶 ${card.dataset.titulo}\n📅 ${card.dataset.data}\n📍 ${card.dataset.local}\nConfira em: `);

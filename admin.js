@@ -97,30 +97,56 @@ let ghTimer = null;
 let ghSyncing = false;
 function scheduleGitHubSync() {
     const cfg = getGHConfig();
-    if (!cfg.enabled || !cfg.token) return;
+    if (!cfg.enabled || !cfg.token) {
+        updateGHStatus('💾 Salvo neste navegador. Para aparecer no site para todos, configure o token do GitHub em Configurações.');
+        return;
+    }
     clearTimeout(ghTimer);
     ghTimer = setTimeout(() => pushToGitHub('💾 Atualização via painel admin'), 2000);
 }
 
-const b64encode = str => btoa(unescape(encodeURIComponent(str)));
+const b64encode = str => {
+    // Versão fatiada: não congela o navegador com JSON grande (foto base64)
+    const bytes = new TextEncoder().encode(str);
+    const CH = 32768;
+    let bin = '';
+    for (let i = 0; i < bytes.length; i += CH) {
+        bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CH));
+    }
+    return btoa(bin);
+};
 
 async function pushToGitHub(message) {
     const cfg = getGHConfig();
-    if (!cfg.token) { toast('⚠️ GitHub: cole o token em Configurações para publicar'); updateGHStatus('⚠️ Sem token — dados salvos só neste navegador.'); return false; }
-    if (ghSyncing) return false;
+    if (!cfg.token) { toast('⚠️ GitHub: cole o token em Configurações para publicar', 4000); updateGHStatus('⚠️ Sem token — dados salvos só neste navegador.'); return false; }
+    if (ghSyncing) { toast('⏳ Já estou enviando, aguarde...', 2500); return false; }
+    // Trava por foto pesada: API do GitHub estoura perto de 1MB
+    const jsonStr = JSON.stringify(data);
+    const jsonKB = Math.round(jsonStr.length / 1024);
+    if (jsonStr.length > 900 * 1024) {
+        const msg = `❌ Grande demais p/ GitHub (~${jsonKB} KB). Remova fotos e use URL externa nas imagens, depois publique de novo. (Salvo localmente)`;
+        updateGHStatus(msg);
+        toast(msg, 7000);
+        return false;
+    }
     ghSyncing = true;
-    updateGHStatus('⏳ Enviando para o GitHub...');
+    updateGHStatus(`⏳ Enviando para o GitHub (~${jsonKB} KB)...`);
+    toast(`⏳ Enviando ~${jsonKB} KB para o GitHub...`, 3000);
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 30000);
     try {
         const apiBase = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.filePath}`;
         let sha = null;
         let getRes;
         try {
-            getRes = await fetch(`${apiBase}?ref=${cfg.branch}`, { headers: { Authorization: `Bearer ${cfg.token}`, Accept: 'application/vnd.github+json' } });
-        } catch {
+            getRes = await fetch(`${apiBase}?ref=${cfg.branch}`, { headers: { Authorization: `Bearer ${cfg.token}`, Accept: 'application/vnd.github+json' }, signal: ctrl.signal });
+        } catch (e) {
+            if (e.name === 'AbortError') throw new Error('tempo esgotado (30s) — internet lenta ou arquivo grande demais');
             throw new Error('sem conexão com api.github.com — verifique internet, VPN ou bloqueador de anúncios');
         }
         if (getRes.status === 401) throw new Error('token inválido ou expirado — gere um novo e marque a permissão "repo"');
         if (getRes.status === 404) throw new Error('repositório/branch não encontrado — confira dono, nome e branch');
+        if (getRes.status === 413 || getRes.status === 422) throw new Error('arquivo grande demais p/ API do GitHub — use URL externa nas fotos');
         if (getRes.ok) {
             const j = await getRes.json();
             sha = j.sha;
@@ -130,25 +156,29 @@ async function pushToGitHub(message) {
         if (sha) body.sha = sha;
         let putRes;
         try {
-            putRes = await fetch(apiBase, { method: 'PUT', headers: { Authorization: `Bearer ${cfg.token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-        } catch {
+            putRes = await fetch(apiBase, { method: 'PUT', headers: { Authorization: `Bearer ${cfg.token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: ctrl.signal });
+        } catch (e) {
+            if (e.name === 'AbortError') throw new Error('tempo esgotado no envio (30s) — foto pesada ou internet lenta. Use URL externa.');
             throw new Error('sem conexão com api.github.com — verifique internet, VPN ou bloqueador de anúncios');
         }
         if (!putRes.ok) {
             const err = await putRes.json().catch(() => ({}));
-            throw new Error(err.message || ('HTTP ' + putRes.status));
+            const raw = (err.message || ('HTTP ' + putRes.status));
+            if (/too large|too_big|large/i.test(raw)) throw new Error('arquivo grande demais p/ GitHub — troque fotos por URL externa');
+            throw new Error(raw);
         }
         const okMsg = '🚀 Publicado no GitHub! Site atualiza em ~1 min.';
         updateGHStatus('✅ ' + okMsg + ' Último envio: ' + new Date().toLocaleString('pt-BR'));
-        toast(okMsg, 3500);
-        ghSyncing = false;
+        toast(okMsg, 4000);
         return true;
     } catch (err) {
         console.error('GitHub sync:', err);
         updateGHStatus('❌ Não publicado no GitHub: ' + err.message + ' (dados continuam salvos neste navegador)');
-        toast('🌐 GitHub falhou, mas está salvo localmente: ' + err.message, 5000);
-        ghSyncing = false;
+        toast('🌐 GitHub falhou, mas está salvo localmente: ' + err.message, 6000);
         return false;
+    } finally {
+        clearTimeout(timer);
+        ghSyncing = false;
     }
 }
 
@@ -157,7 +187,45 @@ function updateGHStatus(msg) {
     if (el) el.textContent = msg;
 }
 
-const isImageSrc = src => src && (src.startsWith('data:image') || src.startsWith('http') || src.startsWith('blob:'));
+// ============== FOTOS/ NO GITHUB ==============
+// Sobe a imagem para a pasta fotos/ do repo e retorna o caminho p/ usar no evento
+async function uploadPhotoToGitHub(dataUrl, prefix = 'foto') {
+    const cfg = getGHConfig();
+    if (!cfg.token) {
+        toast('⚠️ Configure o token do GitHub em Configurações para usar a pasta fotos/', 5000);
+        updateGHStatus('⚠️ Sem token — não dá p/ subir foto p/ fotos/.');
+        return null;
+    }
+    const m = String(dataUrl || '').match(/^data:image\/(\w+);base64,(.+)$/);
+    if (!m) { toast('⚠️ Foto inválida. Selecione a foto de novo ou cole URL.', 4000); return null; }
+    const ext = (m[1] === 'jpeg') ? 'jpg' : m[1];
+    const nome = `${prefix}-${Date.now()}.${ext}`;
+    const path = `fotos/${nome}`;
+    const apiUrl = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}`;
+    toast(`⏳ Subindo ${nome} para fotos/...`, 3000);
+    updateGHStatus(`⏳ Subindo ${path}...`);
+    try {
+        const putRes = await fetch(apiUrl, {
+            method: 'PUT',
+            headers: { Authorization: `Bearer ${cfg.token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: `📸 Nova foto ${nome} via painel admin`, content: m[2], branch: cfg.branch })
+        });
+        if (!putRes.ok) {
+            const err = await putRes.json().catch(() => ({}));
+            throw new Error(err.message || ('HTTP ' + putRes.status));
+        }
+        updateGHStatus(`✅ Foto em fotos/: ${path}`);
+        toast(`✅ Foto salva em ${path}!`, 4000);
+        return path;
+    } catch (err) {
+        console.error('upload foto:', err);
+        updateGHStatus('❌ Falha ao subir foto: ' + err.message);
+        toast('❌ Não subi p/ fotos/: ' + err.message, 6000);
+        return null;
+    }
+}
+
+const isImageSrc = src => src && (src.startsWith('data:image') || src.startsWith('http') || src.startsWith('blob:') || src.startsWith('fotos/') || src.startsWith('./fotos/') || src.startsWith('/fotos/') || /\.(jpe?g|png|webp|gif|avif|svg)(\?.*)?$/i.test(src));
 const thumbStyle = img => {
     if (!img) return 'background:#22223a';
     if (isImageSrc(img)) return `background-image:url("${img}");background-size:cover;background-position:center`;
@@ -170,8 +238,12 @@ const previewHtml = img => {
 };
 
 function getNextId(key) {
-    const ids = data[key].map(i => i.id);
-    return ids.length ? Math.max(...ids) + 1 : nextId[key];
+    let max = 0;
+    for (const item of (data[key] || [])) {
+        const n = +item.id || 0;
+        if (n > max) max = n;
+    }
+    return max > 0 ? max + 1 : nextId[key];
 }
 
 // ============== TOAST ==============
@@ -302,7 +374,7 @@ function renderEventos() {
     tbody.innerHTML = filtered.map(e => `
         <tr>
             <td><div class="thumb" style="${thumbStyle(e.img)}"></div></td>
-            <td><strong>${e.titulo}</strong>${e.tag ? ' <span class="cat-pill">' + e.tag + '</span>' : ''}</td>
+            <td><strong>${e.titulo}</strong>${e.tag ? ' <span class="cat-pill">' + e.tag + '</span>' : ''}${e.galeria && e.galeria.length ? ` <span class="cat-pill">📷 +${e.galeria.length}</span>` : ''}</td>
             <td><span class="cat-pill">${e.cat}</span></td>
             <td>${e.data}</td>
             <td>${e.local}</td>
@@ -375,16 +447,20 @@ function eventForm(ev = {}) {
                 <textarea name="desc" rows="3">${ev.desc || ''}</textarea>
             </div>
 
-            <div class="image-uploader" data-target="img">
-                <label class="up-label">📸 Foto do Flyer / Evento</label>
+            <div class="image-uploader" data-target="img" data-multi="1">
+                <label class="up-label">📸 Foto do Flyer / Evento (capa + extras)</label>
                 <div class="up-preview">${previewHtml(imgVal)}</div>
-                <input type="file" accept="image/*" class="up-input">
+                <input type="file" accept="image/*" class="up-input" multiple>
                 <div class="up-actions">
-                    <button type="button" class="btn-secondary up-clear">🗑 Remover imagem</button>
-                    <span class="up-hint">JPG/PNG até ~2MB (comprime sozinho)</span>
+                    <button type="button" class="btn-secondary up-pick">📁 Escolher foto(s)</button>
+                    <button type="button" class="btn-secondary up-clear">🗑 Remover</button>
+                    <span class="up-hint">Pode selecionar várias de uma vez — a 1ª vira capa</span>
                 </div>
                 <input type="hidden" name="imgUpload" class="up-data" value="${isImageSrc(imgVal) ? imgVal : ''}">
-                <input type="text" name="img" class="up-url" placeholder="Ou cole URL da imagem / gradiente CSS" value="${urlVal.replace(/"/g,'&quot;')}">
+                <input type="text" name="img" class="up-url" placeholder="Ou cole caminho fotos/... ou URL da imagem" value="${urlVal.replace(/"/g,'&quot;')}">
+                <label class="up-label" style="margin-top:12px">🖼️ Fotos extras (opcional, até 6)</label>
+                <div class="up-gallery"></div>
+                <input type="hidden" name="galeria" class="up-gallery-data" value="${JSON.stringify(ev.galeria || []).replace(/"/g,'&quot;')}">
             </div>
 
             <div class="form-group" style="margin-top:16px">
@@ -407,18 +483,31 @@ function eventForm(ev = {}) {
 $('#btnAddEvento').addEventListener('click', () => openModal('Novo Evento', eventForm()));
 
 // ============== IMAGE UPLOADER ==============
-const compressImage = (file, maxW = 1200, quality = 0.8) => new Promise(res => {
+const compressImage = (file, maxW = 640, quality = 0.65) => new Promise((res, rej) => {
     const reader = new FileReader();
+    reader.onerror = () => rej(new Error('read'));
     reader.onload = e => {
         const img = new Image();
+        img.onerror = () => rej(new Error('decode'));
         img.onload = () => {
-            const canvas = document.createElement('canvas');
-            let { width, height } = img;
-            if (width > maxW) { height = height * (maxW / width); width = maxW; }
-            canvas.width = width; canvas.height = height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, width, height);
-            res(canvas.toDataURL('image/jpeg', quality));
+            try {
+                const canvas = document.createElement('canvas');
+                let { width, height } = img;
+                const scale = Math.min(1, maxW / Math.max(width, height));
+                width = Math.round(width * scale);
+                height = Math.round(height * scale);
+                canvas.width = width; canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, width, height);
+                ctx.drawImage(img, 0, 0, width, height);
+                let out = canvas.toDataURL('image/jpeg', quality);
+                // 2ª passada se ainda ficou pesado (foto de celular costuma estourar o GitHub)
+                if (out.length > 450 * 1024 && quality > 0.5) {
+                    out = canvas.toDataURL('image/jpeg', 0.5);
+                }
+                res(out);
+            } catch (err) { rej(err); }
         };
         img.src = e.target.result;
     };
@@ -445,30 +534,88 @@ const bindImageUploader = () => {
             }
         };
 
-        const handleFile = async file => {
-            if (!file || !file.type.startsWith('image/')) { toast('⚠️ Selecione uma imagem válida'); return; }
-            if (file.size > 8 * 1024 * 1024) { toast('⚠️ Imagem muito grande (máx 8MB)'); return; }
-            toast('⏳ Processando imagem...');
+        const galInput = up.querySelector('.up-gallery-data');
+        const galBox = up.querySelector('.up-gallery');
+        const pickBtn = up.querySelector('.up-pick');
+        const allowMulti = up.dataset.multi === '1' || (input && input.multiple);
+        const getGal = () => {
+            if (!galInput) return [];
+            try { const v = JSON.parse(galInput.value || '[]'); return Array.isArray(v) ? v : []; }
+            catch { return []; }
+        };
+        const setGal = arr => { if (galInput) galInput.value = JSON.stringify(arr); renderGal(); };
+        const renderGal = () => {
+            if (!galBox) return;
+            const arr = getGal();
+            if (!arr.length) { galBox.innerHTML = '<span class="up-hint">Nenhuma extra — a capa basta.</span>'; return; }
+            galBox.innerHTML = arr.map((g, i) => `
+                <div class="up-gal-item" data-i="${i}">
+                    ${isImageSrc(g) ? `<img src="${String(g).replace(/"/g, '&quot;')}" alt="extra ${i + 1}">` : `<div class="up-gal-grad" style="background:${String(g).replace(/"/g, '&quot;')}"></div>`}
+                    <button type="button" class="up-gal-del" data-del="${i}" title="Remover">×</button>
+                </div>`).join('');
+            galBox.querySelectorAll('.up-gal-del').forEach(b => b.addEventListener('click', () => {
+                const a = getGal();
+                a.splice(+b.dataset.del, 1);
+                setGal(a);
+            }));
+        };
+        renderGal();
+
+        const validFile = file => {
+            if (!file) return false;
+            if (/heic|heif/i.test(file.type) || /\.hei[cf]$/i.test(file.name || '')) { toast('⚠️ iPhone HEIC não é aceito. Tire print ou converta p/ JPG.', 5000); return false; }
+            if (!file.type.startsWith('image/')) { toast('⚠️ Selecione imagem válida (JPG/PNG)', 3000); return false; }
+            if (file.size > 8 * 1024 * 1024) { toast(`⚠️ "${file.name}" passa de 8MB. Use menor.`, 4000); return false; }
+            return true;
+        };
+
+        const handleFiles = async fileList => {
+            const files = [...(fileList || [])].filter(validFile);
+            if (!files.length) return;
+            if (!allowMulti && files.length > 1) { toast('⚠️ Só 1 foto aqui — a primeira será usada.', 3000); }
+            if (input) input.disabled = true;
+            toast(`⏳ Processando ${files.length} foto(s)...`, 2500);
             try {
-                const compressed = await compressImage(file, 1200, 0.82);
-                if (dataInput) dataInput.value = compressed;
-                if (urlInput) urlInput.value = '';
-                setPreview(compressed, '');
-                toast('✅ Foto carregada! Clique em Salvar.');
+                let mainSet = !!(dataInput && dataInput.value.trim()) || !!(urlInput && urlInput.value.trim());
+                const gal = getGal();
+                for (const file of (allowMulti ? files : files.slice(0, 1))) {
+                    const compressed = await compressImage(file, 640, 0.65);
+                    const kb = Math.round(compressed.length / 1024);
+                    if (!mainSet) {
+                        if (dataInput) dataInput.value = compressed;
+                        if (urlInput) urlInput.value = '';
+                        setPreview(compressed, '');
+                        mainSet = true;
+                    } else if (allowMulti) {
+                        if (gal.length >= 6) { toast('⚠️ Máximo 6 extras.', 3000); break; }
+                        gal.push(compressed);
+                    }
+                    if (compressed.length > 450 * 1024) {
+                        toast(`⚠️ "${file.name}" ficou ~${kb} KB — use "☁️ Subir p/ pasta fotos".`, 5000);
+                    }
+                }
+                if (allowMulti) setGal(gal);
+                else renderGal();
+                const total = (allowMulti ? getGal().length : 0) + 1;
+                toast(`✅ ${allowMulti ? total + ' foto(s) prontas!' : 'Foto pronta!'} Clique em "☁️ Subir p/ pasta fotos" e depois Salvar.`, 4000);
             } catch (err) {
-                toast('❌ Erro ao processar imagem');
+                console.error('compress:', err);
+                toast('❌ Travou ao processar. Tente JPG menor ou cole fotos/...', 5000);
+            } finally {
+                if (input) { input.disabled = false; input.value = ''; }
             }
         };
 
+        if (pickBtn) pickBtn.addEventListener('click', () => input.click());
         preview.addEventListener('click', () => input.click());
         preview.addEventListener('dragover', e => { e.preventDefault(); preview.classList.add('dragover'); });
         preview.addEventListener('dragleave', () => preview.classList.remove('dragover'));
         preview.addEventListener('drop', e => {
             e.preventDefault();
             preview.classList.remove('dragover');
-            if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+            if (e.dataTransfer.files && e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
         });
-        input.addEventListener('change', e => { if (e.target.files[0]) handleFile(e.target.files[0]); });
+        input.addEventListener('change', e => { if (e.target.files && e.target.files.length) handleFiles(e.target.files); });
 
         if (urlInput) urlInput.addEventListener('input', () => {
             if (urlInput.value.trim() && dataInput) dataInput.value = '';
@@ -481,6 +628,54 @@ const bindImageUploader = () => {
                 if (dataInput) dataInput.value = '';
                 input.value = '';
                 setPreview('', '');
+                setGal([]);
+            });
+        }
+
+        // Botão "Subir p/ fotos/" — joga a foto na pasta fotos/ do GitHub e preenche o evento
+        const actions = up.querySelector('.up-actions');
+        if (actions && !up.querySelector('.up-github')) {
+            const ghBtn = document.createElement('button');
+            ghBtn.type = 'button';
+            ghBtn.className = 'btn-secondary up-github';
+            ghBtn.textContent = '☁️ Subir p/ pasta fotos';
+            ghBtn.title = 'Envia a foto para fotos/ no GitHub e preenche o campo do evento';
+            actions.appendChild(ghBtn);
+            ghBtn.addEventListener('click', async () => {
+                const payload = dataInput && dataInput.value.trim();
+                const gal = getGal();
+                const galBase64 = gal.filter(g => String(g).startsWith('data:image'));
+                if (!payload && !galBase64.length) {
+                    if ((urlInput && urlInput.value.trim()) || gal.length) { toast('ℹ️ Isso já é fotos/... — é só salvar.', 3500); return; }
+                    toast('⚠️ Clique em "📁 Escolher foto(s)" primeiro.', 3500); return;
+                }
+                ghBtn.disabled = true;
+                ghBtn.textContent = '⏳ Subindo...';
+                try {
+                    if (payload && payload.startsWith('data:image')) {
+                        const path = await uploadPhotoToGitHub(payload, 'evento');
+                        if (path) {
+                            if (dataInput) dataInput.value = '';
+                            if (urlInput) urlInput.value = path;
+                            if (input) input.value = '';
+                            setPreview('', path);
+                        }
+                    }
+                    if (galBase64.length) {
+                        const novo = [];
+                        for (const g of gal) {
+                            if (String(g).startsWith('data:image')) {
+                                const p = await uploadPhotoToGitHub(g, 'evento-extra');
+                                novo.push(p || g);
+                            } else novo.push(g);
+                        }
+                        setGal(novo);
+                    }
+                    toast('✅ Fotos direcionadas p/ fotos/. Agora clique em Salvar.', 5000);
+                } finally {
+                    ghBtn.disabled = false;
+                    ghBtn.textContent = '☁️ Subir p/ pasta fotos';
+                }
             });
         }
     });
@@ -489,8 +684,10 @@ const bindImageUploader = () => {
 const resolveImg = (form, fallback) => {
     const up = form.querySelector('.up-data');
     const url = form.querySelector('.up-url');
+    const urlVal = url && url.value.trim();
+    // Prioriza caminho/URL (fotos/..., http) sobre base64: base64 pesado congela o salvar
+    if (urlVal) return urlVal;
     if (up && up.value.trim()) return up.value.trim();
-    if (url && url.value.trim()) return url.value.trim();
     return fallback || 'linear-gradient(135deg,#ff3d6e,#ff8a3d)';
 };
 
@@ -498,22 +695,78 @@ document.addEventListener('submit', e => {
     if (e.target && e.target.id === 'formEvento') {
         e.preventDefault();
         const form = e.target;
-        const fd = new FormData(form);
-        const obj = Object.fromEntries(fd);
-        delete obj.imgUpload;
-        obj.img = resolveImg(form, obj.img || 'linear-gradient(135deg,#ff3d6e,#ff8a3d)');
-        obj.preco = parseFloat(obj.preco) || 0;
-        if (obj.id) {
-            const idx = data.eventos.findIndex(x => x.id === +obj.id);
-            obj.id = +obj.id;
-            data.eventos[idx] = obj;
-            toast('✅ Evento atualizado');
-        } else {
-            obj.id = getNextId('eventos');
-            data.eventos.push(obj);
-            toast('✅ Evento adicionado');
+        const btn = form.querySelector('button[type="submit"]');
+        if (btn) { btn.disabled = true; btn.textContent = '⏳ Salvando...'; }
+        toast('⏳ Salvando evento...', 1500);
+        try {
+            const fd = new FormData(form);
+            const obj = Object.fromEntries(fd);
+            delete obj.imgUpload;
+            // Validação com balão explicativo (o required sozinho não mostra nada dentro do modal)
+            const obrigatorios = [['titulo', 'Título'], ['cat', 'Categoria'], ['bairro', 'Bairro'], ['data', 'Data'], ['hora', 'Horário'], ['local', 'Local']];
+            for (const [campo, rotulo] of obrigatorios) {
+                if (!obj[campo] || String(obj[campo]).trim() === '') {
+                    toast(`⚠️ Falta preencher: ${rotulo}`, 3500);
+                    const input = form.querySelector(`[name="${campo}"]`);
+                    if (input) input.focus();
+                    if (btn) { btn.disabled = false; btn.textContent = '💾 Salvar Evento'; }
+                    return;
+                }
+            }
+            obj.img = resolveImg(form, obj.img || 'linear-gradient(135deg,#ff3d6e,#ff8a3d)');
+            // TRAVA PRINCIPAL: base64 grande congela stringify + localStorage + GitHub.
+            // Força usar "☁️ Subir p/ pasta fotos" antes de salvar.
+            if (obj.img && obj.img.startsWith('data:image') && obj.img.length > 300 * 1024) {
+                const kb = Math.round(obj.img.length / 1024);
+                toast(`⚠️ Foto com ~${kb} KB trava o salvamento. Clique em "☁️ Subir p/ pasta fotos" primeiro, depois Salvar.`, 6000);
+                console.warn('save bloqueado: base64 pesado', kb + 'KB');
+                if (btn) { btn.disabled = false; btn.textContent = '💾 Salvar Evento'; }
+                return;
+            }
+            if (obj.img && obj.img.length > 900 * 1024) {
+                toast('⚠️ Foto muito pesada para salvar/publicar. Remova a foto ou use fotos/...', 4500);
+                if (btn) { btn.disabled = false; btn.textContent = '💾 Salvar Evento'; }
+                return;
+            }
+            obj.preco = parseFloat(obj.preco) || 0;
+            try { obj.galeria = JSON.parse(obj.galeria || '[]'); } catch { obj.galeria = []; }
+            if (!Array.isArray(obj.galeria)) obj.galeria = [];
+            obj.galeria = obj.galeria.filter(g => g && isImageSrc(g)).slice(0, 6);
+            const pesada = obj.galeria.find(g => String(g).startsWith('data:image') && String(g).length > 300 * 1024);
+            if (pesada) {
+                toast(`⚠️ Uma extra tem ~${Math.round(String(pesada).length / 1024)} KB e trava. Suba p/ fotos/ primeiro.`, 6000);
+                if (btn) { btn.disabled = false; btn.textContent = '💾 Salvar Evento'; }
+                return;
+            }
+            let acao = '';
+            if (obj.id) {
+                const idx = data.eventos.findIndex(x => x.id === +obj.id);
+                obj.id = +obj.id;
+                if (idx > -1) data.eventos[idx] = obj;
+                else data.eventos.push(obj);
+                acao = 'atualizado';
+            } else {
+                obj.id = getNextId('eventos');
+                data.eventos.push(obj);
+                acao = 'adicionado';
+            }
+            if (saveData()) {
+                const kb = Math.round((localStorage.getItem(STORAGE_KEY) || '').length / 1024);
+                const gh = getGHConfig();
+                const extra = (gh.enabled && gh.token) ? ' 🚀 Publicando no GitHub...' : ' 💾 Só neste navegador (ative o GitHub em Configurações p/ publicar).';
+                const nFotos = 1 + (obj.galeria || []).length;
+                toast(`✅ Evento ${acao}! ${nFotos} foto(s). Total: ${data.eventos.length} eventos (${kb} KB).${extra}`, 5000);
+                console.log(`✅ Evento ${acao}:`, obj);
+                closeModal();
+                renderEventos();
+                populateFilters();
+            }
+            else if (btn) { btn.disabled = false; btn.textContent = '💾 Salvar Evento'; }
+        } catch (err) {
+            console.error('save evento:', err);
+            toast('❌ Erro ao salvar: ' + (err.message || err), 4000);
+            if (btn) { btn.disabled = false; btn.textContent = '💾 Salvar Evento'; }
         }
-        if (saveData()) { closeModal(); renderEventos(); }
     }
 });
 
@@ -571,6 +824,7 @@ function estForm(e = {}) {
                 <div class="up-preview">${previewHtml(imgVal)}</div>
                 <input type="file" accept="image/*" class="up-input">
                 <div class="up-actions">
+                    <button type="button" class="btn-secondary up-pick">📁 Escolher foto</button>
                     <button type="button" class="btn-secondary up-clear">🗑 Remover imagem</button>
                 </div>
                 <input type="hidden" name="imgUpload" class="up-data" value="${isImageSrc(imgVal) ? imgVal : ''}">
@@ -701,6 +955,7 @@ function blogForm(p = {}) {
                 <div class="up-preview">${previewHtml(isExt ? imgVal : '')}</div>
                 <input type="file" accept="image/*" class="up-input">
                 <div class="up-actions">
+                    <button type="button" class="btn-secondary up-pick">📁 Escolher foto</button>
                     <button type="button" class="btn-secondary up-clear">🗑 Remover imagem</button>
                 </div>
                 <input type="hidden" name="imgUpload" class="up-data" value="${isExt ? imgVal.replace(/"/g,'&quot;') : ''}">
