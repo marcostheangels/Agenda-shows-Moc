@@ -106,14 +106,21 @@ const b64encode = str => btoa(unescape(encodeURIComponent(str)));
 
 async function pushToGitHub(message) {
     const cfg = getGHConfig();
-    if (!cfg.token) { toast('⚠️ Configure o token do GitHub primeiro'); return false; }
+    if (!cfg.token) { toast('⚠️ GitHub: cole o token em Configurações para publicar'); updateGHStatus('⚠️ Sem token — dados salvos só neste navegador.'); return false; }
     if (ghSyncing) return false;
     ghSyncing = true;
     updateGHStatus('⏳ Enviando para o GitHub...');
     try {
         const apiBase = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.filePath}`;
         let sha = null;
-        const getRes = await fetch(`${apiBase}?ref=${cfg.branch}`, { headers: { Authorization: `Bearer ${cfg.token}`, Accept: 'application/vnd.github+json' } });
+        let getRes;
+        try {
+            getRes = await fetch(`${apiBase}?ref=${cfg.branch}`, { headers: { Authorization: `Bearer ${cfg.token}`, Accept: 'application/vnd.github+json' } });
+        } catch {
+            throw new Error('sem conexão com api.github.com — verifique internet, VPN ou bloqueador de anúncios');
+        }
+        if (getRes.status === 401) throw new Error('token inválido ou expirado — gere um novo e marque a permissão "repo"');
+        if (getRes.status === 404) throw new Error('repositório/branch não encontrado — confira dono, nome e branch');
         if (getRes.ok) {
             const j = await getRes.json();
             sha = j.sha;
@@ -121,7 +128,12 @@ async function pushToGitHub(message) {
         const content = b64encode(JSON.stringify(data, null, 2));
         const body = { message: message || 'Atualização via painel admin', content, branch: cfg.branch };
         if (sha) body.sha = sha;
-        const putRes = await fetch(apiBase, { method: 'PUT', headers: { Authorization: `Bearer ${cfg.token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        let putRes;
+        try {
+            putRes = await fetch(apiBase, { method: 'PUT', headers: { Authorization: `Bearer ${cfg.token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        } catch {
+            throw new Error('sem conexão com api.github.com — verifique internet, VPN ou bloqueador de anúncios');
+        }
         if (!putRes.ok) {
             const err = await putRes.json().catch(() => ({}));
             throw new Error(err.message || ('HTTP ' + putRes.status));
@@ -133,8 +145,8 @@ async function pushToGitHub(message) {
         return true;
     } catch (err) {
         console.error('GitHub sync:', err);
-        updateGHStatus('❌ Falha: ' + err.message);
-        toast('❌ GitHub: ' + err.message, 4000);
+        updateGHStatus('❌ Não publicado no GitHub: ' + err.message + ' (dados continuam salvos neste navegador)');
+        toast('🌐 GitHub falhou, mas está salvo localmente: ' + err.message, 5000);
         ghSyncing = false;
         return false;
     }
@@ -952,4 +964,4 @@ function bindActions() {
     bindGitHubUI();
 }
 
-console.log('%c🔐 Painel Admin v4', 'color:#ff3d6e;font-size:20px;font-weight:bold;');
+console.log('%c🔐 Painel Admin v5', 'color:#ff3d6e;font-size:20px;font-weight:bold;');
