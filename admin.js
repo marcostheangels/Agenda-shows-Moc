@@ -61,12 +61,16 @@ const defaultData = {
     ]
 };
 
+// ============== STORAGE SEGURO (modo anônimo pode bloquear) ==============
+const safeGet = k => { try { return localStorage.getItem(k); } catch (e) { console.warn('storage bloqueado (get):', k); return null; } };
+const safeSet = (k, v) => { try { localStorage.setItem(k, v); return true; } catch (e) { console.warn('storage bloqueado (set):', k); return false; } };
+
 // ============== ESTADO ==============
 let data = loadData();
 let nextId = { eventos: 100, estabelecimentos: 100, categorias: 100, blog: 100, depoimentos: 100 };
 
 function loadData() {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = safeGet(STORAGE_KEY);
     if (stored) {
         try { return JSON.parse(stored); } catch(e) {}
     }
@@ -75,11 +79,12 @@ function loadData() {
 
 function saveData() {
     try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        const ok = safeSet(STORAGE_KEY, JSON.stringify(data));
+        if (!ok) throw new Error('storage indisponível');
         scheduleGitHubSync();
         return true;
     } catch (e) {
-        toast('⚠️ Armazenamento cheio! Use imagens menores ou URLs externas.');
+        toast('⚠️ Não salvei neste navegador (armazenamento cheio ou bloqueado no modo anônimo). Use fotos/... e o GitHub.');
         console.error('localStorage quota:', e);
         return false;
     }
@@ -88,10 +93,10 @@ function saveData() {
 // ============== GITHUB AUTO-COMMIT ==============
 const GH_KEY = 'agendaShowsMOC_github';
 const getGHConfig = () => {
-    try { return Object.assign({ owner: 'marcostheangels', repo: 'Agenda-shows-Moc', branch: 'main', filePath: 'data.json', token: '', enabled: false }, JSON.parse(localStorage.getItem(GH_KEY) || '{}')); }
+    try { return Object.assign({ owner: 'marcostheangels', repo: 'Agenda-shows-Moc', branch: 'main', filePath: 'data.json', token: '', enabled: false }, JSON.parse(safeGet(GH_KEY) || '{}')); }
     catch { return { owner: 'marcostheangels', repo: 'Agenda-shows-Moc', branch: 'main', filePath: 'data.json', token: '', enabled: false }; }
 };
-const setGHConfig = cfg => localStorage.setItem(GH_KEY, JSON.stringify(cfg));
+const setGHConfig = cfg => safeSet(GH_KEY, JSON.stringify(cfg));
 
 let ghTimer = null;
 let ghSyncing = false;
@@ -260,11 +265,12 @@ $('#loginForm').addEventListener('submit', e => {
     e.preventDefault();
     const u = $('#loginUser').value;
     const p = $('#loginPass').value;
-    const stored = JSON.parse(localStorage.getItem(AUTH_KEY) || '{}');
+    let stored = {};
+    try { stored = JSON.parse(safeGet(AUTH_KEY) || '{}'); } catch {}
     const validU = stored.user || 'markim';
     const validP = stored.pass || 'admin123';
     if (u === validU && p === validP) {
-        sessionStorage.setItem(AUTH_KEY, '1');
+        try { sessionStorage.setItem(AUTH_KEY, '1'); } catch {}
         $('#loginScreen').style.display = 'none';
         $('#adminPanel').style.display = 'grid';
         initAdmin();
@@ -274,7 +280,9 @@ $('#loginForm').addEventListener('submit', e => {
 });
 
 // Auto-login se já autenticado
-if (sessionStorage.getItem(AUTH_KEY)) {
+let _authed = false;
+try { _authed = !!sessionStorage.getItem(AUTH_KEY); } catch {}
+if (_authed) {
     $('#loginScreen').style.display = 'none';
     $('#adminPanel').style.display = 'grid';
     setTimeout(initAdmin, 50);
@@ -282,7 +290,7 @@ if (sessionStorage.getItem(AUTH_KEY)) {
 
 $('#logoutBtn').addEventListener('click', e => {
     e.preventDefault();
-    sessionStorage.removeItem(AUTH_KEY);
+    try { sessionStorage.removeItem(AUTH_KEY); } catch {}
     location.reload();
 });
 
@@ -406,7 +414,7 @@ function eventForm(ev = {}) {
     const imgVal = ev.img || '';
     const urlVal = imgVal && !isImageSrc(imgVal) ? imgVal : '';
     return `
-        <form id="formEvento">
+        <form id="formEvento" method="post" action="#">
             <input type="hidden" name="id" value="${ev.id || ''}">
             <div class="form-group">
                 <label>Título do evento *</label>
@@ -751,7 +759,7 @@ document.addEventListener('submit', e => {
                 acao = 'adicionado';
             }
             if (saveData()) {
-                const kb = Math.round((localStorage.getItem(STORAGE_KEY) || '').length / 1024);
+                const kb = Math.round((safeGet(STORAGE_KEY) || '').length / 1024);
                 const gh = getGHConfig();
                 const extra = (gh.enabled && gh.token) ? ' 🚀 Publicando no GitHub...' : ' 💾 Só neste navegador (ative o GitHub em Configurações p/ publicar).';
                 const nFotos = 1 + (obj.galeria || []).length;
@@ -813,7 +821,7 @@ function estForm(e = {}) {
     const imgVal = e.img || '';
     const urlVal = imgVal && !isImageSrc(imgVal) ? imgVal : '';
     return `
-        <form id="formEst">
+        <form id="formEst" method="post" action="#">
             <input type="hidden" name="id" value="${e.id || ''}">
             <div class="form-group"><label>Nome *</label><input type="text" name="nome" required value="${(e.nome || '').replace(/"/g,'&quot;')}"></div>
             <div class="form-group"><label>Categoria *</label><input type="text" name="cat" required value="${(e.cat || '').replace(/"/g,'&quot;')}"></div>
@@ -882,7 +890,7 @@ window.delCat = id => {
 
 function catForm(c = {}) {
     return `
-        <form id="formCat">
+        <form id="formCat" method="post" action="#">
             <input type="hidden" name="id" value="${c.id || ''}">
             <div class="form-row">
                 <div class="form-group"><label>Nome *</label><input type="text" name="nome" required value="${c.nome || ''}"></div>
@@ -943,7 +951,7 @@ function blogForm(p = {}) {
     const urlVal = imgVal && !isImageSrc(imgVal) ? '' : imgVal;
     const isExt = imgVal && isImageSrc(imgVal);
     return `
-        <form id="formBlog">
+        <form id="formBlog" method="post" action="#">
             <input type="hidden" name="id" value="${p.id || ''}">
             <div class="form-group"><label>Título *</label><input type="text" name="titulo" required value="${(p.titulo || '').replace(/"/g,'&quot;')}"></div>
             <div class="form-row">
@@ -1010,7 +1018,7 @@ window.delDep = id => {
 
 function depForm(d = {}) {
     return `
-        <form id="formDep">
+        <form id="formDep" method="post" action="#">
             <input type="hidden" name="id" value="${d.id || ''}">
             <div class="form-row">
                 <div class="form-group"><label>Nome *</label><input type="text" name="nome" required value="${d.nome || ''}"></div>
@@ -1055,7 +1063,7 @@ $('#btnChangePass').addEventListener('click', () => {
     if (!u) return;
     const p = prompt('Nova senha:');
     if (!p) return;
-    localStorage.setItem(AUTH_KEY, JSON.stringify({ user: u, pass: p }));
+    safeSet(AUTH_KEY, JSON.stringify({ user: u, pass: p }));
     toast('🔐 Senha alterada!');
 });
 
@@ -1172,7 +1180,7 @@ $('#fileImport').addEventListener('change', e => {
 $('#btnReset').addEventListener('click', () => {
     if (confirm('⚠️ Resetar TUDO? Isto apagará todos os dados.')) {
         if (confirm('Tem certeza? Não há como desfazer.')) {
-            localStorage.removeItem(STORAGE_KEY);
+            try { localStorage.removeItem(STORAGE_KEY); } catch {}
             location.reload();
         }
     }
@@ -1220,3 +1228,4 @@ function bindActions() {
 }
 
 console.log('%c🔐 Painel Admin v5', 'color:#ff3d6e;font-size:20px;font-weight:bold;');
+window.__adminOK = true;

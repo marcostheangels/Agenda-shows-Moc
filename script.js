@@ -60,7 +60,8 @@ const bgStyle = img => {
 };
 
 function loadLocal() {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    let stored = null;
+    try { stored = localStorage.getItem(STORAGE_KEY); } catch(e) { return null; }
     if (stored) {
         try { return JSON.parse(stored); } catch(e) {}
     }
@@ -347,7 +348,8 @@ const showToast = (msg, dur = 2500) => {
 
 // ============== FAVORITOS (localStorage) ==============
 const FAV_KEY = 'agendaShowsMOC_favs';
-let favorites = JSON.parse(localStorage.getItem(FAV_KEY) || '[]');
+let favorites = [];
+try { favorites = JSON.parse(localStorage.getItem(FAV_KEY) || '[]'); } catch(e) { favorites = []; }
 
 const updateFavCount = () => {
     const c = $('#favCount');
@@ -356,7 +358,7 @@ const updateFavCount = () => {
 };
 updateFavCount();
 
-const saveFavs = () => localStorage.setItem(FAV_KEY, JSON.stringify(favorites));
+const saveFavs = () => { try { localStorage.setItem(FAV_KEY, JSON.stringify(favorites)); } catch(e) {} };
 
 const toggleFav = id => {
     const idx = favorites.indexOf(id);

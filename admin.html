@@ -413,6 +413,15 @@
     <!-- TOAST -->
     <div class="toast" id="toast"></div>
 
-    <script src="admin.js?v=9"></script>
+    <script>
+    // Guarda anti-414: NUNCA deixa form do modal navegar (funciona mesmo se admin.js falhar)
+    document.addEventListener('submit', function (e) {
+        var f = e.target;
+        if (f && f.id && (f.id === 'formEvento' || f.id === 'formEst' || f.id === 'formCat' || f.id === 'formBlog' || f.id === 'formDep')) {
+            e.preventDefault();
+        }
+    }, true);
+    </script>
+    <script src="admin.js?v=10"></script>
 </body>
 </html>
