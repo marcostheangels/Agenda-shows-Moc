@@ -223,6 +223,13 @@ a { color: inherit; text-decoration: none; }
     padding: 16px 12px;
     border-top: 1px solid var(--border);
 }
+.side-version {
+    font-size: 11px;
+    color: var(--gray);
+    text-align: center;
+    padding: 4px 0 10px;
+    letter-spacing: 1px;
+}
 
 /* MAIN */
 .admin-main {

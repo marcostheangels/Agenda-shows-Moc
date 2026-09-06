@@ -351,7 +351,7 @@ function eventForm(ev = {}) {
                 </div>
                 <div class="form-group">
                     <label>Preço (0 = grátis) *</label>
-                    <input type="number" name="preco" required value="${ev.preco ?? 0}">
+                    <input type="number" name="preco" required min="0" step="1" inputmode="numeric" value="${ev.preco ?? 0}">
                 </div>
             </div>
             <div class="form-group">
@@ -754,7 +754,10 @@ function depForm(d = {}) {
                 <div class="form-group"><label>Cor do avatar</label><input type="text" name="cor" value="${d.cor || 'linear-gradient(135deg,#dc2626,#f59e0b)'}"></div>
             </div>
             <div class="form-group"><label>Depoimento *</label><textarea name="texto" rows="4" required>${d.texto || ''}</textarea></div>
-            <button type="submit" class="btn-primary">💾 Salvar</button>
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                <button type="submit" class="btn-primary">💾 Salvar</button>
+            </div>
         </form>
     `;
 }
@@ -949,4 +952,4 @@ function bindActions() {
     bindGitHubUI();
 }
 
-console.log('%c🔐 Painel Admin', 'color:#ff3d6e;font-size:20px;font-weight:bold;');
+console.log('%c🔐 Painel Admin v4', 'color:#ff3d6e;font-size:20px;font-weight:bold;');
