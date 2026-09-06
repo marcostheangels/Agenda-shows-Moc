@@ -73,7 +73,7 @@ let useAdmin = adminData !== null;
 
 async function loadRemote() {
     try {
-        const res = await fetch('data.json', { cache: 'no-store' });
+        const res = await fetch('data.json?_=' + Date.now(), { cache: 'no-store' });
         if (!res.ok) return false;
         const json = await res.json();
         if (!json || !json.eventos) return false;
