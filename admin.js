@@ -414,7 +414,7 @@ function eventForm(ev = {}) {
     const imgVal = ev.img || '';
     const urlVal = imgVal && !isImageSrc(imgVal) ? imgVal : '';
     return `
-        <form id="formEvento" method="post" action="#" onsubmit="return false">
+        <form id="formEvento" method="post" action="#" onsubmit="return false" novalidate>
             <input type="hidden" name="id" value="${ev.id || ''}">
             <div class="form-group">
                 <label>Título do evento *</label>
@@ -815,7 +815,7 @@ function estForm(e = {}) {
     const imgVal = e.img || '';
     const urlVal = imgVal && !isImageSrc(imgVal) ? imgVal : '';
     return `
-        <form id="formEst" method="post" action="#" onsubmit="return false">
+        <form id="formEst" method="post" action="#" onsubmit="return false" novalidate>
             <input type="hidden" name="id" value="${e.id || ''}">
             <div class="form-group"><label>Nome *</label><input type="text" name="nome" required value="${(e.nome || '').replace(/"/g,'&quot;')}"></div>
             <div class="form-group"><label>Categoria *</label><input type="text" name="cat" required value="${(e.cat || '').replace(/"/g,'&quot;')}"></div>
@@ -884,7 +884,7 @@ window.delCat = id => {
 
 function catForm(c = {}) {
     return `
-        <form id="formCat" method="post" action="#" onsubmit="return false">
+        <form id="formCat" method="post" action="#" onsubmit="return false" novalidate>
             <input type="hidden" name="id" value="${c.id || ''}">
             <div class="form-row">
                 <div class="form-group"><label>Nome *</label><input type="text" name="nome" required value="${c.nome || ''}"></div>
@@ -945,7 +945,7 @@ function blogForm(p = {}) {
     const urlVal = imgVal && !isImageSrc(imgVal) ? '' : imgVal;
     const isExt = imgVal && isImageSrc(imgVal);
     return `
-        <form id="formBlog" method="post" action="#" onsubmit="return false">
+        <form id="formBlog" method="post" action="#" onsubmit="return false" novalidate>
             <input type="hidden" name="id" value="${p.id || ''}">
             <div class="form-group"><label>Título *</label><input type="text" name="titulo" required value="${(p.titulo || '').replace(/"/g,'&quot;')}"></div>
             <div class="form-row">
@@ -1012,7 +1012,7 @@ window.delDep = id => {
 
 function depForm(d = {}) {
     return `
-        <form id="formDep" method="post" action="#" onsubmit="return false">
+        <form id="formDep" method="post" action="#" onsubmit="return false" novalidate>
             <input type="hidden" name="id" value="${d.id || ''}">
             <div class="form-row">
                 <div class="form-group"><label>Nome *</label><input type="text" name="nome" required value="${d.nome || ''}"></div>
