@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda Shows MOC - Shows, Forró, Bares e Restaurantes em Montes Claros</title>
+    <meta name="description" content="A agenda mais completa de shows, forró, bares, restaurantes e festas de Montes Claros - MOC. Fique por dentro de todos os eventos da cidade!">
+    <meta name="keywords" content="shows Montes Claros, forró MOC, bares MOC, restaurantes Montes Claros, agenda shows moc, eventos MOC, festas Montes Claros, sertanejo MOC">
+    <meta name="author" content="Agenda Shows MOC">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://agendashowsmoc.com/">
+    <meta property="og:title" content="Agenda Shows MOC - A agenda mais completa de Montes Claros">
+    <meta property="og:description" content="Descubra shows, forró, bares e restaurantes imperdíveis em Montes Claros. Tudo em um só lugar!">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1200&q=80">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:site_name" content="Agenda Shows MOC">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Agenda Shows MOC">
+    <meta name="twitter:description" content="A agenda mais completa de shows e eventos de Montes Claros.">
+
+    <!-- Schema.org -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Agenda Shows MOC",
+        "url": "https://agendashowsmoc.com",
+        "description": "A agenda mais completa de shows, forró, bares e restaurantes de Montes Claros",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://agendashowsmoc.com/?busca={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+
+    <link rel="canonical" href="https://agendashowsmoc.com/">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23ff3d6e'/%3E%3Ctext x='50' y='65' font-family='Arial Black' font-size='40' fill='white' text-anchor='middle' font-weight='900'%3EMOC%3C/text%3E%3C/svg%3E">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="container header-inner">
+            <a href="#" class="logo">
+                <span class="logo-icon">MOC</span>
+                <div class="logo-text">
+                    <span class="logo-title">Agenda Shows</span>
+                    <span class="logo-sub">MOC</span>
+                </div>
+            </a>
+            <nav class="nav" id="nav">
+                <a href="#home">Início</a>
+                <a href="#calendario">Calendário</a>
+                <a href="#eventos">Eventos</a>
+                <a href="#categorias">Categorias</a>
+                <a href="#estabelecimentos">Estabelecimentos</a>
+                <a href="#blog">Blog</a>
+                <a href="#depoimentos">Depoimentos</a>
+                <a href="#anuncie">Anuncie</a>
+                <a href="#contato">Contato</a>
+            </nav>
+            <div class="header-actions">
+                <button class="fav-btn" id="favBtn" aria-label="Favoritos">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    <span class="fav-count" id="favCount">0</span>
+                </button>
+                <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero" id="home">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
+        <div class="container hero-content">
+            <span class="hero-badge">MOC • Montes Claros</span>
+            <h1 class="hero-title">A agenda mais <span>completa</span> de shows da cidade</h1>
+            <p class="hero-sub">Descubra forrós, bares, restaurantes e shows imperdíveis. Tudo em um só lugar.</p>
+            <div class="hero-actions">
+                <a href="#eventos" class="btn btn-primary">Ver Eventos</a>
+                <a href="#anuncie" class="btn btn-ghost">Divulgue seu Evento</a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat"><strong data-target="150">0</strong><span>Eventos por mês</span></div>
+                <div class="stat"><strong data-target="80">0</strong><span>Estabelecimentos</span></div>
+                <div class="stat"><strong data-target="20">0</strong><span>Mil seguidores</span></div>
+                <div class="stat"><strong data-target="50">0</strong><strong style="margin-left:-2px">k+</strong><span>Visualizações</span></div>
+            </div>
+        </div>
+
+        <!-- Countdown do próximo grande evento -->
+        <div class="hero-countdown">
+            <div class="container countdown-inner">
+                <div class="cd-left">
+                    <span class="cd-tag">🔥 Próximo grande evento</span>
+                    <h3 class="cd-title">Festival de Forró de MOC — 3ª Edição</h3>
+                    <p class="cd-info">📍 Arena MOC • 15 de Outubro, 2026 • 20h</p>
+                </div>
+                <div class="cd-timer" id="cdTimer">
+                    <div class="cd-box"><strong id="cdDays">00</strong><span>Dias</span></div>
+                    <div class="cd-box"><strong id="cdHours">00</strong><span>Hrs</span></div>
+                    <div class="cd-box"><strong id="cdMins">00</strong><span>Min</span></div>
+                    <div class="cd-box"><strong id="cdSecs">00</strong><span>Seg</span></div>
+                </div>
+                <a href="#" class="btn btn-primary cd-btn">Comprar Ingresso</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- BUSCA -->
+    <section class="search-bar">
+        <div class="container search-inner">
+            <div class="search-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input type="text" id="searchInput" placeholder="Buscar por banda, evento ou local...">
+            </div>
+            <select class="filter-select" id="filterCat">
+                <option value="">Todas as categorias</option>
+                <option>Casa de Forró</option>
+                <option>Barzinho</option>
+                <option>Restaurante</option>
+                <option>Show ao Vivo</option>
+                <option>Sertanejo</option>
+                <option>Pagode</option>
+                <option>Rock</option>
+                <option>Festa</option>
+            </select>
+            <select class="filter-select" id="filterBairro">
+                <option value="">Todos os bairros</option>
+                <option>Centro</option>
+                <option>Todos os Santos</option>
+                <option>Independência</option>
+                <option>São José</option>
+                <option>Cidade Nova</option>
+                <option>Major Prates</option>
+            </select>
+            <select class="filter-select" id="filterPreco">
+                <option value="">Qualquer preço</option>
+                <option>Gratuito</option>
+                <option>Até R$ 30</option>
+                <option>Até R$ 60</option>
+                <option>Até R$ 100</option>
+                <option>Acima de R$ 100</option>
+            </select>
+            <button class="btn btn-primary" id="searchBtn">Buscar</button>
+        </div>
+    </section>
+
+    <!-- CATEGORIAS -->
+    <section class="section categorias" id="categorias">
+        <div class="container">
+            <div class="section-head">
+                <span class="section-tag">Explore por estilo</span>
+                <h2 class="section-title">O que você procura hoje?</h2>
+                <p class="section-sub">Filtros inteligentes para você encontrar exatamente o evento ideal</p>
+            </div>
+
+            <div class="cat-tabs">
+                <button class="cat-tab active">Todos</button>
+                <button class="cat-tab">Hoje</button>
+                <button class="cat-tab">Amanhã</button>
+                <button class="cat-tab">Fim de Semana</button>
+                <button class="cat-tab">Gratuitos</button>
+                <button class="cat-tab">VIP</button>
+            </div>
+
+            <div class="cat-grid">
+                <a href="#" class="cat-card cat-forro">
+                    <div class="cat-img"></div>
+                    <div class="cat-body">
+                        <div class="cat-badge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                            Forró
+                        </div>
+                        <h3>Casa de Forró</h3>
+                        <p>Sanfona, zabumba e o autêntico pé-de-serra do norte de Minas</p>
+                        <div class="cat-meta">
+                            <span class="cat-count">42 eventos</span>
+                            <span class="cat-arrow">→</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="#" class="cat-card cat-bar">
+                    <div class="cat-img"></div>
+                    <div class="cat-body">
+                        <div class="cat-badge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8h1a4 4 0 0 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/><line x1="6" y1="2" x2="6" y2="5"/><line x1="10" y1="2" x2="10" y2="5"/><line x1="14" y1="2" x2="14" y2="5"/></svg>
+                            Barzinho
+                        </div>
+                        <h3>Bares &amp; Botecos</h3>
+                        <p>Petiscos, cerveja gelada e música ao vivo nos melhores pontos</p>
+                        <div class="cat-meta">
+                            <span class="cat-count">38 eventos</span>
+                            <span class="cat-arrow">→</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="#" class="cat-card cat-rest">
+                    <div class="cat-img"></div>
+                    <div class="cat-body">
+                        <div class="cat-badge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>
+                            Gastronomia
+                        </div>
+                        <h3>Restaurantes</h3>
+                        <p>Jantares musicais com a melhor culinária da região</p>
+                        <div class="cat-meta">
+                            <span class="cat-count">21 eventos</span>
+                            <span class="cat-arrow">→</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="#" class="cat-card cat-show">
+                    <div class="cat-img"></div>
+                    <div class="cat-body">
+                        <div class="cat-badge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                            Ao Vivo
+                        </div>
+                        <h3>Shows ao Vivo</h3>
+                        <p>Grandes artistas, bandas covers e turnês imperdíveis</p>
+                        <div class="cat-meta">
+                            <span class="cat-count">15 eventos</span>
+                            <span class="cat-arrow">→</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="#" class="cat-card cat-sertanejo">
+                    <div class="cat-img"></div>
+                    <div class="cat-body">
+                        <div class="cat-badge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                            Sertanejo
+                        </div>
+                        <h3>Sertanejo</h3>
+                        <p>Sofrência, modão e universitário para cantar junto</p>
+                        <div class="cat-meta">
+                            <span class="cat-count">28 eventos</span>
+                            <span class="cat-arrow">→</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="#" class="cat-card cat-pagode">
+                    <div class="cat-img"></div>
+                    <div class="cat-body">
+                        <div class="cat-badge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                            Pagode
+                        </div>
+                        <h3>Pagode &amp; Samba</h3>
+                        <p>Roda de samba, pagode e clássicos que não podem faltar</p>
+                        <div class="cat-meta">
+                            <span class="cat-count">19 eventos</span>
+                            <span class="cat-arrow">→</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="#" class="cat-card cat-rock">
+                    <div class="cat-img"></div>
+                    <div class="cat-body">
+                        <div class="cat-badge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            Rock
+                        </div>
+                        <h3>Rock &amp; Pop</h3>
+                        <p>Bandas autorais, clássicos do rock e indie para os apaixonados</p>
+                        <div class="cat-meta">
+                            <span class="cat-count">12 eventos</span>
+                            <span class="cat-arrow">→</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="#" class="cat-card cat-festa">
+                    <div class="cat-img"></div>
+                    <div class="cat-body">
+                        <div class="cat-badge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5.8 11.3 2 22l10.7-3.79"/><path d="M4 3h.01"/><path d="M22 8h.01"/><path d="M15 2h.01"/><path d="M22 20h.01"/><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10"/><path d="m22 13-1.7-.74a2.9 2.9 0 0 0-3.79 1.27l-.17.33a2.9 2.9 0 0 1-3.79 1.27L12 14.7"/></svg>
+                            Festas
+                        </div>
+                        <h3>Festas &amp; Baladas</h3>
+                        <p>Universitárias, temáticas e as melhores baladas da cidade</p>
+                        <div class="cat-meta">
+                            <span class="cat-count">24 eventos</span>
+                            <span class="cat-arrow">→</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="cat-foot">
+                <a href="#" class="cat-foot-link">+ Ver todas as categorias</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CALENDÁRIO -->
+    <section class="section calendario" id="calendario">
+        <div class="container">
+            <div class="section-head">
+                <span class="section-tag">Planeje sua semana</span>
+                <h2 class="section-title">Calendário de Eventos</h2>
+                <p class="section-sub">Clique em qualquer data para ver os eventos do dia</p>
+            </div>
+            <div class="cal-wrap">
+                <div class="cal-header">
+                    <button class="cal-nav" id="calPrev" aria-label="Mês anterior">‹</button>
+                    <h3 id="calMonth">Setembro 2026</h3>
+                    <button class="cal-nav" id="calNext" aria-label="Próximo mês">›</button>
+                </div>
+                <div class="cal-weekdays">
+                    <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+                </div>
+                <div class="cal-grid" id="calGrid"></div>
+                <div class="cal-legend">
+                    <span><span class="legend-dot legend-has"></span> Eventos</span>
+                    <span><span class="legend-dot legend-many"></span> 3+ eventos</span>
+                    <span><span class="legend-dot legend-today"></span> Hoje</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MODAL DE EVENTOS DO DIA -->
+    <div class="modal-overlay" id="dayModal">
+        <div class="modal modal-day">
+            <button class="modal-close" id="dayModalClose">×</button>
+            <div class="day-modal-head">
+                <div>
+                    <span class="section-tag">📅 Eventos do dia</span>
+                    <h2 id="dayModalTitle">15 de Setembro</h2>
+                </div>
+                <div class="day-modal-count" id="dayModalCount">2 eventos</div>
+            </div>
+            <div class="day-modal-body" id="dayModalBody"></div>
+        </div>
+    </div>
+
+    <!-- EVENTOS -->
+    <section class="section eventos" id="eventos">
+        <div class="container">
+            <div class="section-head">
+                <span class="section-tag">Agenda</span>
+                <h2 class="section-title">Próximos Eventos</h2>
+                <p class="section-sub">Os melhores shows da semana em MOC</p>
+                <div class="events-count" id="eventsCount">Mostrando 6 eventos</div>
+            </div>
+            <div class="event-grid" id="eventGrid">
+                <article class="event-card" data-id="1" data-cat="Casa de Forró" data-bairro="Centro" data-preco="30" data-titulo="Forró do Bom — Wesley Safadão Cover" data-local="Villa Forró - Centro" data-data="15 SET" data-hora="Sábado, 22h" data-desc="A noite mais esperada do forró em MOC! Cerveja gelada, ambiente climatizado e a melhor sanfona da cidade tocando os maiores sucessos do momento.">
+                    <button class="fav-card" data-fav="1" aria-label="Favoritar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    </button>
+                    <div class="event-img" style="background-image:linear-gradient(135deg,#ff3d6e,#ff8a3d)">
+                        <span class="event-date">15 SET</span>
+                        <span class="event-tag tag-hot">HOT</span>
+                    </div>
+                    <div class="event-info">
+                        <span class="event-cat">Casa de Forró</span>
+                        <h3 class="event-title">Forró do Bom — Wesley Safadão Cover</h3>
+                        <p class="event-local">📍 Villa Forró - Centro</p>
+                        <p class="event-time">⏰ Sábado, 22h • R$ 30</p>
+                        <a href="#" class="event-btn open-modal" data-id="1">Ver Detalhes</a>
+                    </div>
+                </article>
+                <article class="event-card" data-id="2" data-cat="Barzinho" data-bairro="Independência" data-preco="0" data-titulo="Rock Night — Bandas Locais" data-local="Boteco do Rock - Av. Independência" data-data="17 SET" data-hora="Terça, 21h" data-desc="Noite de rock com bandas autorais e clássicos inesquecíveis. Chopp em dobro e petiscos especiais.">
+                    <button class="fav-card" data-fav="2" aria-label="Favoritar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    </button>
+                    <div class="event-img" style="background-image:linear-gradient(135deg,#7c3aed,#3b82f6)">
+                        <span class="event-date">17 SET</span>
+                    </div>
+                    <div class="event-info">
+                        <span class="event-cat">Barzinho</span>
+                        <h3 class="event-title">Rock Night — Bandas Locais</h3>
+                        <p class="event-local">📍 Boteco do Rock - Av. Independência</p>
+                        <p class="event-time">⏰ Terça, 21h • Entrada Franca</p>
+                        <a href="#" class="event-btn open-modal" data-id="2">Ver Detalhes</a>
+                    </div>
+                </article>
+                <article class="event-card" data-id="3" data-cat="Restaurante" data-bairro="Centro" data-preco="89" data-titulo="Sertanejo & Vinho — Jantar Musical" data-local="Restaurante Sabor da Terra" data-data="20 SET" data-hora="Sexta, 20h" data-desc="Jantar harmonizado com pratos da culinária regional e show de sertanejo ao vivo. Reservas limitadas.">
+                    <button class="fav-card" data-fav="3" aria-label="Favoritar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    </button>
+                    <div class="event-img" style="background-image:linear-gradient(135deg,#10b981,#059669)">
+                        <span class="event-date">20 SET</span>
+                        <span class="event-tag tag-new">NOVO</span>
+                    </div>
+                    <div class="event-info">
+                        <span class="event-cat">Restaurante</span>
+                        <h3 class="event-title">Sertanejo &amp; Vinho — Jantar Musical</h3>
+                        <p class="event-local">📍 Restaurante Sabor da Terra</p>
+                        <p class="event-time">⏰ Sexta, 20h • R$ 89</p>
+                        <a href="#" class="event-btn open-modal" data-id="3">Ver Detalhes</a>
+                    </div>
+                </article>
+                <article class="event-card" data-id="4" data-cat="Show ao Vivo" data-bairro="Todos os Santos" data-preco="40" data-titulo="Pagode do MOC — Grupo Revelação Cover" data-local="Arena MOC - Bairro Todos os Santos" data-data="22 SET" data-hora="Domingo, 20h" data-desc="O melhor pagode da região com a banda cover mais requisitada do momento. Open de chopp até meia-noite.">
+                    <button class="fav-card" data-fav="4" aria-label="Favoritar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    </button>
+                    <div class="event-img" style="background-image:linear-gradient(135deg,#f59e0b,#ef4444)">
+                        <span class="event-date">22 SET</span>
+                    </div>
+                    <div class="event-info">
+                        <span class="event-cat">Show ao Vivo</span>
+                        <h3 class="event-title">Pagode do MOC — Grupo Revelação Cover</h3>
+                        <p class="event-local">📍 Arena MOC - Bairro Todos os Santos</p>
+                        <p class="event-time">⏰ Domingo, 20h • R$ 40</p>
+                        <a href="#" class="event-btn open-modal" data-id="4">Ver Detalhes</a>
+                    </div>
+                </article>
+                <article class="event-card" data-id="5" data-cat="Festa" data-bairro="Centro" data-preco="25" data-titulo="Festa Universitária — DJ Marcos" data-local="Lounge Club - Avenida MOC" data-data="27 SET" data-hora="Sábado, 23h" data-desc="A balada mais badalada da cidade com DJ Marcos e convidados. Open de vodka para o primeiro lote.">
+                    <button class="fav-card" data-fav="5" aria-label="Favoritar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    </button>
+                    <div class="event-img" style="background-image:linear-gradient(135deg,#ec4899,#8b5cf6)">
+                        <span class="event-date">27 SET</span>
+                    </div>
+                    <div class="event-info">
+                        <span class="event-cat">Festa</span>
+                        <h3 class="event-title">Festa Universitária — DJ Marcos</h3>
+                        <p class="event-local">📍 Lounge Club - Avenida MOC</p>
+                        <p class="event-time">⏰ Sábado, 23h • R$ 25</p>
+                        <a href="#" class="event-btn open-modal" data-id="5">Ver Detalhes</a>
+                    </div>
+                </article>
+                <article class="event-card" data-id="6" data-cat="Show ao Vivo" data-bairro="Centro" data-preco="35" data-titulo="Samba de Roda — Noite Especial" data-local="Casa do Samba - Centro Histórico" data-data="29 SET" data-hora="Domingo, 21h" data-desc="Roda de samba com clássicos que marcaram época. Participação especial do mestre Cavaco.">
+                    <button class="fav-card" data-fav="6" aria-label="Favoritar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    </button>
+                    <div class="event-img" style="background-image:linear-gradient(135deg,#0ea5e9,#1e40af)">
+                        <span class="event-date">29 SET</span>
+                        <span class="event-tag tag-vip">VIP</span>
+                    </div>
+                    <div class="event-info">
+                        <span class="event-cat">Show ao Vivo</span>
+                        <h3 class="event-title">Samba de Roda — Noite Especial</h3>
+                        <p class="event-local">📍 Casa do Samba - Centro Histórico</p>
+                        <p class="event-time">⏰ Domingo, 21h • R$ 35</p>
+                        <a href="#" class="event-btn open-modal" data-id="6">Ver Detalhes</a>
+                    </div>
+                </article>
+
+                <!-- Eventos extras para o calendário -->
+                <article class="event-card" data-id="7" data-cat="Sertanejo" data-bairro="Cidade Nova" data-preco="40" data-titulo="Sertanejo Universitário — Marília Cover" data-local="Arena MOC - Cidade Nova" data-data="06 SET" data-hora="Sábado, 22h" data-desc="A noite mais sertaneja de MOC com a banda cover mais requisitada do momento.">
+                    <button class="fav-card" data-fav="7" aria-label="Favoritar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    </button>
+                    <div class="event-img" style="background-image:linear-gradient(135deg,#f59e0b,#fbbf24)">
+                        <span class="event-date">06 SET</span>
+                    </div>
+                    <div class="event-info">
+                        <span class="event-cat">Sertanejo</span>
+                        <h3 class="event-title">Sertanejo Universitário — Marília Cover</h3>
+                        <p class="event-local">📍 Arena MOC - Cidade Nova</p>
+                        <p class="event-time">⏰ Sábado, 22h • R$ 40</p>
+                        <a href="#" class="event-btn open-modal" data-id="7">Ver Detalhes</a>
+                    </div>
+                </article>
+
+                <article class="event-card" data-id="8" data-cat="Casa de Forró" data-bairro="São José" data-preco="25" data-titulo="Quarta do Forró — Trio Pé-de-Serra" data-local="Boteco São José" data-data="10 SET" data-hora="Quarta, 21h" data-desc="A tradicional quarta do forró com o melhor trio pé-de-serra da cidade. Cerveja em dobro.">
+                    <button class="fav-card" data-fav="8" aria-label="Favoritar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    </button>
+                    <div class="event-img" style="background-image:linear-gradient(135deg,#dc2626,#7c2d12)">
+                        <span class="event-date">10 SET</span>
+                    </div>
+                    <div class="event-info">
+                        <span class="event-cat">Casa de Forró</span>
+                        <h3 class="event-title">Quarta do Forró — Trio Pé-de-Serra</h3>
+                        <p class="event-local">📍 Boteco São José</p>
+                        <p class="event-time">⏰ Quarta, 21h • R$ 25</p>
+                        <a href="#" class="event-btn open-modal" data-id="8">Ver Detalhes</a>
+                    </div>
+                </article>
+
+                <article class="event-card" data-id="9" data-cat="Rock" data-bairro="Independência" data-preco="15" data-titulo="Sexta no Rock — Acústico" data-local="Boteco do Rock - Av. Independência" data-data="12 SET" data-hora="Sexta, 22h" data-desc="Versões acústicas dos clássicos do rock nacional e internacional. Open de chopp.">
+                    <button class="fav-card" data-fav="9" aria-label="Favoritar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    </button>
+                    <div class="event-img" style="background-image:linear-gradient(135deg,#1e293b,#7c3aed)">
+                        <span class="event-date">12 SET</span>
+                        <span class="event-tag tag-new">NOVO</span>
+                    </div>
+                    <div class="event-info">
+                        <span class="event-cat">Rock</span>
+                        <h3 class="event-title">Sexta no Rock — Acústico</h3>
+                        <p class="event-local">📍 Boteco do Rock - Av. Independência</p>
+                        <p class="event-time">⏰ Sexta, 22h • R$ 15</p>
+                        <a href="#" class="event-btn open-modal" data-id="9">Ver Detalhes</a>
+                    </div>
+                </article>
+
+                <article class="event-card" data-id="10" data-cat="Pagode" data-bairro="Centro" data-preco="0" data-titulo="Roda de Samba Gratuita" data-local="Praça da matriz - Centro" data-data="15 SET" data-hora="Domingo, 17h" data-desc="Roda de samba gratuita na praça com participação de vários músicos da cidade.">
+                    <button class="fav-card" data-fav="10" aria-label="Favoritar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    </button>
+                    <div class="event-img" style="background-image:linear-gradient(135deg,#d97706,#92400e)">
+                        <span class="event-date">15 SET</span>
+                    </div>
+                    <div class="event-info">
+                        <span class="event-cat">Pagode</span>
+                        <h3 class="event-title">Roda de Samba Gratuita</h3>
+                        <p class="event-local">📍 Praça da Matriz - Centro</p>
+                        <p class="event-time">⏰ Domingo, 17h • Entrada Franca</p>
+                        <a href="#" class="event-btn open-modal" data-id="10">Ver Detalhes</a>
+                    </div>
+                </article>
+
+                <article class="event-card" data-id="11" data-cat="Festa" data-bairro="Centro" data-preco="60" data-titulo="Halloween MOC — Edição 2026" data-local="Lounge Club - Centro" data-data="31 OUT" data-hora="Sexta, 23h" data-desc="A festa de Halloween mais esperada do ano. Fantasia obrigatória, prêmio de melhor roupa.">
+                    <button class="fav-card" data-fav="11" aria-label="Favoritar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    </button>
+                    <div class="event-img" style="background-image:linear-gradient(135deg,#7c3aed,#1e1b4b)">
+                        <span class="event-date">31 OUT</span>
+                        <span class="event-tag tag-vip">VIP</span>
+                    </div>
+                    <div class="event-info">
+                        <span class="event-cat">Festa</span>
+                        <h3 class="event-title">Halloween MOC — Edição 2026</h3>
+                        <p class="event-local">📍 Lounge Club - Centro</p>
+                        <p class="event-time">⏰ Sexta, 23h • R$ 60</p>
+                        <a href="#" class="event-btn open-modal" data-id="11">Ver Detalhes</a>
+                    </div>
+                </article>
+
+                <article class="event-card" data-id="12" data-cat="Show ao Vivo" data-bairro="Todos os Santos" data-preco="120" data-titulo="Festival de Forró de MOC — 3ª Edição" data-local="Arena MOC - Todos os Santos" data-data="15 OUT" data-hora="Quinta, 20h" data-desc="Os maiores nomes do forró nacional se apresentam na Arena MOC. Line-up com 12 atrações.">
+                    <button class="fav-card" data-fav="12" aria-label="Favoritar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    </button>
+                    <div class="event-img" style="background-image:linear-gradient(135deg,#ff3d6e,#7c3aed)">
+                        <span class="event-date">15 OUT</span>
+                        <span class="event-tag tag-hot">HOT</span>
+                    </div>
+                    <div class="event-info">
+                        <span class="event-cat">Show ao Vivo</span>
+                        <h3 class="event-title">Festival de Forró de MOC — 3ª Edição</h3>
+                        <p class="event-local">📍 Arena MOC - Todos os Santos</p>
+                        <p class="event-time">⏰ Quinta, 20h • R$ 120</p>
+                        <a href="#" class="event-btn open-modal" data-id="12">Ver Detalhes</a>
+                    </div>
+                </article>
+            </div>
+            <div class="section-foot">
+                <a href="#" class="btn btn-outline">Ver Todos os Eventos →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ESTABELECIMENTOS -->
+    <section class="section estabelecimentos" id="estabelecimentos">
+        <div class="container">
+            <div class="section-head">
+                <span class="section-tag">Parceiros</span>
+                <h2 class="section-title">Estabelecimentos em Destaque</h2>
+                <p class="section-sub">Os melhores lugares de MOC para curtir</p>
+            </div>
+            <div class="est-grid">
+                <a href="#" class="est-card">
+                    <div class="est-img" style="background-image:linear-gradient(135deg,#dc2626,#7c2d12)">
+                        <span class="est-cat">Forró</span>
+                    </div>
+                    <div class="est-info">
+                        <h3>Villa Forró</h3>
+                        <p>A casa mais tradicional de forró da cidade</p>
+                        <span class="est-link">Ver agenda →</span>
+                    </div>
+                </a>
+                <a href="#" class="est-card">
+                    <div class="est-img" style="background-image:linear-gradient(135deg,#1e40af,#7c3aed)">
+                        <span class="est-cat">Bar</span>
+                    </div>
+                    <div class="est-info">
+                        <h3>Boteco do Rock</h3>
+                        <p>Rock, petiscos e cerveja gelada</p>
+                        <span class="est-link">Ver agenda →</span>
+                    </div>
+                </a>
+                <a href="#" class="est-card">
+                    <div class="est-img" style="background-image:linear-gradient(135deg,#059669,#065f46)">
+                        <span class="est-cat">Restaurante</span>
+                    </div>
+                    <div class="est-info">
+                        <h3>Sabor da Terra</h3>
+                        <p>Culinária regional com música ao vivo</p>
+                        <span class="est-link">Ver agenda →</span>
+                    </div>
+                </a>
+                <a href="#" class="est-card">
+                    <div class="est-img" style="background-image:linear-gradient(135deg,#db2777,#831843)">
+                        <span class="est-cat">Festa</span>
+                    </div>
+                    <div class="est-info">
+                        <h3>Lounge Club</h3>
+                        <p>A balada mais badalada de MOC</p>
+                        <span class="est-link">Ver agenda →</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- DEPOIMENTOS -->
+    <section class="section depoimentos" id="depoimentos">
+        <div class="container">
+            <div class="section-head">
+                <span class="section-tag">Confiança</span>
+                <h2 class="section-title">Quem anuncia, aprova</h2>
+                <p class="section-sub">Donos de bares e restaurantes que cresceram com a gente</p>
+            </div>
+            <div class="dep-grid">
+                <article class="dep-card">
+                    <div class="dep-stars">★★★★★</div>
+                    <p>"Em 3 meses anunciando no Agenda Shows MOC, nosso movimento cresceu 40%. A plataforma é simples e o suporte é excelente. Hoje é nosso principal canal de divulgação."</p>
+                    <div class="dep-author">
+                        <div class="dep-avatar" style="background:linear-gradient(135deg,#dc2626,#f59e0b)">RC</div>
+                        <div>
+                            <strong>Roberto Carvalho</strong>
+                            <span>Proprietário — Villa Forró</span>
+                        </div>
+                    </div>
+                </article>
+                <article class="dep-card">
+                    <div class="dep-stars">★★★★★</div>
+                    <p>"Investimos R$ 99/mês no pacote premium e o retorno veio já na primeira semana. Hoje temos fila de espera nos fins de semana. Recomendo de olhos fechados!"</p>
+                    <div class="dep-author">
+                        <div class="dep-avatar" style="background:linear-gradient(135deg,#7c3aed,#3b82f6)">MF</div>
+                        <div>
+                            <strong>Marina Ferreira</strong>
+                            <span>Sócia — Boteco do Rock</span>
+                        </div>
+                    </div>
+                </article>
+                <article class="dep-card">
+                    <div class="dep-stars">★★★★★</div>
+                    <p>"A equipe do Agenda Shows MOC me ajudou a estruturar toda a divulgação. Os posts são profissionais e alcançam o público certo. Meu restaurante bombou nos jantares musicais!"</p>
+                    <div class="dep-author">
+                        <div class="dep-avatar" style="background:linear-gradient(135deg,#10b981,#059669)">CS</div>
+                        <div>
+                            <strong>Carlos Santos</strong>
+                            <span>Chef — Sabor da Terra</span>
+                        </div>
+                    </div>
+                </article>
+                <article class="dep-card">
+                    <div class="dep-stars">★★★★★</div>
+                    <p>"Divulgo todos os meus eventos aqui. A agenda é o que há de mais completo na cidade. Os clientes chegam perguntando pelo site — isso mostra a credibilidade."</p>
+                    <div class="dep-author">
+                        <div class="dep-avatar" style="background:linear-gradient(135deg,#ec4899,#8b5cf6)">JL</div>
+                        <div>
+                            <strong>Juliana Lopes</strong>
+                            <span>Promotora — Lounge Club</span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            <div class="dep-stats">
+                <div class="dep-stat"><strong>98%</strong><span>de satisfação</span></div>
+                <div class="dep-stat"><strong>+300</strong><span>eventos divulgados</span></div>
+                <div class="dep-stat"><strong>+80</strong><span>parceiros ativos</span></div>
+                <div class="dep-stat"><strong>4.9★</strong><span>avaliação média</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BLOG -->
+    <section class="section blog" id="blog">
+        <div class="container">
+            <div class="section-head">
+                <span class="section-tag">Conteúdo</span>
+                <h2 class="section-title">Blog &amp; Notícias</h2>
+                <p class="section-sub">Tudo sobre a cena cultural e noturna de Montes Claros</p>
+            </div>
+            <div class="blog-grid">
+                <article class="blog-card blog-destaque">
+                    <div class="blog-img" style="background-image:linear-gradient(135deg,rgba(255,61,110,0.5),rgba(124,58,237,0.5)),url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&q=80')">
+                        <span class="blog-cat">Cobertura</span>
+                    </div>
+                    <div class="blog-body">
+                        <span class="blog-date">📅 02 Set 2026</span>
+                        <h3>Festival de Forró de MOC anuncia line-up da 3ª edição</h3>
+                        <p>Os maiores nomes do forró nacional se apresentam em outubro na Arena MOC. Confira a programação completa e garanta seu ingresso...</p>
+                        <a href="#" class="blog-link">Ler matéria completa →</a>
+                    </div>
+                </article>
+                <article class="blog-card">
+                    <div class="blog-img" style="background-image:linear-gradient(135deg,rgba(245,158,11,0.5),rgba(239,68,68,0.5)),url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80')">
+                        <span class="blog-cat">Gastronomia</span>
+                    </div>
+                    <div class="blog-body">
+                        <span class="blog-date">📅 28 Ago 2026</span>
+                        <h3>7 restaurantes de MOC com música ao vivo que você precisa conhecer</h3>
+                        <p>Uma seleção especial com os melhores restaurantes da cidade que oferecem jantar com show ao vivo...</p>
+                        <a href="#" class="blog-link">Ler matéria →</a>
+                    </div>
+                </article>
+                <article class="blog-card">
+                    <div class="blog-img" style="background-image:linear-gradient(135deg,rgba(124,58,237,0.5),rgba(59,130,246,0.5)),url('https://images.unsplash.com/photo-1493676304819-0d7a8d026dcf?w=800&q=80')">
+                        <span class="blog-cat">Dicas</span>
+                    </div>
+                    <div class="blog-body">
+                        <span class="blog-date">📅 22 Ago 2026</span>
+                        <h3>Roteiro completo: como curtir MOC em um fim de semana</h3>
+                        <p>Montamos um guia definitivo para você aproveitar o melhor da cena cultural e noturna de Montes Claros...</p>
+                        <a href="#" class="blog-link">Ler matéria →</a>
+                    </div>
+                </article>
+                <article class="blog-card">
+                    <div class="blog-img" style="background-image:linear-gradient(135deg,rgba(16,185,129,0.5),rgba(5,150,105,0.5)),url('https://images.unsplash.com/photo-1538488749019-edaaee8060dc?w=800&q=80')">
+                        <span class="blog-cat">Bares</span>
+                    </div>
+                    <div class="blog-body">
+                        <span class="blog-date">📅 15 Ago 2026</span>
+                        <h3>Top 10 botecos imperdíveis no Centro de Montes Claros</h3>
+                        <p>Selecionamos os bares mais tradicionais e badalados para você tomar uma boa cachaça...</p>
+                        <a href="#" class="blog-link">Ler matéria →</a>
+                    </div>
+                </article>
+            </div>
+            <div class="section-foot">
+                <a href="#" class="btn btn-outline">Ver Todas as Matérias →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- BANNER ANUNCIE -->
+    <section class="cta-anuncie" id="anuncie">
+        <div class="container cta-inner">
+            <div class="cta-text">
+                <span class="section-tag light">Para Proprietários</span>
+                <h2>Divulgue seu estabelecimento aqui!</h2>
+                <p>Milhares de pessoas procuram shows e eventos em MOC todos os dias. Coloque seu bar, restaurante ou casa de show na agenda e atraia muito mais clientes.</p>
+                <ul class="cta-list">
+                    <li>✓ Seu evento na página inicial</li>
+                    <li>✓ Destaque para +20 mil seguidores</li>
+                    <li>✓ Posts nas redes sociais</li>
+                    <li>✓ Pacotes a partir de R$ 49/mês</li>
+                </ul>
+                <a href="#contato" class="btn btn-primary btn-lg">Quero Anunciar</a>
+            </div>
+            <div class="cta-visual">
+                <div class="cta-card c1">
+                    <div class="cta-emoji">🎤</div>
+                    <strong>+150</strong>
+                    <span>eventos/mês</span>
+                </div>
+                <div class="cta-card c2">
+                    <div class="cta-emoji">📈</div>
+                    <strong>+300%</strong>
+                    <span>mais público</span>
+                </div>
+                <div class="cta-card c3">
+                    <div class="cta-emoji">❤️</div>
+                    <strong>+20k</strong>
+                    <span>seguidores</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEWSLETTER -->
+    <section class="newsletter">
+        <div class="container news-inner">
+            <div class="news-text">
+                <h2>Não perca nenhum show!</h2>
+                <p>Receba a agenda semanal direto no seu WhatsApp ou e-mail.</p>
+            </div>
+            <form class="news-form" onsubmit="return false;">
+                <input type="email" placeholder="Seu melhor e-mail">
+                <button class="btn btn-primary" type="submit">Quero Receber</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- CONTATO -->
+    <section class="section contato" id="contato">
+        <div class="container">
+            <div class="section-head">
+                <span class="section-tag">Fale com a gente</span>
+                <h2 class="section-title">Contato</h2>
+            </div>
+            <div class="contato-grid">
+                <a class="contato-card" href="https://wa.me/5538999999999" target="_blank">
+                    <div class="contato-icon" style="background:#25D366;">💬</div>
+                    <h3>WhatsApp</h3>
+                    <p>(38) 99999-9999</p>
+                </a>
+                <a class="contato-card" href="https://instagram.com" target="_blank">
+                    <div class="contato-icon" style="background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);">📸</div>
+                    <h3>Instagram</h3>
+                    <p>@agendashowsmoc</p>
+                </a>
+                <a class="contato-card" href="mailto:contato@agendashowsmoc.com">
+                    <div class="contato-icon" style="background:#3b82f6;">✉️</div>
+                    <h3>E-mail</h3>
+                    <p>contato@agendashowsmoc.com</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container footer-inner">
+            <div class="footer-brand">
+                <div class="logo">
+                    <span class="logo-icon">MOC</span>
+                    <div class="logo-text">
+                        <span class="logo-title">Agenda Shows</span>
+                        <span class="logo-sub">MOC</span>
+                    </div>
+                </div>
+                <p>A agenda mais completa de shows, forró, bares e restaurantes de Montes Claros.</p>
+                <div class="footer-social">
+                    <a href="https://instagram.com" aria-label="Instagram"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16zm0 5.5a4.34 4.34 0 100 8.68 4.34 4.34 0 000-8.68zm5.41-.87a1.01 1.01 0 100 2.03 1.01 1.01 0 000-2.03zM12 9.16a2.84 2.84 0 110 5.68 2.84 2.84 0 010-5.68z"/></svg></a>
+                    <a href="https://wa.me/5538999999999" aria-label="WhatsApp"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.94.55 3.74 1.5 5.27L2 22l4.83-1.46C8.31 21.45 10.1 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm5.6 14.6c-.24.67-1.41 1.32-2.06 1.42-.52.08-1.18.13-1.91-.12-.45-.15-1.03-.34-1.78-.67-3.13-1.35-5.18-4.5-5.34-4.71-.16-.21-1.28-1.71-1.28-3.26 0-1.55.81-2.31 1.1-2.63.29-.32.63-.4.85-.4.21 0 .42 0 .61.01.2.01.47-.08.73.56.28.68.95 2.34 1.03 2.51.08.17.13.37.02.6-.11.23-.17.37-.33.57-.16.2-.34.45-.49.6-.16.16-.33.34-.14.66.19.32.84 1.39 1.81 2.25 1.25 1.11 2.3 1.45 2.63 1.62.32.16.51.13.7-.08.19-.21.81-.94 1.03-1.27.22-.32.43-.27.73-.16.3.11 1.92.91 2.25 1.07.32.16.54.24.62.37.08.13.08.76-.16 1.43z"/></svg></a>
+                    <a href="https://facebook.com" aria-label="Facebook"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg></a>
+                    <a href="https://youtube.com" aria-label="YouTube"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M21.58 7.19c-.23-.86-.91-1.54-1.77-1.77C18.25 5 12 5 12 5s-6.25 0-7.81.42c-.86.23-1.54.91-1.77 1.77C2 8.75 2 12 2 12s0 3.25.42 4.81c.23.86.91 1.54 1.77 1.77C5.75 19 12 19 12 19s6.25 0 7.81-.42c.86-.23 1.54-.91 1.77-1.77C22 15.25 22 12 22 12s0-3.25-.42-4.81zM10 15V9l5.2 3-5.2 3z"/></svg></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Navegue</h4>
+                <a href="#home">Início</a>
+                <a href="#calendario">Calendário</a>
+                <a href="#eventos">Eventos</a>
+                <a href="#categorias">Categorias</a>
+                <a href="#estabelecimentos">Estabelecimentos</a>
+                <a href="#blog">Blog</a>
+            </div>
+            <div class="footer-col">
+                <h4>Categorias</h4>
+                <a href="#">Casa de Forró</a>
+                <a href="#">Barzinho</a>
+                <a href="#">Restaurante</a>
+                <a href="#">Show ao Vivo</a>
+                <a href="#">Sertanejo</a>
+                <a href="#">Festas</a>
+            </div>
+            <div class="footer-col">
+                <h4>Empresa</h4>
+                <a href="#sobre">Sobre nós</a>
+                <a href="#anuncie">Anuncie</a>
+                <a href="#contato">Contato</a>
+                <a href="#politica">Política de Privacidade</a>
+                <a href="#termos">Termos de Uso</a>
+            </div>
+            <div class="footer-col">
+                <h4>Contato</h4>
+                <a href="https://wa.me/5538999999999">📱 (38) 99999-9999</a>
+                <a href="mailto:contato@agendashowsmoc.com">✉ contato@agendashowsmoc.com</a>
+                <a href="#">📍 Montes Claros - MG</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 Agenda Shows MOC. Todos os direitos reservados.</p>
+            <p>Feito com ❤️ em Montes Claros - MG</p>
+            <p style="margin-top:8px"><a href="admin.html" style="color:var(--gray);font-size:11px;opacity:0.5">⚙ Área restrita</a></p>
+        </div>
+    </footer>
+
+    <!-- WhatsApp Float -->
+    <a class="whatsapp-float" href="https://wa.me/5538999999999" target="_blank" aria-label="WhatsApp">
+        <svg viewBox="0 0 32 32" width="32" height="32" fill="white"><path d="M16 3C9.4 3 4 8.4 4 15c0 2.4.7 4.7 1.9 6.7L4 29l7.5-1.9c1.9 1 4.1 1.6 4.5 1.6 6.6 0 12-5.4 12-12S22.6 3 16 3zm6.6 17.1c-.3.8-1.6 1.5-2.3 1.6-.6.1-1.4.1-2.2-.1-.5-.1-1.1-.3-1.9-.7-3.3-1.4-5.5-4.7-5.7-4.9-.2-.2-1.4-1.9-1.4-3.6 0-1.7.9-2.5 1.2-2.9.3-.3.7-.4.9-.4h.6c.2 0 .5-.1.7.5l.9 2.2c.1.2.2.5 0 .8-.2.3-.3.5-.5.7-.2.2-.4.5-.2.9.3.5 1.1 1.9 2.4 3 1.6 1.4 3 1.8 3.4 2 .4.2.7.2.9-.1.3-.3 1-1.2 1.3-1.6.3-.4.6-.3.9-.2.4.1 2.3 1.1 2.7 1.3.4.2.7.3.8.5.2.2.2 1.1-.1 1.9z"/></svg>
+    </a>
+
+    <!-- Botão de voltar ao topo -->
+    <button class="back-top" id="backTop" aria-label="Voltar ao topo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+    </button>
+
+    <!-- MODAL DE EVENTO -->
+    <div class="modal-overlay" id="eventModal">
+        <div class="modal">
+            <button class="modal-close" id="modalClose">×</button>
+            <div class="modal-img" id="modalImg"></div>
+            <div class="modal-body">
+                <span class="event-cat" id="modalCat"></span>
+                <h2 id="modalTitle"></h2>
+                <div class="modal-info">
+                    <p id="modalData"></p>
+                    <p id="modalHora"></p>
+                    <p id="modalLocal"></p>
+                    <p id="modalPreco"></p>
+                </div>
+                <p class="modal-desc" id="modalDesc"></p>
+                <div class="modal-share">
+                    <span>Compartilhar:</span>
+                    <a href="#" id="shareWpp" target="_blank" aria-label="WhatsApp" class="share-btn share-wpp">💬</a>
+                    <a href="#" id="shareFb" target="_blank" aria-label="Facebook" class="share-btn share-fb">📘</a>
+                    <a href="#" id="shareTw" target="_blank" aria-label="Twitter" class="share-btn share-tw">🐦</a>
+                    <a href="#" id="shareCp" aria-label="Copiar" class="share-btn share-cp">🔗</a>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-outline" id="modalFav">❤️ Favoritar</button>
+                    <a href="#" class="btn btn-primary" id="modalMap" target="_blank">📍 Ver no Mapa</a>
+                    <a href="#" class="btn btn-ghost" id="modalTicket">🎟 Comprar Ingresso</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAINEL DE FAVORITOS -->
+    <div class="fav-panel" id="favPanel">
+        <div class="fav-panel-head">
+            <h3>❤️ Meus Favoritos</h3>
+            <button class="modal-close" id="favClose">×</button>
+        </div>
+        <div class="fav-panel-body" id="favList">
+            <p class="fav-empty">Você ainda não favoritou nenhum evento. Clique no ❤️ dos eventos para salvá-los aqui!</p>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

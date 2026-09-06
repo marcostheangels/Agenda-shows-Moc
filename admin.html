@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin — Agenda Shows MOC</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23ff3d6e'/%3E%3Ctext x='50' y='65' font-family='Arial Black' font-size='40' fill='white' text-anchor='middle' font-weight='900'%3EMOC%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+    <!-- TELA DE LOGIN -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-box">
+            <div class="login-logo">
+                <span>MOC</span>
+            </div>
+            <h1>Painel Administrativo</h1>
+            <p class="login-sub">Agenda Shows MOC</p>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Usuário</label>
+                    <input type="text" id="loginUser" value="admin" autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" id="loginPass" value="admin123" autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn-primary">Entrar no Painel</button>
+                <p class="login-hint">🔐 Padrão: <strong>admin</strong> / <strong>admin123</strong></p>
+                <p id="loginError" class="login-error"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- PAINEL -->
+    <div class="admin-panel" id="adminPanel" style="display:none">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-head">
+                <div class="logo">
+                    <span class="logo-icon">MOC</span>
+                    <div class="logo-text">
+                        <strong>Agenda Shows</strong>
+                        <small>Administração</small>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="side-nav">
+                <a href="#" class="side-link active" data-section="dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    Dashboard
+                </a>
+                <a href="#" class="side-link" data-section="eventos">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    Eventos
+                </a>
+                <a href="#" class="side-link" data-section="estabelecimentos">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg>
+                    Estabelecimentos
+                </a>
+                <a href="#" class="side-link" data-section="categorias">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                    Categorias
+                </a>
+                <a href="#" class="side-link" data-section="blog">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                    Blog / Notícias
+                </a>
+                <a href="#" class="side-link" data-section="depoimentos">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    Depoimentos
+                </a>
+                <a href="#" class="side-link" data-section="config">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    Configurações
+                </a>
+            </nav>
+
+            <div class="sidebar-foot">
+                <a href="index.html" target="_blank" class="side-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    Ver Site
+                </a>
+                <a href="#" id="logoutBtn" class="side-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    Sair
+                </a>
+            </div>
+        </aside>
+
+        <!-- CONTEÚDO -->
+        <main class="admin-main">
+
+            <header class="admin-top">
+                <div>
+                    <h1 id="sectionTitle">Dashboard</h1>
+                    <p id="sectionSub">Visão geral do sistema</p>
+                </div>
+                <div class="admin-user">
+                    <div class="user-avatar">A</div>
+                    <div>
+                        <strong>Administrador</strong>
+                        <small>admin@agendashowsmoc.com</small>
+                    </div>
+                </div>
+            </header>
+
+            <!-- DASHBOARD -->
+            <section class="admin-section active" id="sec-dashboard">
+                <div class="kpi-grid">
+                    <div class="kpi-card k1">
+                        <div class="kpi-icon">📅</div>
+                        <div>
+                            <strong id="kpiEventos">0</strong>
+                            <span>Eventos cadastrados</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card k2">
+                        <div class="kpi-icon">🏪</div>
+                        <div>
+                            <strong id="kpiEst">0</strong>
+                            <span>Estabelecimentos</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card k3">
+                        <div class="kpi-icon">📁</div>
+                        <div>
+                            <strong id="kpiCat">0</strong>
+                            <span>Categorias</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card k4">
+                        <div class="kpi-icon">📰</div>
+                        <div>
+                            <strong id="kpiBlog">0</strong>
+                            <span>Posts do blog</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-grid">
+                    <div class="dash-card">
+                        <h3>⚡ Ações Rápidas</h3>
+                        <div class="quick-actions">
+                            <button class="qa-btn" data-go="eventos">
+                                <span>➕</span> Novo Evento
+                            </button>
+                            <button class="qa-btn" data-go="estabelecimentos">
+                                <span>🏪</span> Novo Estabelecimento
+                            </button>
+                            <button class="qa-btn" data-go="blog">
+                                <span>📰</span> Novo Post
+                            </button>
+                            <button class="qa-btn" data-go="config">
+                                <span>⚙️</span> Configurações
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="dash-card">
+                        <h3>📊 Próximos Eventos</h3>
+                        <div id="dashUpcoming" class="dash-list"></div>
+                    </div>
+
+                    <div class="dash-card">
+                        <h3>💾 Backup &amp; Restauração</h3>
+                        <p class="muted">Exporte todos os dados ou importe de um backup.</p>
+                        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+                            <button class="btn-secondary" id="btnExport">📥 Exportar Dados</button>
+                            <button class="btn-secondary" id="btnImport">📤 Importar Dados</button>
+                            <button class="btn-danger" id="btnReset">🗑 Resetar Tudo</button>
+                        </div>
+                        <input type="file" id="fileImport" accept=".json" hidden>
+                    </div>
+                </div>
+            </section>
+
+            <!-- EVENTOS -->
+            <section class="admin-section" id="sec-eventos">
+                <div class="toolbar">
+                    <input type="text" id="searchEventos" class="search-input" placeholder="🔍 Buscar evento...">
+                    <select id="filterEventCat" class="search-input">
+                        <option value="">Todas categorias</option>
+                    </select>
+                    <button class="btn-primary" id="btnAddEvento">+ Novo Evento</button>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="admin-table" id="tblEventos">
+                        <thead>
+                            <tr>
+                                <th>Imagem</th>
+                                <th>Título</th>
+                                <th>Categoria</th>
+                                <th>Data</th>
+                                <th>Local</th>
+                                <th>Preço</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ESTABELECIMENTOS -->
+            <section class="admin-section" id="sec-estabelecimentos">
+                <div class="toolbar">
+                    <input type="text" id="searchEst" class="search-input" placeholder="🔍 Buscar estabelecimento...">
+                    <button class="btn-primary" id="btnAddEst">+ Novo Estabelecimento</button>
+                </div>
+                <div class="table-wrap">
+                    <table class="admin-table" id="tblEst">
+                        <thead>
+                            <tr>
+                                <th>Imagem</th>
+                                <th>Nome</th>
+                                <th>Categoria</th>
+                                <th>Descrição</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- CATEGORIAS -->
+            <section class="admin-section" id="sec-categorias">
+                <div class="toolbar">
+                    <button class="btn-primary" id="btnAddCat">+ Nova Categoria</button>
+                </div>
+                <div class="table-wrap">
+                    <table class="admin-table" id="tblCat">
+                        <thead>
+                            <tr>
+                                <th>Ícone</th>
+                                <th>Nome</th>
+                                <th>Slug</th>
+                                <th>Cor</th>
+                                <th>Qtd. Eventos</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- BLOG -->
+            <section class="admin-section" id="sec-blog">
+                <div class="toolbar">
+                    <input type="text" id="searchBlog" class="search-input" placeholder="🔍 Buscar post...">
+                    <button class="btn-primary" id="btnAddBlog">+ Novo Post</button>
+                </div>
+                <div class="table-wrap">
+                    <table class="admin-table" id="tblBlog">
+                        <thead>
+                            <tr>
+                                <th>Imagem</th>
+                                <th>Título</th>
+                                <th>Categoria</th>
+                                <th>Data</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- DEPOIMENTOS -->
+            <section class="admin-section" id="sec-depoimentos">
+                <div class="toolbar">
+                    <button class="btn-primary" id="btnAddDep">+ Novo Depoimento</button>
+                </div>
+                <div class="table-wrap">
+                    <table class="admin-table" id="tblDep">
+                        <thead>
+                            <tr>
+                                <th>Avatar</th>
+                                <th>Nome</th>
+                                <th>Cargo</th>
+                                <th>Estrelas</th>
+                                <th>Depoimento</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- CONFIGURAÇÕES -->
+            <section class="admin-section" id="sec-config">
+                <form id="configForm" class="config-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nome do site</label>
+                            <input type="text" name="siteName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>WhatsApp</label>
+                            <input type="text" name="whatsapp" placeholder="(38) 99999-9999">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>E-mail de contato</label>
+                            <input type="email" name="email" placeholder="contato@...">
+                        </div>
+                        <div class="form-group">
+                            <label>Instagram</label>
+                            <input type="text" name="instagram" placeholder="@agendashowsmoc">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Eventos por mês</label>
+                            <input type="number" name="eventosMes">
+                        </div>
+                        <div class="form-group">
+                            <label>Seguidores</label>
+                            <input type="number" name="seguidores">
+                        </div>
+                        <div class="form-group">
+                            <label>Visualizações (k)</label>
+                            <input type="number" name="visualizacoes">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Descrição da próxima contagem regressiva</label>
+                        <input type="text" name="countdownTitulo">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Data do próximo grande evento</label>
+                            <input type="datetime-local" name="countdownData">
+                        </div>
+                        <div class="form-group">
+                            <label>Local do evento</label>
+                            <input type="text" name="countdownLocal">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Preço inicial dos pacotes</label>
+                            <input type="text" name="pacotePreco" placeholder="R$ 49">
+                        </div>
+                        <div class="form-group">
+                            <label>Texto do botão Anuncie</label>
+                            <input type="text" name="anuncieTexto">
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:12px;align-items:center;margin-top:20px">
+                        <button type="submit" class="btn-primary">💾 Salvar Configurações</button>
+                        <button type="button" class="btn-secondary" id="btnChangePass">🔐 Alterar Senha</button>
+                    </div>
+                </form>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- MODAL GENÉRICO -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-box">
+            <button class="modal-close" id="modalClose">×</button>
+            <div class="modal-head">
+                <h2 id="modalTitle">Modal</h2>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
