@@ -451,6 +451,10 @@ function eventForm(ev = {}) {
                 <input type="text" name="local" required value="${(ev.local || '').replace(/"/g,'&quot;')}">
             </div>
             <div class="form-group">
+                <label>Endereço (rua, número, cidade) *</label>
+                <input type="text" name="endereco" required placeholder="Av. Principal, 100 - Montes Claros, MG" value="${(ev.endereco || '').replace(/"/g,'&quot;')}">
+            </div>
+            <div class="form-group">
                 <label>Descrição</label>
                 <textarea name="desc" rows="3">${ev.desc || ''}</textarea>
             </div>
@@ -708,7 +712,7 @@ function handleEventoSubmit(form) {
         const fd = new FormData(form);
         const obj = Object.fromEntries(fd);
         delete obj.imgUpload;
-        const obrigatorios = [['titulo', 'Título'], ['cat', 'Categoria'], ['bairro', 'Bairro'], ['data', 'Data'], ['hora', 'Horário'], ['local', 'Local']];
+            const obrigatorios = [['titulo', 'Título'], ['cat', 'Categoria'], ['bairro', 'Bairro'], ['data', 'Data'], ['hora', 'Horário'], ['local', 'Local'], ['endereco', 'Endereço']];
         for (const [campo, rotulo] of obrigatorios) {
             if (!obj[campo] || String(obj[campo]).trim() === '') {
                 toast(`⚠️ Falta preencher: ${rotulo}`, 3500);

@@ -141,7 +141,7 @@ function renderEventosFromAdmin() {
     const count = $('#eventsCount');
     if (!grid) return false;
     grid.innerHTML = adminData.eventos.map(ev => `
-        <article class="event-card" data-id="${ev.id}" data-cat="${ev.cat}" data-bairro="${ev.bairro}" data-preco="${ev.preco}" data-titulo="${ev.titulo.replace(/"/g,'&quot;')}" data-local="${ev.local.replace(/"/g,'&quot;')}" data-data="${ev.data}" data-hora="${ev.hora}" data-desc="${(ev.desc || '').replace(/"/g,'&quot;')}" data-galeria="${JSON.stringify(ev.galeria || []).replace(/"/g,'&quot;')}">
+        <article class="event-card" data-id="${ev.id}" data-cat="${ev.cat}" data-bairro="${ev.bairro}" data-preco="${ev.preco}" data-titulo="${ev.titulo.replace(/"/g,'&quot;')}" data-local="${ev.local.replace(/"/g,'&quot;')}" data-endereco="${(ev.endereco || '').replace(/"/g,'&quot;')}" data-data="${ev.data}" data-hora="${ev.hora}" data-desc="${(ev.desc || '').replace(/"/g,'&quot;')}" data-galeria="${JSON.stringify(ev.galeria || []).replace(/"/g,'&quot;')}">
             <button class="fav-card" data-fav="${ev.id}" aria-label="Favoritar">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             </button>
@@ -195,9 +195,16 @@ function renderCategoriasFromAdmin() {
     if (!grid) return false;
     grid.innerHTML = adminData.categorias.map(c => {
         const count = adminData.eventos.filter(e => e.cat === c.nome).length;
+        const firstEvent = adminData.eventos.find(e => e.cat === c.nome && e.img && isImgSrc(e.img));
+        const firstEst = !firstEvent ? adminData.estabelecimentos.find(e => e.cat === c.nome && e.img && isImgSrc(e.img)) : null;
+        const bg = firstEvent
+            ? `background-image:url("${firstEvent.img}");background-size:cover;background-position:center;`
+            : firstEst
+            ? `background-image:url("${firstEst.img}");background-size:cover;background-position:center;opacity:0.7;`
+            : `background:linear-gradient(135deg,${c.cor},${c.cor}88)`;
         return `
         <a href="#" class="cat-card" style="position:relative">
-            <div class="cat-img" style="background:linear-gradient(135deg,${c.cor},${c.cor}88)"></div>
+            <div class="cat-img" style="${bg}"></div>
             <div class="cat-body">
                 <div class="cat-badge">${c.icone} ${c.nome}</div>
                 <h3>${c.nome}</h3>
@@ -309,7 +316,11 @@ function bindEventActions() {
         $('#shareFb').href = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
         $('#shareTw').href = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
         $('#shareCp').onclick = e => { e.preventDefault(); navigator.clipboard.writeText(window.location.href); showToast('🔗 Link copiado!'); };
-        $('#modalMap').href = `https://www.google.com/maps/search/${encodeURIComponent(card.dataset.local + ' Montes Claros')}`;
+    const mapQuery = card.dataset.endereco
+        ? card.dataset.endereco + ' Montes Claros MG'
+        : card.dataset.local + ' Montes Claros';
+    $('#modalMap').href = `https://www.google.com/maps/search/${encodeURIComponent(mapQuery)}`;
+    $('#modalMap').style.display = 'inline-flex';
         const favBtn2 = $('#modalFav');
         favBtn2.textContent = favorites.includes(id) ? '❤️ Favoritado' : '🤍 Favoritar';
         favBtn2.onclick = () => {
@@ -443,6 +454,10 @@ openModalBtns.forEach(btn => btn.addEventListener('click', e => {
     $('#modalData').textContent = '📅 ' + card.dataset.data;
     $('#modalHora').textContent = '⏰ ' + card.dataset.hora;
     $('#modalLocal').textContent = '📍 ' + card.dataset.local;
+    if (card.dataset.endereco) {
+        const endEl = $('#modalEndereco');
+        if (endEl) { endEl.textContent = '🏠 ' + card.dataset.endereco; endEl.style.display = 'block'; }
+    }
     $('#modalPreco').textContent = '💰 ' + (card.dataset.preco === '0' ? 'Entrada Franca' : 'R$ ' + card.dataset.preco);
     $('#modalDesc').textContent = card.dataset.desc;
     $('#modalImg').setAttribute('style', card.querySelector('.event-img').getAttribute('style'));
