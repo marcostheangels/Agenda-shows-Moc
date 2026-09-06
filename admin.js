@@ -230,7 +230,7 @@ async function uploadPhotoToGitHub(dataUrl, prefix = 'foto') {
     }
 }
 
-const isImageSrc = src => src && (src.startsWith('data:image') || src.startsWith('http') || src.startsWith('blob:') || src.startsWith('fotos/') || src.startsWith('./fotos/') || src.startsWith('/fotos/') || /\.(jpe?g|png|webp|gif|avif|svg)(\?.*)?$/i.test(src));
+const isImageSrc = src => src && (src.startsWith('data:image') || src.startsWith('http') || src.startsWith('blob:') || src.startsWith('fotos/') || src.startsWith('./fotos/') || src.startsWith('/fotos/') || /\/(fotos\/|\.\.\/)[^\s]+\.(jpe?g|png|webp|gif|avif|svg)(\?.*)?$/i.test(src));
 const thumbStyle = img => {
     if (!img) return 'background:#22223a';
     if (isImageSrc(img)) return `background-image:url("${img}");background-size:cover;background-position:center`;
@@ -692,7 +692,13 @@ const resolveImg = (form, fallback) => {
     const url = form.querySelector('.up-url');
     const urlVal = url && url.value.trim();
     // Prioriza caminho/URL (fotos/..., http) sobre base64: base64 pesado congela o salvar
-    if (urlVal) return urlVal;
+    if (urlVal) {
+        // Se parece nome de arquivo sem pasta, adiciona fotos/
+        if (!urlVal.includes('/') && !urlVal.startsWith('data:') && !urlVal.startsWith('http') && !urlVal.startsWith('blob:')) {
+            return 'fotos/' + urlVal;
+        }
+        return urlVal;
+    }
     if (up && up.value.trim()) return up.value.trim();
     return fallback || 'linear-gradient(135deg,#ff3d6e,#ff8a3d)';
 };
