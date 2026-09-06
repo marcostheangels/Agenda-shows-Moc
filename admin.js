@@ -177,7 +177,7 @@ $('#loginForm').addEventListener('submit', e => {
     const u = $('#loginUser').value;
     const p = $('#loginPass').value;
     const stored = JSON.parse(localStorage.getItem(AUTH_KEY) || '{}');
-    const validU = stored.user || 'admin';
+    const validU = stored.user || 'markim';
     const validP = stored.pass || 'admin123';
     if (u === validU && p === validP) {
         sessionStorage.setItem(AUTH_KEY, '1');
@@ -384,7 +384,10 @@ function eventForm(ev = {}) {
                     <option ${ev.tag === 'VIP' ? 'selected' : ''}>VIP</option>
                 </select>
             </div>
-            <button type="submit" class="btn-primary">💾 Salvar Evento</button>
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                <button type="submit" class="btn-primary">💾 Salvar Evento</button>
+            </div>
         </form>
     `;
 }
@@ -562,7 +565,10 @@ function estForm(e = {}) {
                 <input type="text" name="img" class="up-url" placeholder="Ou cole URL / gradiente CSS" value="${urlVal.replace(/"/g,'&quot;')}">
             </div>
 
-            <button type="submit" class="btn-primary" style="margin-top:16px">💾 Salvar</button>
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                <button type="submit" class="btn-primary">💾 Salvar</button>
+            </div>
         </form>
     `;
 }
@@ -620,7 +626,10 @@ function catForm(c = {}) {
                 <div class="form-group"><label>Slug (URL)</label><input type="text" name="slug" value="${c.slug || ''}"></div>
                 <div class="form-group"><label>Cor</label><input type="color" name="cor" value="${c.cor || '#ff3d6e'}" class="color-input"></div>
             </div>
-            <button type="submit" class="btn-primary">💾 Salvar</button>
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                <button type="submit" class="btn-primary">💾 Salvar</button>
+            </div>
         </form>
     `;
 }
@@ -686,7 +695,10 @@ function blogForm(p = {}) {
                 <input type="text" name="img" class="up-url" placeholder="Ou cole URL da imagem" value="${!isExt ? (imgVal||'').replace(/"/g,'&quot;') : ''}">
             </div>
             <div class="form-group" style="margin-top:16px"><label>Resumo</label><textarea name="resumo" rows="4">${p.resumo || ''}</textarea></div>
-            <button type="submit" class="btn-primary">💾 Salvar</button>
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                <button type="submit" class="btn-primary">💾 Salvar</button>
+            </div>
         </form>
     `;
 }
@@ -769,7 +781,7 @@ $('#configForm').addEventListener('submit', e => {
 });
 
 $('#btnChangePass').addEventListener('click', () => {
-    const u = prompt('Novo usuário:', 'admin');
+    const u = prompt('Novo usuário:', 'markim');
     if (!u) return;
     const p = prompt('Nova senha:');
     if (!p) return;
@@ -837,7 +849,23 @@ function closeModal() {
 
 $('#modalClose').addEventListener('click', closeModal);
 $('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeModal(); return; }
+    // Enter dentro do modal: avança para o próximo campo em vez de salvar
+    // (evita que o teclado numérico do celular ou um Enter acidental feche a edição)
+    if (e.key === 'Enter' && $('#modal').classList.contains('open')) {
+        const t = e.target;
+        if (!t || !t.form) return;
+        if (t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.tagName === 'BUTTON') return;
+        if (t.tagName === 'INPUT') {
+            e.preventDefault();
+            const fields = [...t.form.querySelectorAll('input:not([type="hidden"]):not([type="file"]), select, textarea')].filter(el => !el.disabled);
+            const i = fields.indexOf(t);
+            if (i > -1 && i < fields.length - 1) fields[i + 1].focus();
+            else t.blur();
+        }
+    }
+});
 
 // ============== BACKUP / RESTORE ==============
 $('#btnExport').addEventListener('click', () => {

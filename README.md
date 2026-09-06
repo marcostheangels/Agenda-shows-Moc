@@ -14,12 +14,12 @@ Site profissional para divulgação de shows, forró, bares e restaurantes de Mo
 
 ## 🚀 Como usar
 1. **Site público:** Abra `index.html`
-2. **Painel admin:** Abra `admin.html` (login: `admin` / `admin123`)
+2. **Painel admin:** Abra `admin.html` (primeiro acesso: `markim` / `admin123`, depois troque a senha)
 
 ## 🔐 Acesso ao Painel Admin
 - URL: `admin.html` ou link discreto no rodapé do site
-- **Login padrão:** `admin` / `admin123`
-- ⚠️ **Altere a senha em "Configurações" no primeiro acesso**
+- **Primeiro acesso:** `markim` / `admin123`
+- ⚠️ **Altere a senha em "Configurações → Alterar Senha" no primeiro acesso**
 
 ## ✅ O que você pode fazer no painel
 
