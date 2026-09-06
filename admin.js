@@ -1223,3 +1223,4 @@ function bindActions() {
 
 console.log('%c🔐 Painel Admin v5', 'color:#ff3d6e;font-size:20px;font-weight:bold;');
 window.__adminOK = true;
+try { const _v = document.querySelector('.side-version'); if (_v) _v.textContent = 'Painel v6 · JS OK 🟢'; } catch (e) {}
