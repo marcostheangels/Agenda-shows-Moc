@@ -78,13 +78,6 @@ const bgStyle = img => {
     return `background:${img}`;
 };
 
-// Diagnóstico global de falhas de imagem
-window.addEventListener('error', e => {
-    if (e.target && (e.target.tagName === 'IMG' || (e.target.style && e.target.style.backgroundImage))) {
-        console.warn('⚠️ Falha ao carregar imagem:', e.target.src || e.target.style.backgroundImage);
-    }
-}, true);
-
 function loadLocal() {
     let stored = null;
     try { stored = localStorage.getItem(STORAGE_KEY); } catch(e) { return null; }
@@ -115,12 +108,7 @@ async function loadRemote() {
         updateCountdown();
         const total = json.eventos.length;
         const comFoto = json.eventos.filter(e => e.img && (e.img.startsWith('fotos/') || e.img.startsWith('http') || e.img.startsWith('data:image'))).length;
-        console.log('%c✅ data.json carregado: ' + total + ' eventos, ' + comFoto + ' com foto', 'color:#10b981;font-weight:bold');
-        json.eventos.forEach(ev => {
-            if (ev.img && ev.img.startsWith('fotos/')) {
-                console.log('  📸 Evento "' + ev.titulo + '" → ' + ev.img);
-            }
-        });
+        console.log('%c✅ data.json carregado: ' + total + ' eventos', 'color:#10b981;font-weight:bold');
         return true;
     } catch (e) {
         console.warn('❌ Falha ao carregar data.json remoto:', e.message);
@@ -179,18 +167,12 @@ function renderEventosFromAdmin() {
     if (!grid) return false;
     grid.innerHTML = adminData.eventos.map(ev => {
         const imgStyle = bgStyle(ev.img);
-        const imgSrc = resolveImgSrc(ev.img);
-        if (ev.img && isImgSrc(ev.img)) {
-            console.log('🖼️ Evento "' + ev.titulo + '" | raw=' + ev.img + ' | resolved=' + imgSrc + ' | base=' + siteBase);
-        }
-        const imgTag = isImgSrc(ev.img) ? `<img src="${imgSrc}" alt="${(ev.titulo || '').replace(/"/g,'&quot;')}" class="event-img-real" loading="lazy" onerror="console.error('❌ IMG falhou:', this.src); this.style.display='none';">` : '';
         return `
         <article class="event-card" data-id="${ev.id}" data-cat="${ev.cat}" data-bairro="${ev.bairro}" data-preco="${ev.preco}" data-titulo="${ev.titulo.replace(/"/g,'&quot;')}" data-local="${ev.local.replace(/"/g,'&quot;')}" data-endereco="${(ev.endereco || '').replace(/"/g,'&quot;')}" data-data="${ev.data}" data-hora="${ev.hora}" data-desc="${(ev.desc || '').replace(/"/g,'&quot;')}" data-galeria="${JSON.stringify(ev.galeria || []).replace(/"/g,'&quot;')}">
             <button class="fav-card" data-fav="${ev.id}" aria-label="Favoritar">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             </button>
             <div class="event-img" style="${imgStyle}">
-                ${imgTag}
                 <span class="event-date">${ev.data}</span>
                 ${ev.tag ? `<span class="event-tag tag-${ev.tag.toLowerCase()}">${ev.tag}</span>` : ''}
                 ${ev.galeria && ev.galeria.length ? `<span class="event-tag tag-fotos">📷 +${ev.galeria.length}</span>` : ''}
@@ -216,9 +198,15 @@ function renderEstabelecimentosFromAdmin() {
     const grids = document.querySelectorAll('.est-grid');
     if (!grids.length) return false;
     grids.forEach(grid => {
-        grid.innerHTML = adminData.estabelecimentos.map(e => `
+        grid.innerHTML = adminData.estabelecimentos.map(e => {
+            const temFoto = e.img && isImgSrc(e.img);
+            const fallbackImg = !temFoto
+                ? (adminData.eventos.find(ev => ev.img && isImgSrc(ev.img) && categoriaCombina(ev.cat, e.cat)) || {}).img
+                : null;
+            const imgFinal = temFoto ? e.img : (fallbackImg || e.img);
+            return `
             <a href="#" class="est-card">
-                <div class="est-img" style="${bgStyle(e.img)}">
+                <div class="est-img" style="${bgStyle(imgFinal)}">
                     <span class="est-cat">${e.cat}</span>
                 </div>
                 <div class="est-info">
@@ -227,9 +215,19 @@ function renderEstabelecimentosFromAdmin() {
                     <span class="est-link">Ver agenda →</span>
                 </div>
             </a>
-        `).join('');
+        `}).join('');
     });
     return true;
+}
+
+function normalizarCat(s) {
+    return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+function categoriaCombina(catEvento, catEstabelecimento) {
+    const a = normalizarCat(catEvento);
+    const b = normalizarCat(catEstabelecimento);
+    if (!a || !b) return false;
+    return a.includes(b) || b.includes(a);
 }
 
 function renderCategoriasFromAdmin() {
