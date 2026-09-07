@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="admin.css?v=6">
+    <link rel="stylesheet" href="admin.css?v=7">
 </head>
 <body>
 
@@ -300,7 +300,7 @@
 
             <!-- CONFIGURAÇÕES -->
             <section class="admin-section" id="sec-config">
-                <form id="configForm" class="config-form" method="post" action="#" onsubmit="return false">
+                <form id="configForm" class="config-form" onsubmit="return false">
                     <div class="form-row">
                         <div class="form-group">
                             <label>Nome do site</label>
@@ -367,32 +367,55 @@
 
                 <div class="config-form" style="margin-top:20px">
                     <h3 style="margin-bottom:6px">🚀 Publicação automática no GitHub</h3>
-                    <p class="muted" style="margin-bottom:16px">Ao ativar, cada clique em <strong>Salvar</strong> commita o <code>data.json</code> direto no repositório. O site (GitHub Pages) atualiza em ~1 minuto.</p>
+                    <p class="muted" style="margin-bottom:16px">Cada <strong>Salvar</strong> pode atualizar o site para todos automaticamente. O token fica salvo só no seu navegador.</p>
+
                     <div class="form-row">
                         <div class="form-group">
                             <label>Dono (owner)</label>
-                            <input type="text" id="ghOwner" value="marcostheangels">
+                            <input type="text" id="ghOwner" value="marcostheangels" placeholder="seu-usuario">
                         </div>
                         <div class="form-group">
                             <label>Repositório</label>
-                            <input type="text" id="ghRepo" value="Agenda-shows-Moc">
+                            <input type="text" id="ghRepo" value="Agenda-shows-Moc" placeholder="nome-do-repo">
                         </div>
                         <div class="form-group">
                             <label>Branch</label>
                             <input type="text" id="ghBranch" value="main">
                         </div>
                     </div>
+
                     <div class="form-group">
-                        <label>Token (PAT com permissão <code>repo</code>) — fica só no seu navegador</label>
-                        <input type="password" id="ghToken" placeholder="ghp_... ou github_pat_..." autocomplete="off">
+                        <label>🔑 Personal Access Token (PAT) com permissão <code>repo</code></label>
+                        <div style="display:flex;gap:8px;align-items:center">
+                            <input type="password" id="ghToken" placeholder="ghp_... ou github_pat_..." autocomplete="off" style="flex:1">
+                            <button type="button" class="btn-secondary" id="btnGHTest" style="width:auto">🔍 Testar</button>
+                        </div>
+                        <small class="muted">Gere em: <a href="https://github.com/settings/tokens?type=beta" target="_blank" style="color:#a855f7">github.com/settings/tokens</a> → Fine-grained, marque "Contents: Read and write".</small>
                     </div>
-                    <label class="gh-toggle"><input type="checkbox" id="ghEnabled"> <span>Ativar commit automático ao salvar</span></label>
+
+                    <label class="gh-toggle" style="display:flex;align-items:center;gap:8px;padding:12px;background:#1a1a2e;border-radius:8px;margin-top:12px;cursor:pointer">
+                        <input type="checkbox" id="ghAutoPublish">
+                        <span><strong>⚡ Auto-publicar ao Salvar</strong> — toda alteração no painel já vai para o site (~1 min).</span>
+                    </label>
+
                     <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
-                        <button class="btn-primary" style="width:auto" id="btnGHSave">💾 Salvar GitHub</button>
-                        <button class="btn-secondary" id="btnGHNow">🚀 Publicar agora</button>
+                        <button type="button" class="btn-primary" id="btnGHSave" style="width:auto">💾 Salvar Config</button>
+                        <button type="button" class="btn-secondary" id="btnGHPubNow">🚀 Publicar Agora</button>
                     </div>
-                    <p id="ghStatus" class="muted" style="margin-top:12px">Nunca publicado nesta máquina.</p>
-                    <p class="muted" style="margin-top:8px;font-size:12px">⚠️ Como gerar: GitHub → Settings → Developer settings → Personal access tokens → Fine-grained ou Classic (marque <code>repo</code>) → copie e cole aqui. Nunca commite o token no código.</p>
+                    <p id="ghStatus" class="muted" style="margin-top:12px;padding:10px;background:#0f0f1a;border-radius:8px">💾 Sem token configurado. Dados salvos apenas neste navegador.</p>
+
+                    <details style="margin-top:16px">
+                        <summary class="muted" style="cursor:pointer;font-size:13px">📋 Como gerar o token passo a passo</summary>
+                        <ol style="margin:8px 0 0 16px;font-size:12px;color:#888;line-height:1.6">
+                            <li>Acesse <a href="https://github.com/settings/tokens?type=beta" target="_blank" style="color:#a855f7">github.com/settings/tokens</a> (Fine-grained token)</li>
+                            <li>Clique em <strong>Generate new token</strong></li>
+                            <li>Em <strong>Repository access</strong>, selecione "Only select repositories" e escolha <code>Agenda-shows-Moc</code></li>
+                            <li>Em <strong>Permissions</strong> → <strong>Repository permissions</strong> → <strong>Contents</strong>, marque <strong>Read and write</strong></li>
+                            <li>Clique em <strong>Generate token</strong> e copie o token (começa com <code>github_pat_</code>)</li>
+                            <li>Cole no campo acima, clique em <strong>🔍 Testar</strong> para confirmar, depois marque "Auto-publicar"</li>
+                            <li>Pronto! Agora todo Salvar atualiza o site em ~1 minuto</li>
+                        </ol>
+                    </details>
                 </div>
             </section>
 
@@ -425,6 +448,6 @@
     <script>
         document.addEventListener('submit', function(e){var f=e.target;if(f&&f.id&&typeof f.id==='string'&&f.id.startsWith('form')){e.preventDefault();}e.stopImmediatePropagation();}, true);
     </script>
-    <script src="admin.js?v=19"></script>
+    <script src="admin.js?v=99"></script>
 </body>
 </html>
