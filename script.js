@@ -177,12 +177,17 @@ function renderEventosFromAdmin() {
     const grid = $('#eventGrid');
     const count = $('#eventsCount');
     if (!grid) return false;
-    grid.innerHTML = adminData.eventos.map(ev => `
+    grid.innerHTML = adminData.eventos.map(ev => {
+        const imgStyle = bgStyle(ev.img);
+        if (ev.img && ev.img.startsWith('fotos/')) {
+            console.log('🖼️ Evento "' + ev.titulo + '" style:', imgStyle);
+        }
+        return `
         <article class="event-card" data-id="${ev.id}" data-cat="${ev.cat}" data-bairro="${ev.bairro}" data-preco="${ev.preco}" data-titulo="${ev.titulo.replace(/"/g,'&quot;')}" data-local="${ev.local.replace(/"/g,'&quot;')}" data-endereco="${(ev.endereco || '').replace(/"/g,'&quot;')}" data-data="${ev.data}" data-hora="${ev.hora}" data-desc="${(ev.desc || '').replace(/"/g,'&quot;')}" data-galeria="${JSON.stringify(ev.galeria || []).replace(/"/g,'&quot;')}">
             <button class="fav-card" data-fav="${ev.id}" aria-label="Favoritar">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             </button>
-            <div class="event-img" style="${bgStyle(ev.img)}">
+            <div class="event-img" style="${imgStyle}">
                 <span class="event-date">${ev.data}</span>
                 ${ev.tag ? `<span class="event-tag tag-${ev.tag.toLowerCase()}">${ev.tag}</span>` : ''}
                 ${ev.galeria && ev.galeria.length ? `<span class="event-tag tag-fotos">📷 +${ev.galeria.length}</span>` : ''}
@@ -195,7 +200,7 @@ function renderEventosFromAdmin() {
                 <a href="#" class="event-btn open-modal" data-id="${ev.id}">Ver Detalhes</a>
             </div>
         </article>
-    `).join('');
+    `}).join('');
     if (count) count.textContent = `Mostrando ${adminData.eventos.length} eventos`;
 
     // Re-bind modal e favoritos
