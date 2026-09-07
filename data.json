@@ -37,7 +37,7 @@
       "hora": "Terça, 21h",
       "local": "Boteco do Rock - Av. Independência",
       "desc": "Noite de rock com bandas autorais e clássicos inesquecíveis. Chopp em dobro e petiscos especiais.",
-      "img": "fotos/evento-1788734598404.jpg",
+      "img": "https://images.unsplash.com/photo-1493676304819-0d7a8d026dcf?w=900&q=80",
       "tag": ""
     },
     {
@@ -50,7 +50,7 @@
       "hora": "Sexta, 20h",
       "local": "Restaurante Sabor da Terra",
       "desc": "Jantar harmonizado com pratos da culinária regional e show de sertanejo ao vivo. Reservas limitadas.",
-      "img": "fotos/evento-1788735121677.jpg",
+      "img": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&q=80",
       "tag": "NOVO"
     },
     {
@@ -63,7 +63,7 @@
       "hora": "Domingo, 20h",
       "local": "Arena MOC - Bairro Todos os Santos",
       "desc": "O melhor pagode da região com a banda cover mais requisitada do momento. Open de chopp até meia-noite.",
-      "img": "fotos/evento-1788736530724.jpg",
+      "img": "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=900&q=80",
       "tag": ""
     },
     {
@@ -76,7 +76,7 @@
       "hora": "Sábado, 23h",
       "local": "Lounge Club - Avenida MOC",
       "desc": "A balada mais badalada da cidade com DJ Marcos e convidados. Open de vodka para o primeiro lote.",
-      "img": "fotos/evento-1788736824489.jpg",
+      "img": "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=900&q=80",
       "tag": ""
     },
     {
@@ -89,7 +89,7 @@
       "hora": "Domingo, 21h",
       "local": "Casa do Samba - Centro Histórico",
       "desc": "Roda de samba com clássicos que marcaram época. Participação especial do mestre Cavaco.",
-      "img": "fotos/evento-1788734598404.jpg",
+      "img": "https://images.unsplash.com/photo-1538488749019-edaaee8060dc?w=900&q=80",
       "tag": "VIP"
     },
     {
