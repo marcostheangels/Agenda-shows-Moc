@@ -73,7 +73,7 @@ const bgStyle = img => {
     if (!img) return 'background:linear-gradient(135deg,#ff3d6e,#ff8a3d)';
     if (isImgSrc(img)) {
         const src = resolveImgSrc(img);
-        return `background-image:linear-gradient(135deg,rgba(0,0,0,0.25),rgba(0,0,0,0.45)),url("${src}");background-size:cover;background-position:center;background-color:#222`;
+        return `background-image:linear-gradient(135deg,rgba(0,0,0,0.25),rgba(0,0,0,0.45)),url('${src}');background-size:cover;background-position:center;background-color:#222`;
     }
     return `background:${img}`;
 };
@@ -240,9 +240,9 @@ function renderCategoriasFromAdmin() {
         const firstEst = !firstEvent ? adminData.estabelecimentos.find(e => e.cat === c.nome && e.img && isImgSrc(e.img)) : null;
         const catClass = 'cat-' + (c.slug || c.nome.toLowerCase().replace(/\s+/g, '-'));
         const catBg = firstEvent
-            ? `background-image:linear-gradient(135deg,${c.cor}88,${c.cor}44),url("${resolveImgSrc(firstEvent.img)}");background-size:cover;background-position:center;`
+            ? `background-image:linear-gradient(135deg,${c.cor}88,${c.cor}44),url('${resolveImgSrc(firstEvent.img)}');background-size:cover;background-position:center;`
             : firstEst
-            ? `background-image:linear-gradient(135deg,${c.cor}88,${c.cor}44),url("${resolveImgSrc(firstEst.img)}");background-size:cover;background-position:center;`
+            ? `background-image:linear-gradient(135deg,${c.cor}88,${c.cor}44),url('${resolveImgSrc(firstEst.img)}');background-size:cover;background-position:center;`
             : '';
         return `
         <a href="#" class="cat-card ${catClass}">
@@ -322,7 +322,7 @@ function renderModalGallery(card) {
     box.querySelectorAll('img').forEach(img => img.addEventListener('click', () => {
         const main = $('#modalImg');
         const cur = main.getAttribute('style');
-        main.setAttribute('style', `background-image:url("${img.src}");background-size:cover;background-position:center`);
+        main.setAttribute('style', `background-image:url('${img.src}');background-size:cover;background-position:center`);
         img.style.outline = '2px solid #ff3d6e';
         setTimeout(() => img.style.outline = '', 800);
         void cur;
