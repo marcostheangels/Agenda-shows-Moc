@@ -1038,14 +1038,25 @@ function renderConfig() {
     });
 }
 
+// Listener do botão Salvar Configurações
+document.addEventListener('click', e => {
+    if (e.target && e.target.id === 'btnSaveConfig') {
+        e.preventDefault();
+        e.stopPropagation();
+        const form = $('#configForm');
+        Object.keys(data.config).forEach(k => {
+            if (form[k]) data.config[k] = form[k].value;
+        });
+        saveData();
+        toast('✅ Configurações salvas' + (getGHConfig().autoPublish ? ' — publicando...' : ''));
+    }
+});
+
+// Listener do submit (Enter em qualquer campo do form) - só pra não navegar
 $('#configForm').addEventListener('submit', e => {
     e.preventDefault();
-    const form = e.target;
-    Object.keys(data.config).forEach(k => {
-        data.config[k] = form[k].value;
-    });
-    saveData();
-    toast('✅ Configurações salvas');
+    e.stopPropagation();
+    return false;
 });
 
 $('#btnChangePass').addEventListener('click', () => {

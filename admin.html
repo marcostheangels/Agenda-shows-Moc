@@ -360,7 +360,7 @@
                         </div>
                     </div>
                     <div style="display:flex;gap:12px;align-items:center;margin-top:20px;flex-wrap:wrap">
-                        <button type="submit" class="btn-primary" style="width:auto">💾 Salvar Configurações</button>
+                        <button type="button" class="btn-primary" style="width:auto" id="btnSaveConfig">💾 Salvar Configurações</button>
                         <button type="button" class="btn-secondary" id="btnChangePass">🔐 Alterar Senha</button>
                     </div>
                 </form>
@@ -448,6 +448,6 @@
     <script>
         document.addEventListener('submit', function(e){var f=e.target;if(f&&f.id&&typeof f.id==='string'&&f.id.startsWith('form')){e.preventDefault();}e.stopImmediatePropagation();}, true);
     </script>
-    <script src="admin.js?v=100"></script>
+    <script src="admin.js?v=101"></script>
 </body>
 </html>
