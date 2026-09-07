@@ -53,12 +53,21 @@ const defaultData = {
 };
 
 const isImgSrc = s => s && (s.startsWith('data:image') || s.startsWith('http') || s.startsWith('blob:') || s.startsWith('fotos/') || s.startsWith('./fotos/') || s.startsWith('/fotos/') || s.startsWith('../fotos/') || /\.(jpe?g|png|webp|gif|avif|svg)(\?.*)?$/i.test(s));
+const siteBase = (() => {
+    try {
+        const u = new URL('.', window.location.href);
+        return u.pathname.endsWith('/') ? u.pathname : u.pathname + '/';
+    } catch { return './'; }
+})();
 const resolveImgSrc = img => {
     if (!img) return '';
-    if (img.startsWith('data:') || img.startsWith('http') || img.startsWith('blob:')) return img;
-    if (img.startsWith('./') || img.startsWith('/') || img.startsWith('../')) return img;
-    if (img.includes('/')) return img;
-    return 'fotos/' + img;
+    if (img.startsWith('data:') || img.startsWith('blob:')) return img;
+    if (img.startsWith('http')) return img;
+    if (img.startsWith('./')) return img.substring(2);
+    if (img.startsWith('/')) return img;
+    if (img.startsWith('../')) return img;
+    if (img.includes('/')) return siteBase + img;
+    return siteBase + 'fotos/' + img;
 };
 const bgStyle = img => {
     if (!img) return 'background:linear-gradient(135deg,#ff3d6e,#ff8a3d)';
@@ -68,6 +77,13 @@ const bgStyle = img => {
     }
     return `background:${img}`;
 };
+
+// Diagnóstico global de falhas de imagem
+window.addEventListener('error', e => {
+    if (e.target && (e.target.tagName === 'IMG' || (e.target.style && e.target.style.backgroundImage))) {
+        console.warn('⚠️ Falha ao carregar imagem:', e.target.src || e.target.style.backgroundImage);
+    }
+}, true);
 
 function loadLocal() {
     let stored = null;
@@ -97,7 +113,14 @@ async function loadRemote() {
         renderDepoimentosFromAdmin();
         renderCalendar();
         updateCountdown();
-        console.log('%c✅ data.json carregado do GitHub: ' + json.eventos.length + ' eventos', 'color:#10b981;font-weight:bold');
+        const total = json.eventos.length;
+        const comFoto = json.eventos.filter(e => e.img && (e.img.startsWith('fotos/') || e.img.startsWith('http') || e.img.startsWith('data:image'))).length;
+        console.log('%c✅ data.json carregado: ' + total + ' eventos, ' + comFoto + ' com foto', 'color:#10b981;font-weight:bold');
+        json.eventos.forEach(ev => {
+            if (ev.img && ev.img.startsWith('fotos/')) {
+                console.log('  📸 Evento "' + ev.titulo + '" → ' + ev.img);
+            }
+        });
         return true;
     } catch (e) {
         console.warn('❌ Falha ao carregar data.json remoto:', e.message);
