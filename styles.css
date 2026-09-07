@@ -481,37 +481,15 @@ ul { list-style: none; }
     z-index: 2;
 }
 
-.cat-forro .cat-img {
-    background-image: linear-gradient(135deg, rgba(220, 38, 38, 0.5), rgba(245, 158, 11, 0.5)),
-                      url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&q=80');
-}
-.cat-bar .cat-img {
-    background-image: linear-gradient(135deg, rgba(124, 58, 237, 0.5), rgba(59, 130, 246, 0.5)),
-                      url('https://images.unsplash.com/photo-1538488749019-edaaee8060dc?w=800&q=80');
-}
-.cat-rest .cat-img {
-    background-image: linear-gradient(135deg, rgba(16, 185, 129, 0.5), rgba(5, 150, 105, 0.5)),
-                      url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80');
-}
-.cat-show .cat-img {
-    background-image: linear-gradient(135deg, rgba(236, 72, 153, 0.5), rgba(139, 92, 246, 0.5)),
-                      url('https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800&q=80');
-}
-.cat-sertanejo .cat-img {
-    background-image: linear-gradient(135deg, rgba(245, 158, 11, 0.5), rgba(239, 68, 68, 0.5)),
-                      url('https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800&q=80');
-}
-.cat-pagode .cat-img {
-    background-image: linear-gradient(135deg, rgba(217, 119, 6, 0.5), rgba(124, 45, 18, 0.5)),
-                      url('https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800&q=80');
-}
-.cat-rock .cat-img {
-    background-image: linear-gradient(135deg, rgba(239, 68, 68, 0.5), rgba(15, 23, 42, 0.7)),
-                      url('https://images.unsplash.com/photo-1493676304819-0d7a8d026dcf?w=800&q=80');
-}
+.cat-forro .cat-img,
+.cat-bar .cat-img,
+.cat-rest .cat-img,
+.cat-show .cat-img,
+.cat-sertanejo .cat-img,
+.cat-pagode .cat-img,
+.cat-rock .cat-img,
 .cat-festa .cat-img {
-    background-image: linear-gradient(135deg, rgba(168, 85, 247, 0.5), rgba(236, 72, 153, 0.5)),
-                      url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80');
+    background-image: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.5));
 }
 
 .cat-card:hover {
