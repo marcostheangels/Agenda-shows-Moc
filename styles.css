@@ -1266,24 +1266,25 @@ ul { list-style: none; }
     padding: 16px;
     margin-bottom: 12px;
     display: flex;
-    gap: 16px;
+    flex-wrap: wrap;
+    gap: 12px;
     cursor: pointer;
     transition: 0.3s;
+    align-items: flex-start;
 }
 .day-event:hover {
     border-color: var(--primary);
-    transform: translateX(4px);
 }
 
 .day-event-img {
-    width: 80px; height: 80px;
+    width: 70px; height: 70px;
     border-radius: 10px;
     background-size: cover;
     background-position: center;
     flex-shrink: 0;
 }
 
-.day-event-info { flex: 1; min-width: 0; }
+.day-event-info { flex: 1; min-width: 0; min-width: calc(100% - 90px); }
 .day-event-cat {
     display: inline-block;
     background: rgba(255, 61, 110, 0.15);
@@ -1297,22 +1298,34 @@ ul { list-style: none; }
 }
 .day-event h4 {
     color: white;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     line-height: 1.3;
 }
 .day-event p {
     color: var(--gray);
-    font-size: 13px;
+    font-size: 12px;
     margin-bottom: 2px;
 }
-.day-event-cta {
-    align-self: center;
-    color: var(--primary);
-    font-size: 24px;
-    font-weight: 300;
-    flex-shrink: 0;
+
+.day-event-btn {
+    display: inline-block;
+    background: var(--gradient);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 6px;
+    width: 100%;
+    text-align: center;
+}
+.day-event-btn:hover {
+    box-shadow: 0 4px 12px rgba(255, 61, 110, 0.4);
 }
 
 /* ============== EVENTOS ============== */
@@ -1789,6 +1802,9 @@ ul { list-style: none; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
+/* ============== RESPONSIVO MOBILE ============== */
+
+/* Tablet */
 @media (max-width: 900px) {
     .nav {
         position: fixed;
@@ -1820,30 +1836,131 @@ ul { list-style: none; }
     .countdown-inner { flex-direction: column; text-align: center; }
     .cd-timer { justify-content: center; }
     .cd-btn { width: 100%; }
+
+    .cat-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+    .event-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+    .est-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    .contato-grid { grid-template-columns: 1fr; }
 }
 
+/* Mobile */
 @media (max-width: 600px) {
-    .hero { padding: 100px 0 60px; }
-    .hero-stats { gap: 30px; }
+    /* Header */
+    .header-inner { padding: 12px 16px; }
+    .logo-icon { font-size: 18px; padding: 6px 10px; }
+    .logo-title { font-size: 14px; }
+    .logo-sub { font-size: 12px; }
+
+    /* Hero */
+    .hero { padding: 90px 0 40px; min-height: auto; }
+    .hero-badge { font-size: 11px; padding: 6px 16px; }
+    .hero-title { font-size: 36px; line-height: 1.1; }
+    .hero-sub { font-size: 15px; max-width: 100%; }
+    .hero-actions { flex-direction: column; gap: 12px; }
+    .hero-actions .btn { width: 100%; justify-content: center; }
+    .hero-stats { flex-direction: column; gap: 20px; }
     .stat strong { font-size: 32px; }
-    .section { padding: 60px 0; }
+
+    /* Search */
+    .search-bar { padding: 16px 0; }
     .search-inner { flex-direction: column; }
-    .search-box, .filter-select, .news-form { width: 100%; }
-    .news-form { flex-direction: column; }
-    .footer-inner { grid-template-columns: 1fr; }
+    .search-box, .filter-select, .search-box input { width: 100%; border-radius: 12px; }
+    .filter-select { border-radius: 12px; }
 
-    .blog-grid { grid-template-columns: 1fr; }
-    .blog-destaque { grid-column: auto; }
+    /* Sections */
+    .section { padding: 60px 0; }
+    .section-head { margin-bottom: 40px; }
+    .section-title { font-size: 28px; }
+    .section-tag { font-size: 10px; padding: 4px 12px; }
 
+    /* Categorias */
+    .cat-grid { grid-template-columns: 1fr; gap: 16px; }
+    .cat-card { height: 200px; }
+    .cat-tabs { gap: 6px; }
+    .cat-tab { padding: 8px 16px; font-size: 12px; }
+
+    /* Eventos */
+    .event-grid { grid-template-columns: 1fr; gap: 16px; }
+    .event-img { height: 160px; }
+    .event-info { padding: 16px; }
+    .event-title { font-size: 16px; }
+
+    /* Estabelecimentos */
+    .est-grid { grid-template-columns: 1fr; gap: 16px; }
+
+    /* Calendário */
+    .cal-wrap { padding: 16px; }
     .cal-day { padding: 4px; }
     .cal-day-num { font-size: 12px; }
-    .cal-box { padding: 10px 14px; min-width: 60px; }
-    .cd-box strong { font-size: 24px; }
+    .cal-dots { display: none; }
 
-    .fav-panel { width: 100vw; }
-    .modal-body { padding: 20px; }
-    .modal-body h2 { font-size: 24px; }
+    /* Depoimentos */
+    .dep-grid { grid-template-columns: 1fr; gap: 16px; }
+    .dep-stats { padding: 24px; gap: 16px; }
+    .dep-stat strong { font-size: 28px; }
 
-    .hero-countdown { padding: 20px; margin-bottom: -60px; }
-    .cd-title { font-size: 22px; }
+    /* Blog */
+    .blog-grid { grid-template-columns: 1fr; max-height: none; }
+    .blog-destaque { grid-column: auto; }
+    .blog-destaque .blog-img { min-height: 200px; }
+
+    /* CTA */
+    .cta-anuncie { padding: 60px 0; }
+    .cta-visual { display: none; }
+
+    /* Newsletter */
+    .newsletter { padding: 40px 0; }
+    .news-inner { flex-direction: column; text-align: center; }
+    .news-form { flex-direction: column; width: 100%; max-width: 100%; }
+    .news-form input, .news-form button { width: 100%; border-radius: 12px; }
+
+    /* Contato */
+    .contato-grid { grid-template-columns: 1fr; gap: 16px; }
+    .contato-card { padding: 24px 16px; }
+    .contato-icon { width: 56px; height: 56px; font-size: 24px; }
+
+    /* Footer */
+    .footer-inner { grid-template-columns: 1fr; gap: 30px; }
+    .footer { padding-top: 50px; }
+    .footer-bottom { flex-direction: column; gap: 8px; }
+    .footer-social { justify-content: center; }
+
+    /* Countdown */
+    .hero-countdown { padding: 16px; margin-bottom: -80px; border-radius: 16px; }
+    .cd-title { font-size: 20px; }
+    .cd-timer { gap: 8px; }
+    .cd-box { padding: 10px 12px; min-width: 60px; }
+    .cd-box strong { font-size: 22px; }
+    .cd-tag { font-size: 10px; padding: 3px 10px; }
+    .countdown-inner { gap: 16px; }
+
+    /* Modal */
+    .modal { border-radius: 16px; }
+    .modal-body { padding: 16px; }
+    .modal-body h2 { font-size: 20px; }
+    .modal-img { height: 180px; }
+    .modal-actions { flex-direction: column; }
+    .modal-actions .btn { width: 100%; }
+    .modal-overlay { padding: 10px; }
+
+    /* Modal Dia */
+    .modal-day { max-width: 100%; margin: 10px; }
+    .day-modal-head { padding: 20px 16px; }
+    .day-modal-head h2 { font-size: 24px; }
+    .day-modal-body { padding: 16px; max-height: 50vh; }
+    .day-event-img { width: 60px; height: 60px; }
+
+    /* Favoritos */
+    .fav-panel { width: 100vw; right: -100%; }
+    .fav-panel.open { right: 0; }
+
+    /* WhatsApp Float */
+    .whatsapp-float { width: 50px; height: 50px; bottom: 16px; right: 16px; }
+
+    /* Back to top */
+    .back-top { width: 40px; height: 40px; bottom: 80px; right: 16px; }
+
+    /* Buttons */
+    .btn { padding: 12px 24px; font-size: 13px; }
+    .btn-lg { padding: 14px 28px; font-size: 14px; }
 }

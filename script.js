@@ -696,7 +696,7 @@ const showDayEvents = (year, month, day) => {
                 <p>📍 ${ev.local}</p>
                 <p>💰 ${ev.preco === 0 ? 'Entrada Franca' : 'R$ ' + ev.preco}</p>
             </div>
-            <button class="btn btn-primary btn-sm day-event-btn" data-id="${ev.id}">Ver Detalhes</button>
+            <button class="day-event-btn" data-id="${ev.id}">Ver Detalhes →</button>
         </div>
     `).join('');
 
