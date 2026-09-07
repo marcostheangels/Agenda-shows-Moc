@@ -52,12 +52,19 @@ const defaultData = {
     depoimentos: []
 };
 
-const isImgSrc = s => s && (s.startsWith('data:image') || s.startsWith('http') || s.startsWith('blob:') || s.startsWith('fotos/') || s.startsWith('./fotos/') || s.startsWith('/fotos/') || /\.(jpe?g|png|webp|gif|avif|svg)(\?.*)?$/i.test(s));
+const isImgSrc = s => s && (s.startsWith('data:image') || s.startsWith('http') || s.startsWith('blob:') || s.startsWith('fotos/') || s.startsWith('./fotos/') || s.startsWith('/fotos/') || s.startsWith('../fotos/') || /\.(jpe?g|png|webp|gif|avif|svg)(\?.*)?$/i.test(s));
+const resolveImgSrc = img => {
+    if (!img) return '';
+    if (img.startsWith('data:') || img.startsWith('http') || img.startsWith('blob:')) return img;
+    if (img.startsWith('./') || img.startsWith('/') || img.startsWith('../')) return img;
+    if (img.includes('/')) return img;
+    return 'fotos/' + img;
+};
 const bgStyle = img => {
     if (!img) return 'background:linear-gradient(135deg,#ff3d6e,#ff8a3d)';
     if (isImgSrc(img)) {
-        const src = (img.includes('/') || img.startsWith('data:') || img.startsWith('http') || img.startsWith('blob:')) ? img : 'fotos/' + img;
-        return `background:linear-gradient(135deg,#ff3d6e55,#ff8a3d55),url("${src}");background-size:cover;background-position:center`;
+        const src = resolveImgSrc(img);
+        return `background-image:linear-gradient(135deg,rgba(0,0,0,0.25),rgba(0,0,0,0.45)),url("${src}");background-size:cover;background-position:center;background-color:#222`;
     }
     return `background:${img}`;
 };
@@ -76,7 +83,7 @@ let useAdmin = adminData !== null;
 
 async function loadRemote() {
     try {
-        const res = await fetch('data.json?_=' + Date.now(), { cache: 'no-store' });
+        const res = await fetch('data.json?v=' + Date.now(), { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
         if (!res.ok) return false;
         const json = await res.json();
         if (!json || !json.eventos) return false;
@@ -90,8 +97,12 @@ async function loadRemote() {
         renderDepoimentosFromAdmin();
         renderCalendar();
         updateCountdown();
+        console.log('%c✅ data.json carregado do GitHub: ' + json.eventos.length + ' eventos', 'color:#10b981;font-weight:bold');
         return true;
-    } catch { return false; }
+    } catch (e) {
+        console.warn('❌ Falha ao carregar data.json remoto:', e.message);
+        return false;
+    }
 }
 
 // ============== APLICAR DADOS DO ADMIN NO SITE ==============
@@ -202,9 +213,9 @@ function renderCategoriasFromAdmin() {
         const firstEst = !firstEvent ? adminData.estabelecimentos.find(e => e.cat === c.nome && e.img && isImgSrc(e.img)) : null;
         const catClass = 'cat-' + (c.slug || c.nome.toLowerCase().replace(/\s+/g, '-'));
         const catBg = firstEvent
-            ? `background:linear-gradient(135deg,${c.cor}88,${c.cor}44),url("${firstEvent.img}");background-size:cover;background-position:center;`
+            ? `background-image:linear-gradient(135deg,${c.cor}88,${c.cor}44),url("${resolveImgSrc(firstEvent.img)}");background-size:cover;background-position:center;`
             : firstEst
-            ? `background:linear-gradient(135deg,${c.cor}88,${c.cor}44),url("${firstEst.img}");background-size:cover;background-position:center;`
+            ? `background-image:linear-gradient(135deg,${c.cor}88,${c.cor}44),url("${resolveImgSrc(firstEst.img)}");background-size:cover;background-position:center;`
             : '';
         return `
         <a href="#" class="cat-card ${catClass}">
@@ -231,7 +242,7 @@ function renderBlogFromAdmin() {
         const isDestaque = i === 0 && adminData.blog.length > 3;
         return `
         <article class="blog-card ${isDestaque ? 'blog-destaque' : ''}">
-            <div class="blog-img" style="${isImgSrc(p.img) ? `background-image:linear-gradient(135deg,rgba(0,0,0,0.3),rgba(0,0,0,0.5)),url(&quot;${p.img}&quot;);background-size:cover;background-position:center` : `background:${p.img || 'linear-gradient(135deg,#ff3d6e,#7c3aed)'}`}">
+            <div class="blog-img" style="${isImgSrc(p.img) ? `background-image:linear-gradient(135deg,rgba(0,0,0,0.3),rgba(0,0,0,0.5)),url(&quot;${resolveImgSrc(p.img)}&quot;);background-size:cover;background-position:center;background-color:#222` : `background:${p.img || 'linear-gradient(135deg,#ff3d6e,#7c3aed)'}`}">
                 <span class="blog-cat">${p.cat}</span>
             </div>
             <div class="blog-body">
