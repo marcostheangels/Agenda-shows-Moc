@@ -359,7 +359,19 @@ function bindEventActions() {
         $('#modalLocal').textContent = '📍 ' + card.dataset.local;
         $('#modalPreco').textContent = '💰 ' + (card.dataset.preco === '0' ? 'Entrada Franca' : 'R$ ' + card.dataset.preco);
         $('#modalDesc').textContent = card.dataset.desc;
-        $('#modalImg').setAttribute('style', card.querySelector('.event-img').getAttribute('style'));
+
+        // Imagem do modal - pegar a imagem real (sem cortando)
+        const realImg = card.querySelector('.event-img-real');
+        const evImgStyle = card.querySelector('.event-img').getAttribute('style') || '';
+        if (realImg && realImg.src) {
+            // Tem imagem real - usar object-fit: contain para não cortar
+            $('#modalImg').innerHTML = `<img src="${realImg.src}" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;" alt="${card.dataset.titulo}">`;
+            $('#modalImg').setAttribute('style', `background:${evImgStyle.includes('background:') ? evImgStyle.split('background:')[1].split(';')[0] : 'var(--dark-2)'};background-size:cover;background-position:center;`);
+        } else {
+            // Sem imagem real - usar o style do card (gradient)
+            $('#modalImg').innerHTML = '';
+            $('#modalImg').setAttribute('style', evImgStyle);
+        }
         renderModalGallery(card);
         const url = encodeURIComponent(window.location.href);
         const text = encodeURIComponent(`🎶 ${card.dataset.titulo}\n📅 ${card.dataset.data}\n📍 ${card.dataset.local}\nConfira: `);
@@ -511,7 +523,17 @@ openModalBtns.forEach(btn => btn.addEventListener('click', e => {
     }
     $('#modalPreco').textContent = '💰 ' + (card.dataset.preco === '0' ? 'Entrada Franca' : 'R$ ' + card.dataset.preco);
     $('#modalDesc').textContent = card.dataset.desc;
-    $('#modalImg').setAttribute('style', card.querySelector('.event-img').getAttribute('style'));
+    // Imagem do modal - pegar a imagem real (sem cortando)
+    const realImg = card.querySelector('.event-img-real');
+    const evImgStyle = card.querySelector('.event-img').getAttribute('style') || '';
+    if (realImg && realImg.src) {
+        $('#modalImg').innerHTML = `<img src="${realImg.src}" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;" alt="${card.dataset.titulo}">`;
+        const bgColor = evImgStyle.includes('background:') ? evImgStyle.split('background:')[1].split(';')[0] : 'var(--dark-2)';
+        $('#modalImg').setAttribute('style', `background:${bgColor};background-size:cover;background-position:center;`);
+    } else {
+        $('#modalImg').innerHTML = '';
+        $('#modalImg').setAttribute('style', evImgStyle);
+    }
     renderModalGallery(card);
 
     const url = encodeURIComponent(window.location.href);
@@ -674,13 +696,14 @@ const showDayEvents = (year, month, day) => {
                 <p>📍 ${ev.local}</p>
                 <p>💰 ${ev.preco === 0 ? 'Entrada Franca' : 'R$ ' + ev.preco}</p>
             </div>
-            <div class="day-event-cta">→</div>
+            <button class="btn btn-primary btn-sm day-event-btn" data-id="${ev.id}">Ver Detalhes</button>
         </div>
     `).join('');
 
-    // Click no evento do dia
-    $$('.day-event', body).forEach(el => el.addEventListener('click', () => {
-        const id = +el.dataset.id;
+    // Click no botao "Ver Detalhes"
+    $$('.day-event-btn', body).forEach(btn => btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const id = +btn.dataset.id;
         $('#dayModal').classList.remove('open');
         setTimeout(() => {
             const card = document.querySelector(`.event-card[data-id="${id}"]`);
