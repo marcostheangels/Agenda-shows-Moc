@@ -1926,13 +1926,27 @@ ul { list-style: none; }
     .footer-social { justify-content: center; }
 
     /* Countdown */
-    .hero-countdown { padding: 16px; margin-bottom: -80px; border-radius: 16px; }
-    .cd-title { font-size: 20px; }
-    .cd-timer { gap: 8px; }
-    .cd-box { padding: 10px 12px; min-width: 60px; }
-    .cd-box strong { font-size: 22px; }
-    .cd-tag { font-size: 10px; padding: 3px 10px; }
-    .countdown-inner { gap: 16px; }
+    /* Countdown Mobile */
+    .hero-countdown {
+        padding: 12px 8px;
+        margin-bottom: -60px;
+        border-radius: 12px;
+        margin-top: 40px;
+    }
+    .cd-left { width: 100%; text-align: center; margin-bottom: 12px; }
+    .cd-tag { font-size: 9px; padding: 3px 8px; }
+    .cd-title { font-size: 16px; }
+    .cd-info { font-size: 11px; }
+    .countdown-inner { gap: 8px; justify-content: center; }
+    .cd-timer { gap: 6px; justify-content: center; }
+    .cd-box {
+        padding: 6px 8px;
+        min-width: 50px;
+        border-radius: 8px;
+    }
+    .cd-box strong { font-size: 18px; }
+    .cd-box span { font-size: 8px; }
+    .cd-btn { width: 100%; font-size: 11px; padding: 8px 12px; }
 
     /* Modal */
     .modal { border-radius: 16px; }
