@@ -167,51 +167,52 @@ ul { list-style: none; }
     position: relative;
     min-height: 100vh;
     display: flex;
-    align-items: center;
-    padding: 120px 0 80px;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 100px 0 0;
     overflow: hidden;
+    background: var(--bg);
+}
+
+.hero-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+    flex: 1;
+    padding: 20px 24px 60px;
+    min-height: 80vh;
+    position: relative;
+    z-index: 2;
+}
+
+.hero-img-wrapper {
+    position: relative;
+    width: 100%;
+    height: 600px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
 }
 
 .hero-img {
-    position: absolute;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center;
-    z-index: 0;
+    display: block;
 }
 
-.hero-bg {
-    display: none;
-}
-
-.hero-bg::before {
+.hero-img-wrapper::after {
     content: '';
     position: absolute;
     inset: 0;
-    background-image:
-        radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
-    background-size: 30px 30px;
-}
-
-.hero-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-        to bottom,
-        rgba(10, 10, 20, 0.4) 0%,
-        rgba(10, 10, 20, 0.5) 40%,
-        rgba(10, 10, 20, 0.9) 90%
-    );
-    z-index: 1;
+    background: linear-gradient(135deg, rgba(10, 10, 20, 0.2) 0%, rgba(10, 10, 20, 0.5) 100%);
+    pointer-events: none;
 }
 
 .hero-content {
-    position: relative;
-    text-align: center;
-    z-index: 2;
+    text-align: left;
 }
 
 .hero-badge {
@@ -229,10 +230,10 @@ ul { list-style: none; }
 
 .hero-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(40px, 8vw, 88px);
-    line-height: 0.95;
+    font-size: clamp(40px, 5vw, 64px);
+    line-height: 1.05;
     color: white;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     letter-spacing: 1px;
 }
 
@@ -244,18 +245,45 @@ ul { list-style: none; }
 }
 
 .hero-sub {
-    font-size: 18px;
+    font-size: 17px;
     color: var(--gray);
-    max-width: 600px;
-    margin: 0 auto 40px;
+    margin-bottom: 32px;
+    max-width: 500px;
 }
 
 .hero-actions {
     display: flex;
-    gap: 16px;
-    justify-content: center;
+    gap: 14px;
+    margin-bottom: 50px;
     flex-wrap: wrap;
-    margin-bottom: 60px;
+}
+
+.hero-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+}
+
+.stat { text-align: center; }
+.stat strong {
+    display: block;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 1px;
+}
+.stat span {
+    color: var(--gray);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
 }
 
 .btn {
@@ -993,17 +1021,14 @@ ul { list-style: none; }
 /* ============== COUNTDOWN ============== */
 .hero-countdown {
     position: relative;
-    z-index: 3;
-    margin-top: 60px;
-    background: rgba(10, 10, 20, 0.7);
-    backdrop-filter: blur(12px);
+    z-index: 10;
+    background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 24px;
-    padding: 28px 36px;
-    max-width: 1100px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: -100px;
+    border-radius: 16px;
+    padding: 24px 32px;
+    margin: -40px auto 0;
+    max-width: 1000px;
+    width: calc(100% - 48px);
 }
 
 .countdown-inner {
@@ -1026,7 +1051,7 @@ ul { list-style: none; }
 }
 .cd-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 28px;
+    font-size: 26px;
     color: white;
     letter-spacing: 1px;
     margin-bottom: 6px;
@@ -1036,25 +1061,19 @@ ul { list-style: none; }
 
 .cd-timer { display: flex; gap: 12px; }
 .cd-box {
-    background: var(--card);
+    background: var(--dark);
     border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 14px 18px;
+    border-radius: 12px;
+    padding: 12px 16px;
     text-align: center;
-    min-width: 76px;
+    min-width: 70px;
     position: relative;
     overflow: hidden;
-}
-.cd-box::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, transparent, rgba(255, 61, 110, 0.1));
 }
 .cd-box strong {
     display: block;
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 32px;
+    font-size: 28px;
     background: var(--gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -1065,7 +1084,7 @@ ul { list-style: none; }
 }
 .cd-box span {
     display: block;
-    font-size: 10px;
+    font-size: 9px;
     color: var(--gray);
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -1887,94 +1906,87 @@ ul { list-style: none; }
         height: 36px;
     }
 
-    /* Hero - MUITO COMPACTO */
+    /* Hero Mobile - LAYOUT EM COLUNA */
     .hero {
-        padding: 70px 0 0 0 !important;
+        padding: 80px 0 0 !important;
         min-height: auto !important;
-        overflow: hidden;
     }
-    .hero-img {
-        position: relative;
-        width: 100%;
-        height: 180px;
+    .hero-container {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+        padding: 12px !important;
+        min-height: auto !important;
     }
-    .hero-overlay {
-        position: absolute;
+    .hero-img-wrapper {
+        height: 180px !important;
+        border-radius: 12px !important;
     }
     .hero-content {
-        position: relative;
-        padding: 16px 12px 20px;
-        z-index: 2;
+        text-align: center !important;
     }
     .hero-badge {
-        font-size: 9px;
-        padding: 3px 10px;
-        margin-bottom: 8px;
+        font-size: 9px !important;
+        padding: 4px 10px !important;
+        margin-bottom: 8px !important;
     }
     .hero-title {
-        font-size: 26px !important;
+        font-size: 24px !important;
         line-height: 1.1 !important;
         margin-bottom: 8px !important;
     }
-    .hero-title span {
-        display: inline;
-    }
     .hero-sub {
         font-size: 12px !important;
-        margin-bottom: 16px !important;
-        max-width: 100%;
+        margin-bottom: 12px !important;
+        max-width: 100% !important;
     }
-
-    /* Botoes Hero */
     .hero-actions {
         flex-direction: column !important;
         gap: 8px !important;
-        margin-bottom: 16px !important;
+        margin-bottom: 12px !important;
     }
     .hero-actions .btn {
         width: 100%;
-        padding: 10px 16px;
-        font-size: 12px;
-        justify-content: center;
-        border-radius: 10px;
+        padding: 10px !important;
+        font-size: 12px !important;
+        border-radius: 10px !important;
     }
 
-    /* Stats - compactos */
+    /* Stats grid 2x2 */
     .hero-stats {
         display: grid !important;
         grid-template-columns: repeat(2, 1fr) !important;
-        gap: 10px !important;
+        gap: 8px !important;
+        padding: 12px !important;
         margin-bottom: 0 !important;
-        justify-content: center;
     }
     .stat {
-        text-align: center;
-        padding: 8px;
-        background: rgba(255,255,255,0.05);
-        border-radius: 10px;
+        padding: 6px !important;
+        border-radius: 8px !important;
     }
     .stat strong {
-        font-size: 22px !important;
-        display: block;
+        font-size: 20px !important;
     }
     .stat span {
-        font-size: 9px;
+        font-size: 9px !important;
     }
 
-    /* Countdown - COMPACTO e VISIVEL */
+    /* Countdown Mobile - ALINHADO COM PAGINA */
     .hero-countdown {
         position: relative !important;
         z-index: 10 !important;
-        margin: 0 !important;
-        padding: 12px 10px !important;
-        border-radius: 12px 12px 0 0 !important;
-        width: 100% !important;
-        max-width: 100% !important;
         margin-top: -20px !important;
+        padding: 12px 12px !important;
+        border-radius: 12px 12px 0 0 !important;
+        width: calc(100% - 24px) !important;
+        max-width: 100% !important;
+        margin-left: 12px !important;
+        margin-right: auto !important;
+        margin-bottom: 0 !important;
     }
     .countdown-inner {
         flex-direction: column !important;
         gap: 8px !important;
+        align-items: center;
     }
     .cd-left {
         width: 100% !important;
