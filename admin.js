@@ -68,6 +68,8 @@ const safeSet = (k, v) => { try { localStorage.setItem(k, v); return true; } cat
 // ============== ESTADO ==============
 let data = loadData();
 let nextId = { eventos: 100, estabelecimentos: 100, categorias: 100, blog: 100, depoimentos: 100 };
+let _initDone = false;
+let _ghLoadPromise = null;
 
 function loadData() {
     const stored = safeGet(STORAGE_KEY);
@@ -79,16 +81,21 @@ function loadData() {
 
 // SEMPRE baixa o data.json do GitHub primeiro - é a fonte da verdade.
 // O localStorage é só um cache rápido para o admin trabalhar.
-async function loadFromGitHub(force) {
+async function loadFromGitHub() {
     try {
         const res = await fetch('data.json?t=' + Date.now(), { cache: 'no-store' });
         if (!res.ok) return false;
         const json = await res.json();
         if (!json || !json.eventos) return false;
-        data = json;
-        safeSet(STORAGE_KEY, JSON.stringify(data));
-        console.log('%c✅ data.json carregado do GitHub: ' + json.eventos.length + ' eventos', 'color:#10b981');
-        return true;
+        // Se o usuário já tem dados locais (modificou algo), não sobrescreve
+        const hasLocal = !!safeGet(STORAGE_KEY);
+        if (!hasLocal) {
+            data = json;
+            safeSet(STORAGE_KEY, JSON.stringify(data));
+            console.log('%c✅ data.json carregado do GitHub: ' + json.eventos.length + ' eventos', 'color:#10b981');
+            return true;
+        }
+        return false;
     } catch (e) {
         console.warn('Falha ao carregar data.json do GitHub:', e.message);
         return false;
@@ -334,15 +341,15 @@ function showSection(name) {
 
 // ============== INIT ==============
 async function initAdmin() {
+    if (_initDone) return;
+    _initDone = true;
     showSection('dashboard');
     bindActions();
     populateFilters();
-    // Tenta puxar dados reais do GitHub se localStorage estiver vazio
     const loaded = await loadFromGitHub();
     if (loaded) {
-        // Re-renderiza tudo com os dados novos
         showSection('dashboard');
-        toast('📥 Dados carregados do GitHub.', 3000);
+        toast('Dados carregados do GitHub.', 3000);
     }
 }
 
