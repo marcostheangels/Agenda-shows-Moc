@@ -121,14 +121,21 @@ function applyConfig() {
     if (!adminData) return;
     const cfg = adminData.config;
     if (cfg.whatsapp) {
+        const num = cfg.whatsapp.replace(/\D/g, '');
         document.querySelectorAll('a[href*="wa.me"]').forEach(a => {
-            const num = cfg.whatsapp.replace(/\D/g, '');
             a.href = `https://wa.me/55${num}`;
+        });
+        // Atualiza textos visiveis
+        document.querySelectorAll('[data-cfg="whatsapp"]').forEach(el => {
+            el.textContent = el.textContent.startsWith('📱') ? '📱 ' + cfg.whatsapp : cfg.whatsapp;
         });
     }
     if (cfg.email) {
         const m = document.querySelector('a[href^="mailto:"]');
         if (m) m.href = 'mailto:' + cfg.email;
+        document.querySelectorAll('[data-cfg="email"]').forEach(el => {
+            el.textContent = el.textContent.startsWith('✉') ? '✉ ' + cfg.email : cfg.email;
+        });
     }
     if (cfg.countdownTitulo) {
         const t = document.querySelector('.cd-title');
