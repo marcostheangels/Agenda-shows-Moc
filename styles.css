@@ -1851,15 +1851,21 @@ ul { list-style: none; }
     .logo-title { font-size: 14px; }
     .logo-sub { font-size: 12px; }
 
-    /* Hero */
-    .hero { padding: 90px 0 40px; min-height: auto; }
-    .hero-badge { font-size: 11px; padding: 6px 16px; }
-    .hero-title { font-size: 36px; line-height: 1.1; }
-    .hero-sub { font-size: 15px; max-width: 100%; }
-    .hero-actions { flex-direction: column; gap: 12px; }
-    .hero-actions .btn { width: 100%; justify-content: center; }
-    .hero-stats { flex-direction: column; gap: 20px; }
-    .stat strong { font-size: 32px; }
+    /* Hero Mobile */
+    .hero {
+        padding: 80px 0 20px;
+        min-height: auto;
+        overflow: visible;
+    }
+    .hero-content { padding-bottom: 0; }
+    .hero-badge { font-size: 10px; padding: 4px 12px; margin-bottom: 12px; }
+    .hero-title { font-size: 32px; line-height: 1.1; margin-bottom: 12px; }
+    .hero-sub { font-size: 13px; max-width: 100%; margin-bottom: 20px; }
+    .hero-actions { flex-direction: column; gap: 10px; margin-bottom: 20px; }
+    .hero-actions .btn { width: 100%; justify-content: center; padding: 12px; font-size: 13px; }
+    .hero-stats { flex-direction: row; flex-wrap: wrap; gap: 16px; justify-content: center; margin-bottom: 0; }
+    .stat strong { font-size: 28px; }
+    .stat span { font-size: 10px; }
 
     /* Search */
     .search-bar { padding: 16px 0; }
@@ -1925,28 +1931,33 @@ ul { list-style: none; }
     .footer-bottom { flex-direction: column; gap: 8px; }
     .footer-social { justify-content: center; }
 
-    /* Countdown */
-    /* Countdown Mobile */
+    /* Countdown Mobile - FORA DO HERO */
     .hero-countdown {
-        padding: 12px 8px;
-        margin-bottom: -60px;
+        position: relative !important;
+        z-index: 10;
+        margin-top: 20px;
+        margin-bottom: 0 !important;
+        padding: 12px 10px;
         border-radius: 12px;
-        margin-top: 40px;
+        width: 100%;
+        max-width: 100%;
     }
-    .cd-left { width: 100%; text-align: center; margin-bottom: 12px; }
+    .cd-left { width: 100%; text-align: center; margin-bottom: 10px; }
     .cd-tag { font-size: 9px; padding: 3px 8px; }
-    .cd-title { font-size: 16px; }
-    .cd-info { font-size: 11px; }
-    .countdown-inner { gap: 8px; justify-content: center; }
-    .cd-timer { gap: 6px; justify-content: center; }
+    .cd-title { font-size: 14px; }
+    .cd-info { font-size: 10px; }
+    .countdown-inner { gap: 6px; justify-content: center; flex-direction: column; }
+    .cd-timer { gap: 6px; justify-content: center; flex-wrap: wrap; }
     .cd-box {
         padding: 6px 8px;
         min-width: 50px;
         border-radius: 8px;
+        flex: 1;
+        max-width: 70px;
     }
     .cd-box strong { font-size: 18px; }
     .cd-box span { font-size: 8px; }
-    .cd-btn { width: 100%; font-size: 11px; padding: 8px 12px; }
+    .cd-btn { width: 100%; font-size: 11px; padding: 10px; margin-top: 10px; border-radius: 8px; }
 
     /* Modal */
     .modal { border-radius: 16px; }
