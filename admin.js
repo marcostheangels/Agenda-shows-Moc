@@ -77,41 +77,56 @@ function loadData() {
     return JSON.parse(JSON.stringify(defaultData));
 }
 
-function saveData() {
+// SEMPRE baixa o data.json do GitHub primeiro - é a fonte da verdade.
+// O localStorage é só um cache rápido para o admin trabalhar.
+async function loadFromGitHub(force) {
     try {
-        const ok = safeSet(STORAGE_KEY, JSON.stringify(data));
-        if (!ok) throw new Error('storage indisponível');
-        scheduleGitHubSync();
+        const res = await fetch('data.json?t=' + Date.now(), { cache: 'no-store' });
+        if (!res.ok) return false;
+        const json = await res.json();
+        if (!json || !json.eventos) return false;
+        data = json;
+        safeSet(STORAGE_KEY, JSON.stringify(data));
+        console.log('%c✅ data.json carregado do GitHub: ' + json.eventos.length + ' eventos', 'color:#10b981');
         return true;
     } catch (e) {
-        toast('⚠️ Não salvei neste navegador (armazenamento cheio ou bloqueado no modo anônimo). Use fotos/... e o GitHub.');
-        console.error('localStorage quota:', e);
+        console.warn('Falha ao carregar data.json do GitHub:', e.message);
         return false;
     }
 }
 
-// ============== GITHUB AUTO-COMMIT ==============
-const GH_KEY = 'agendaShowsMOC_github';
+function saveData() {
+    try {
+        const ok = safeSet(STORAGE_KEY, JSON.stringify(data));
+        if (!ok) throw new Error('storage indisponível');
+        const cfg = getGHConfig();
+        if (cfg.autoPublish && cfg.token) {
+            updateGHStatus('Salvando... próximo: publicar no GitHub automaticamente.', 'warn');
+            scheduleGitHubSync();
+        } else {
+            updateGHStatus('Salvo neste navegador. Ative "Auto-publicar" para atualizar o site.', 'warn');
+        }
+        return true;
+    } catch (e) {
+        toast('Erro ao salvar: ' + e.message, 4000);
+        return false;
+    }
+}
+
+
+
+// ============== GITHUB AUTO-PUBLISH ==============
+const GH_KEY = 'agendaShowsMOC_gh';
 const getGHConfig = () => {
-    try { return Object.assign({ owner: 'marcostheangels', repo: 'Agenda-shows-Moc', branch: 'main', filePath: 'data.json', token: '', enabled: false }, JSON.parse(safeGet(GH_KEY) || '{}')); }
-    catch { return { owner: 'marcostheangels', repo: 'Agenda-shows-Moc', branch: 'main', filePath: 'data.json', token: '', enabled: false }; }
+    try { return Object.assign({ owner: 'marcostheangels', repo: 'Agenda-shows-Moc', branch: 'main', token: '', autoPublish: false }, JSON.parse(safeGet(GH_KEY) || '{}')); }
+    catch { return { owner: 'marcostheangels', repo: 'Agenda-shows-Moc', branch: 'main', token: '', autoPublish: false }; }
 };
 const setGHConfig = cfg => safeSet(GH_KEY, JSON.stringify(cfg));
 
-let ghTimer = null;
 let ghSyncing = false;
-function scheduleGitHubSync() {
-    const cfg = getGHConfig();
-    if (!cfg.enabled || !cfg.token) {
-        updateGHStatus('💾 Salvo neste navegador. Para aparecer no site para todos, configure o token do GitHub em Configurações.');
-        return;
-    }
-    clearTimeout(ghTimer);
-    ghTimer = setTimeout(() => pushToGitHub('💾 Atualização via painel admin'), 2000);
-}
+let ghTimer = null;
 
 const b64encode = str => {
-    // Versão fatiada: não congela o navegador com JSON grande (foto base64)
     const bytes = new TextEncoder().encode(str);
     const CH = 32768;
     let bin = '';
@@ -121,65 +136,78 @@ const b64encode = str => {
     return btoa(bin);
 };
 
+function updateGHStatus(msg, type) {
+    const el = document.getElementById('ghStatus');
+    if (!el) return;
+    el.textContent = msg;
+    el.style.color = type === 'ok' ? '#10b981' : type === 'err' ? '#ef4444' : type === 'warn' ? '#f59e0b' : '';
+}
+
 async function pushToGitHub(message) {
     const cfg = getGHConfig();
-    if (!cfg.token) { toast('⚠️ GitHub: cole o token em Configurações para publicar', 4000); updateGHStatus('⚠️ Sem token — dados salvos só neste navegador.'); return false; }
-    if (ghSyncing) { toast('⏳ Já estou enviando, aguarde...', 2500); return false; }
-    // Trava por foto pesada: API do GitHub estoura perto de 1MB
-    const jsonStr = JSON.stringify(data);
-    const jsonKB = Math.round(jsonStr.length / 1024);
-    if (jsonStr.length > 900 * 1024) {
-        const msg = `❌ Grande demais p/ GitHub (~${jsonKB} KB). Remova fotos e use URL externa nas imagens, depois publique de novo. (Salvo localmente)`;
-        updateGHStatus(msg);
-        toast(msg, 7000);
+    if (!cfg.token) {
+        updateGHStatus('Sem token GitHub configurado. Dados salvos apenas neste navegador.', 'warn');
         return false;
     }
+    if (ghSyncing) return false;
+
+    const jsonStr = JSON.stringify(data, null, 2);
+    const jsonKB = Math.round(jsonStr.length / 1024);
+    if (jsonStr.length > 900 * 1024) {
+        updateGHStatus(`Arquivo grande demais (~${jsonKB} KB). Remova fotos base64 e use URL externa.`, 'err');
+        toast('Arquivo grande demais para publicar. Use URL externa nas fotos.', 5000);
+        return false;
+    }
+
     ghSyncing = true;
-    updateGHStatus(`⏳ Enviando para o GitHub (~${jsonKB} KB)...`);
-    toast(`⏳ Enviando ~${jsonKB} KB para o GitHub...`, 3000);
+    updateGHStatus(`Enviando para GitHub (~${jsonKB} KB)...`);
+    toast(`Enviando ~${jsonKB} KB para o GitHub...`, 3000);
+
     const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 30000);
+    const timer = setTimeout(() => ctrl.abort(), 60000);
+
     try {
-        const apiBase = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.filePath}`;
+        const apiBase = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/data.json`;
         let sha = null;
-        let getRes;
-        try {
-            getRes = await fetch(`${apiBase}?ref=${cfg.branch}`, { headers: { Authorization: `Bearer ${cfg.token}`, Accept: 'application/vnd.github+json' }, signal: ctrl.signal });
-        } catch (e) {
-            if (e.name === 'AbortError') throw new Error('tempo esgotado (30s) — internet lenta ou arquivo grande demais');
-            throw new Error('sem conexão com api.github.com — verifique internet, VPN ou bloqueador de anúncios');
-        }
-        if (getRes.status === 401) throw new Error('token inválido ou expirado — gere um novo e marque a permissão "repo"');
-        if (getRes.status === 404) throw new Error('repositório/branch não encontrado — confira dono, nome e branch');
-        if (getRes.status === 413 || getRes.status === 422) throw new Error('arquivo grande demais p/ API do GitHub — use URL externa nas fotos');
-        if (getRes.ok) {
+
+        const getRes = await fetch(`${apiBase}?ref=${cfg.branch}`, {
+            headers: { Authorization: `Bearer ${cfg.token}`, Accept: 'application/vnd.github+json' },
+            signal: ctrl.signal
+        });
+
+        if (getRes.status === 401) { throw new Error('Token inválido ou expirado.'); }
+        if (getRes.status === 404) { /* arquivo novo, sem sha */ }
+        else if (getRes.ok) {
             const j = await getRes.json();
             sha = j.sha;
         }
-        const content = b64encode(JSON.stringify(data, null, 2));
-        const body = { message: message || 'Atualização via painel admin', content, branch: cfg.branch };
+
+        const body = {
+            message: message || 'Atualizacao via painel admin',
+            content: b64encode(jsonStr),
+            branch: cfg.branch
+        };
         if (sha) body.sha = sha;
-        let putRes;
-        try {
-            putRes = await fetch(apiBase, { method: 'PUT', headers: { Authorization: `Bearer ${cfg.token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: ctrl.signal });
-        } catch (e) {
-            if (e.name === 'AbortError') throw new Error('tempo esgotado no envio (30s) — foto pesada ou internet lenta. Use URL externa.');
-            throw new Error('sem conexão com api.github.com — verifique internet, VPN ou bloqueador de anúncios');
-        }
+
+        const putRes = await fetch(apiBase, {
+            method: 'PUT',
+            headers: { Authorization: `Bearer ${cfg.token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+            signal: ctrl.signal
+        });
+
         if (!putRes.ok) {
             const err = await putRes.json().catch(() => ({}));
-            const raw = (err.message || ('HTTP ' + putRes.status));
-            if (/too large|too_big|large/i.test(raw)) throw new Error('arquivo grande demais p/ GitHub — troque fotos por URL externa');
-            throw new Error(raw);
+            throw new Error(err.message || `HTTP ${putRes.status}`);
         }
-        const okMsg = '🚀 Publicado no GitHub! Site atualiza em ~1 min.';
-        updateGHStatus('✅ ' + okMsg + ' Último envio: ' + new Date().toLocaleString('pt-BR'));
-        toast(okMsg, 4000);
+
+        updateGHStatus(`Publicado! Site atualiza em ~1 min. (${jsonKB} KB)`, 'ok');
+        toast('Publicado no GitHub! Site atualiza em ~1 min.', 4000);
         return true;
     } catch (err) {
-        console.error('GitHub sync:', err);
-        updateGHStatus('❌ Não publicado no GitHub: ' + err.message + ' (dados continuam salvos neste navegador)');
-        toast('🌐 GitHub falhou, mas está salvo localmente: ' + err.message, 6000);
+        const msg = err.name === 'AbortError' ? 'Tempo esgotado (60s) - internet lenta.' : err.message;
+        updateGHStatus('Erro ao publicar: ' + msg, 'err');
+        toast('Erro: ' + msg, 6000);
         return false;
     } finally {
         clearTimeout(timer);
@@ -187,47 +215,18 @@ async function pushToGitHub(message) {
     }
 }
 
-function updateGHStatus(msg) {
-    const el = document.getElementById('ghStatus');
-    if (el) el.textContent = msg;
+function scheduleGitHubSync() {
+    const cfg = getGHConfig();
+    if (!cfg.autoPublish || !cfg.token) return;
+    clearTimeout(ghTimer);
+    ghTimer = setTimeout(() => pushToGitHub('Atualizacao via painel admin'), 2000);
 }
 
-// ============== FOTOS/ NO GITHUB ==============
-// Sobe a imagem para a pasta fotos/ do repo e retorna o caminho p/ usar no evento
-async function uploadPhotoToGitHub(dataUrl, prefix = 'foto') {
-    const cfg = getGHConfig();
-    if (!cfg.token) {
-        toast('⚠️ Configure o token do GitHub em Configurações para usar a pasta fotos/', 5000);
-        updateGHStatus('⚠️ Sem token — não dá p/ subir foto p/ fotos/.');
-        return null;
-    }
-    const m = String(dataUrl || '').match(/^data:image\/(\w+);base64,(.+)$/);
-    if (!m) { toast('⚠️ Foto inválida. Selecione a foto de novo ou cole URL.', 4000); return null; }
-    const ext = (m[1] === 'jpeg') ? 'jpg' : m[1];
-    const nome = `${prefix}-${Date.now()}.${ext}`;
-    const path = `fotos/${nome}`;
-    const apiUrl = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}`;
-    toast(`⏳ Subindo ${nome} para fotos/...`, 3000);
-    updateGHStatus(`⏳ Subindo ${path}...`);
-    try {
-        const putRes = await fetch(apiUrl, {
-            method: 'PUT',
-            headers: { Authorization: `Bearer ${cfg.token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: `📸 Nova foto ${nome} via painel admin`, content: m[2], branch: cfg.branch })
-        });
-        if (!putRes.ok) {
-            const err = await putRes.json().catch(() => ({}));
-            throw new Error(err.message || ('HTTP ' + putRes.status));
-        }
-        updateGHStatus(`✅ Foto em fotos/: ${path}`);
-        toast(`✅ Foto salva em ${path}!`, 4000);
-        return path;
-    } catch (err) {
-        console.error('upload foto:', err);
-        updateGHStatus('❌ Falha ao subir foto: ' + err.message);
-        toast('❌ Não subi p/ fotos/: ' + err.message, 6000);
-        return null;
-    }
+// ============== FOTOS NO REPO ==============
+// As fotos devem ser enviadas pelo próprio GitHub (Add file → Upload files, pasta fotos/).
+// O painel guarda apenas o caminho (fotos/foto-123.jpg) no data.json.
+function getFotoPathSuggestion(prefix = 'foto') {
+    return `fotos/${prefix}-${Date.now()}.jpg`;
 }
 
 const isImageSrc = src => src && (src.startsWith('data:image') || src.startsWith('http') || src.startsWith('blob:') || src.startsWith('fotos/') || src.startsWith('./fotos/') || src.startsWith('/fotos/') || /\.(jpe?g|png|webp|gif|avif|svg)(\?.*)?$/i.test(src));
@@ -285,7 +284,7 @@ try { _authed = !!sessionStorage.getItem(AUTH_KEY); } catch {}
 if (_authed) {
     $('#loginScreen').style.display = 'none';
     $('#adminPanel').style.display = 'grid';
-    setTimeout(initAdmin, 50);
+    initAdmin();
 }
 
 $('#logoutBtn').addEventListener('click', e => {
@@ -334,10 +333,17 @@ function showSection(name) {
 }
 
 // ============== INIT ==============
-function initAdmin() {
+async function initAdmin() {
     showSection('dashboard');
     bindActions();
     populateFilters();
+    // Tenta puxar dados reais do GitHub se localStorage estiver vazio
+    const loaded = await loadFromGitHub();
+    if (loaded) {
+        // Re-renderiza tudo com os dados novos
+        showSection('dashboard');
+        toast('📥 Dados carregados do GitHub.', 3000);
+    }
 }
 
 // ============== DASHBOARD ==============
@@ -414,7 +420,7 @@ function eventForm(ev = {}) {
     const imgVal = ev.img || '';
     const urlVal = imgVal && !isImageSrc(imgVal) ? imgVal : '';
     return `
-        <form id="formEvento" method="post" action="?" onsubmit="return false" novalidate>
+        <form id="formEvento" onsubmit="return false" novalidate>
             <input type="hidden" name="id" value="${ev.id || ''}">
             <div class="form-group">
                 <label>Título do evento *</label>
@@ -604,13 +610,13 @@ const bindImageUploader = () => {
                         gal.push(compressed);
                     }
                     if (compressed.length > 450 * 1024) {
-                        toast(`⚠️ "${file.name}" ficou ~${kb} KB — use "☁️ Subir p/ pasta fotos".`, 5000);
+                        toast(`⚠️ "${file.name}" ficou ~${kb} KB. Funciona, mas use URL externa para melhor performance.`, 5000);
                     }
                 }
                 if (allowMulti) setGal(gal);
                 else renderGal();
                 const total = (allowMulti ? getGal().length : 0) + 1;
-                toast(`✅ ${allowMulti ? total + ' foto(s) prontas!' : 'Foto pronta!'} Clique em "☁️ Subir p/ pasta fotos" e depois Salvar.`, 4000);
+                toast(`✅ ${allowMulti ? total + ' foto(s) prontas!' : 'Foto pronta!'}`, 4000);
             } catch (err) {
                 console.error('compress:', err);
                 toast('❌ Travou ao processar. Tente JPG menor ou cole fotos/...', 5000);
@@ -638,50 +644,26 @@ const bindImageUploader = () => {
             });
         }
 
-        // Botão "Subir p/ fotos/" — joga a foto na pasta fotos/ do GitHub e preenche o evento
+        // Botão "Sugerir caminho fotos/" — apenas preenche o campo com o caminho padrão.
+        // A foto real precisa ser enviada pelo GitHub (drag & drop) em um commit separado.
         const actions = up.querySelector('.up-actions');
-        if (actions && !up.querySelector('.up-github')) {
-            const ghBtn = document.createElement('button');
-            ghBtn.type = 'button';
-            ghBtn.className = 'btn-secondary up-github';
-            ghBtn.textContent = '☁️ Subir p/ pasta fotos';
-            ghBtn.title = 'Envia a foto para fotos/ no GitHub e preenche o campo do evento';
-            actions.appendChild(ghBtn);
-            ghBtn.addEventListener('click', async () => {
-                const payload = dataInput && dataInput.value.trim();
-                const gal = getGal();
-                const galBase64 = gal.filter(g => String(g).startsWith('data:image'));
-                if (!payload && !galBase64.length) {
-                    if ((urlInput && urlInput.value.trim()) || gal.length) { toast('ℹ️ Isso já é fotos/... — é só salvar.', 3500); return; }
-                    toast('⚠️ Clique em "📁 Escolher foto(s)" primeiro.', 3500); return;
+        if (actions && !up.querySelector('.up-foto-path')) {
+            const pathBtn = document.createElement('button');
+            pathBtn.type = 'button';
+            pathBtn.className = 'btn-secondary up-foto-path';
+            pathBtn.textContent = '📁 Usar caminho fotos/...';
+            pathBtn.title = 'Gera o caminho fotos/foto-123.jpg para você subir a foto direto no GitHub depois';
+            actions.appendChild(pathBtn);
+            pathBtn.addEventListener('click', () => {
+                const urlInput2 = up.querySelector('.up-url');
+                const dataInput2 = up.querySelector('.up-data');
+                if (dataInput2 && dataInput2.value.trim()) {
+                    toast('⚠️ Tire o print/upload da foto e cole em "URL" o caminho fotos/...', 5000);
+                    return;
                 }
-                ghBtn.disabled = true;
-                ghBtn.textContent = '⏳ Subindo...';
-                try {
-                    if (payload && payload.startsWith('data:image')) {
-                        const path = await uploadPhotoToGitHub(payload, 'evento');
-                        if (path) {
-                            if (dataInput) dataInput.value = '';
-                            if (urlInput) urlInput.value = path;
-                            if (input) input.value = '';
-                            setPreview(path);
-                        }
-                    }
-                    if (galBase64.length) {
-                        const novo = [];
-                        for (const g of gal) {
-                            if (String(g).startsWith('data:image')) {
-                                const p = await uploadPhotoToGitHub(g, 'evento-extra');
-                                novo.push(p || g);
-                            } else novo.push(g);
-                        }
-                        setGal(novo);
-                    }
-                    toast('✅ Fotos direcionadas p/ fotos/. Agora clique em Salvar.', 5000);
-                } finally {
-                    ghBtn.disabled = false;
-                    ghBtn.textContent = '☁️ Subir p/ pasta fotos';
-                }
+                const sugestao = getFotoPathSuggestion('evento');
+                if (urlInput2) { urlInput2.value = sugestao; urlInput2.dispatchEvent(new Event('input')); }
+                toast(`📁 Caminho sugerido: ${sugestao}. Suba a foto no GitHub depois.`, 5000);
             });
         }
     });
@@ -731,7 +713,7 @@ function handleEventoSubmit(form) {
         obj.img = resolveImg(form, obj.img || 'linear-gradient(135deg,#ff3d6e,#ff8a3d)');
         if (obj.img && obj.img.startsWith('data:image') && obj.img.length > 300 * 1024) {
             const kb = Math.round(obj.img.length / 1024);
-            toast(`⚠️ Foto com ~${kb} KB trava o salvamento. Clique em "☁️ Subir p/ pasta fotos" primeiro, depois Salvar.`, 6000);
+            toast(`⚠️ Foto com ~${kb} KB. Funciona, mas use URL externa para melhor performance.`, 6000);
             console.warn('save bloqueado: base64 pesado', kb + 'KB');
             if (btn) { btn.disabled = false; btn.textContent = '💾 Salvar Evento'; }
             return;
@@ -747,7 +729,7 @@ function handleEventoSubmit(form) {
         obj.galeria = obj.galeria.filter(g => g && isImageSrc(g)).slice(0, 6);
         const pesada = obj.galeria.find(g => String(g).startsWith('data:image') && String(g).length > 300 * 1024);
         if (pesada) {
-            toast(`⚠️ Uma extra tem ~${Math.round(String(pesada).length / 1024)} KB e trava. Suba p/ fotos/ primeiro.`, 6000);
+            toast(`⚠️ Uma extra tem ~${Math.round(String(pesada).length / 1024)} KB. Funciona, mas prefira URL externa.`, 6000);
             if (btn) { btn.disabled = false; btn.textContent = '💾 Salvar Evento'; }
             return;
         }
@@ -765,10 +747,8 @@ function handleEventoSubmit(form) {
         }
         if (saveData()) {
             const kb = Math.round((safeGet(STORAGE_KEY) || '').length / 1024);
-            const gh = getGHConfig();
-            const extra = (gh.enabled && gh.token) ? ' 🚀 Publicando no GitHub...' : ' 💾 Só neste navegador (ative o GitHub em Configurações p/ publicar).';
             const nFotos = 1 + (obj.galeria || []).length;
-            toast(`✅ Evento ${acao}! ${nFotos} foto(s). Total: ${data.eventos.length} eventos (${kb} KB).${extra}`, 5000);
+            toast(`✅ Evento ${acao}! ${nFotos} foto(s). Total: ${data.eventos.length} eventos (${kb} KB). 💾 Salvo localmente.`, 5000);
             console.log(`✅ Evento ${acao}:`, obj);
             closeModal();
             renderEventos();
@@ -825,7 +805,7 @@ function estForm(e = {}) {
     const imgVal = e.img || '';
     const urlVal = imgVal && !isImageSrc(imgVal) ? imgVal : '';
     return `
-        <form id="formEst" method="post" action="#" onsubmit="handleGenericSubmit(this); return false;" novalidate>
+        <form id="formEst" onsubmit="handleGenericSubmit(this); return false;" novalidate>
             <input type="hidden" name="id" value="${e.id || ''}">
             <div class="form-group"><label>Nome *</label><input type="text" name="nome" required value="${(e.nome || '').replace(/"/g,'&quot;')}"></div>
             <div class="form-group"><label>Categoria *</label><input type="text" name="cat" required value="${(e.cat || '').replace(/"/g,'&quot;')}"></div>
@@ -894,7 +874,7 @@ window.delCat = id => {
 
 function catForm(c = {}) {
     return `
-        <form id="formCat" method="post" action="#" onsubmit="handleGenericSubmit(this); return false;" novalidate>
+        <form id="formCat" onsubmit="handleGenericSubmit(this); return false;" novalidate>
             <input type="hidden" name="id" value="${c.id || ''}">
             <div class="form-row">
                 <div class="form-group"><label>Nome *</label><input type="text" name="nome" required value="${c.nome || ''}"></div>
@@ -955,7 +935,7 @@ function blogForm(p = {}) {
     const urlVal = imgVal && !isImageSrc(imgVal) ? '' : imgVal;
     const isExt = imgVal && isImageSrc(imgVal);
     return `
-        <form id="formBlog" method="post" action="#" onsubmit="handleGenericSubmit(this); return false;" novalidate>
+        <form id="formBlog" onsubmit="handleGenericSubmit(this); return false;" novalidate>
             <input type="hidden" name="id" value="${p.id || ''}">
             <div class="form-group"><label>Título *</label><input type="text" name="titulo" required value="${(p.titulo || '').replace(/"/g,'&quot;')}"></div>
             <div class="form-row">
@@ -1022,7 +1002,7 @@ window.delDep = id => {
 
 function depForm(d = {}) {
     return `
-        <form id="formDep" method="post" action="#" onsubmit="handleGenericSubmit(this); return false;" novalidate>
+        <form id="formDep" onsubmit="handleGenericSubmit(this); return false;" novalidate>
             <input type="hidden" name="id" value="${d.id || ''}">
             <div class="form-row">
                 <div class="form-group"><label>Nome *</label><input type="text" name="nome" required value="${d.nome || ''}"></div>
@@ -1049,7 +1029,6 @@ function renderConfig() {
     Object.keys(data.config).forEach(k => {
         if (form[k]) form[k].value = data.config[k] || '';
     });
-    loadGHForm();
 }
 
 $('#configForm').addEventListener('submit', e => {
@@ -1194,40 +1173,68 @@ $('#btnReset').addEventListener('click', () => {
     }
 });
 
-function loadGHForm() {
-    const cfg = getGHConfig();
-    const o = document.getElementById('ghOwner'); if (o) o.value = cfg.owner || 'marcostheangels';
-    const r = document.getElementById('ghRepo'); if (r) r.value = cfg.repo || 'Agenda-shows-Moc';
-    const b = document.getElementById('ghBranch'); if (b) b.value = cfg.branch || 'main';
-    const t = document.getElementById('ghToken'); if (t) t.value = cfg.token || '';
-    const e = document.getElementById('ghEnabled'); if (e) e.checked = !!cfg.enabled;
+function updateGHStatus(msg) {
+    const el = document.getElementById('ghStatus');
+    if (el) el.textContent = msg;
 }
 
 function bindGitHubUI() {
-    loadGHForm();
-    const btnSave = document.getElementById('btnGHSave');
-    const btnNow = document.getElementById('btnGHNow');
-    if (btnSave && !btnSave.dataset.bound) {
-        btnSave.dataset.bound = '1';
-        btnSave.addEventListener('click', () => {
-            const cfg = {
-                owner: document.getElementById('ghOwner').value.trim() || 'marcostheangels',
-                repo: document.getElementById('ghRepo').value.trim() || 'Agenda-shows-Moc',
-                branch: document.getElementById('ghBranch').value.trim() || 'main',
-                filePath: 'data.json',
-                token: document.getElementById('ghToken').value.trim(),
-                enabled: document.getElementById('ghEnabled').checked
-            };
-            if (cfg.enabled && !cfg.token) { toast('⚠️ Cole o token para ativar'); return; }
-            setGHConfig(cfg);
-            updateGHStatus(cfg.enabled ? '✅ Auto-commit ativado. Próximo Salvar publica sozinho.' : '⏸️ Auto-commit desativado (só local).');
-            toast('✅ Config GitHub salva');
-        });
-    }
-    if (btnNow && !btnNow.dataset.bound) {
-        btnNow.dataset.bound = '1';
-        btnNow.addEventListener('click', () => pushToGitHub('🚀 Publicação manual via painel admin'));
-    }
+    const o = document.getElementById('ghOwner');
+    const r = document.getElementById('ghRepo');
+    const b = document.getElementById('ghBranch');
+    const t = document.getElementById('ghToken');
+    const ap = document.getElementById('ghAutoPublish');
+    const saveBtn = document.getElementById('btnGHSave');
+    const testBtn = document.getElementById('btnGHTest');
+    const pubBtn = document.getElementById('btnGHPubNow');
+
+    const cfg = getGHConfig();
+    if (o) o.value = cfg.owner;
+    if (r) r.value = cfg.repo;
+    if (b) b.value = cfg.branch;
+    if (t) t.value = cfg.token;
+    if (ap) ap.checked = !!cfg.autoPublish;
+
+    if (saveBtn) saveBtn.addEventListener('click', () => {
+        const newCfg = {
+            owner: (o && o.value.trim()) || 'marcostheangels',
+            repo: (r && r.value.trim()) || 'Agenda-shows-Moc',
+            branch: (b && b.value.trim()) || 'main',
+            token: t ? t.value.trim() : '',
+            autoPublish: !!(ap && ap.checked)
+        };
+        setGHConfig(newCfg);
+        toast('Configurações GitHub salvas no navegador.', 2500);
+        updateGHStatus(newCfg.token ? (newCfg.autoPublish ? 'Pronto! Auto-publicar ativado.' : 'Token salvo. Marque "Auto-publicar" para salvar e publicar em 1 clique.') : 'Token vazio. Apenas local.', newCfg.token ? 'ok' : 'warn');
+    });
+
+    if (testBtn) testBtn.addEventListener('click', async () => {
+        if (!t || !t.value.trim()) { toast('Cole o token primeiro.', 3000); return; }
+        testBtn.disabled = true;
+        testBtn.textContent = '⏳ Testando...';
+        try {
+            const res = await fetch('https://api.github.com/user', {
+                headers: { Authorization: 'Bearer ' + t.value.trim(), Accept: 'application/vnd.github+json' }
+            });
+            if (res.ok) {
+                const user = await res.json();
+                toast('Token OK! Logado como @' + user.login, 4000);
+                updateGHStatus('Token válido para @' + user.login, 'ok');
+            } else if (res.status === 401) {
+                toast('Token inválido! Gere um novo em github.com/settings/tokens', 5000);
+                updateGHStatus('Token inválido (401).', 'err');
+            } else {
+                toast('Erro ' + res.status, 4000);
+            }
+        } catch (e) {
+            toast('Sem conexão: ' + e.message, 4000);
+        } finally {
+            testBtn.disabled = false;
+            testBtn.textContent = '🔍 Testar Token';
+        }
+    });
+
+    if (pubBtn) pubBtn.addEventListener('click', () => pushToGitHub('Publicação manual via painel admin'));
 }
 
 // ============== BIND ACTIONS ==============
@@ -1235,6 +1242,6 @@ function bindActions() {
     bindGitHubUI();
 }
 
-console.log('%c🔐 Painel Admin v5', 'color:#ff3d6e;font-size:20px;font-weight:bold;');
+console.log('%c🔐 Painel Admin v8', 'color:#ff3d6e;font-size:20px;font-weight:bold;');
 window.__adminOK = true;
-try { const _v = document.querySelector('.side-version'); if (_v) _v.textContent = 'Painel v6 · JS OK 🟢'; } catch (e) {}
+try { const _v = document.querySelector('.side-version'); if (_v) _v.textContent = 'Painel v8 · JS OK 🟢'; } catch (e) {}
