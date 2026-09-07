@@ -202,14 +202,14 @@ function renderCategoriasFromAdmin() {
         const firstEvent = adminData.eventos.find(e => e.cat === c.nome && e.img && isImgSrc(e.img));
         const firstEst = !firstEvent ? adminData.estabelecimentos.find(e => e.cat === c.nome && e.img && isImgSrc(e.img)) : null;
         const catClass = 'cat-' + (c.slug || c.nome.toLowerCase().replace(/\s+/g, '-'));
-        const bg = firstEvent
+        const catBg = firstEvent
             ? `background:linear-gradient(135deg,${c.cor}88,${c.cor}44),url("${firstEvent.img}");background-size:cover;background-position:center;`
             : firstEst
             ? `background:linear-gradient(135deg,${c.cor}88,${c.cor}44),url("${firstEst.img}");background-size:cover;background-position:center;`
             : '';
         return `
         <a href="#" class="cat-card ${catClass}">
-            <div class="cat-img" style="${bg}"></div>
+            <div class="cat-img" style="${catBg}"></div>
             <div class="cat-body">
                 <div class="cat-badge">${c.icone} ${c.nome}</div>
                 <h3>${c.nome}</h3>
