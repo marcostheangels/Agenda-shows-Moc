@@ -203,9 +203,9 @@ function renderCategoriasFromAdmin() {
         const firstEst = !firstEvent ? adminData.estabelecimentos.find(e => e.cat === c.nome && e.img && isImgSrc(e.img)) : null;
         const catClass = 'cat-' + (c.slug || c.nome.toLowerCase().replace(/\s+/g, '-'));
         const catBg = firstEvent
-            ? `background:linear-gradient(135deg,${c.cor}88,${c.cor}44),url("${firstEvent.img}");background-size:cover;background-position:center;`
+            ? `background-image:url("${firstEvent.img}");background-size:cover;background-position:center;`
             : firstEst
-            ? `background:linear-gradient(135deg,${c.cor}88,${c.cor}44),url("${firstEst.img}");background-size:cover;background-position:center;`
+            ? `background-image:url("${firstEst.img}");background-size:cover;background-position:center;`
             : '';
         return `
         <a href="#" class="cat-card ${catClass}">
