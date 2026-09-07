@@ -79,37 +79,37 @@ const bgStyle = img => {
 };
 
 function loadLocal() {
-    let stored = null;
-    try { stored = localStorage.getItem(STORAGE_KEY); } catch(e) { return null; }
-    if (stored) {
-        try { return JSON.parse(stored); } catch(e) {}
-    }
+    // Desabilitado - sempre buscamos do GitHub (fonte da verdade)
     return null;
 }
 
-let adminData = loadLocal();
-let useAdmin = adminData !== null;
+let adminData = null;
+let useAdmin = false;
 
 async function loadRemote() {
     try {
-        const res = await fetch('data.json?t=' + Date.now(), { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
-        if (!res.ok) return false;
-        const json = await res.json();
-        if (!json || !json.eventos) return false;
-        adminData = json;
-        useAdmin = true;
-        applyConfig();
-        renderEventosFromAdmin();
-        renderEstabelecimentosFromAdmin();
-        renderCategoriasFromAdmin();
-        renderBlogFromAdmin();
-        renderDepoimentosFromAdmin();
-        renderCalendar();
-        updateCountdown();
-        const total = json.eventos.length;
-        const comFoto = json.eventos.filter(e => e.img && (e.img.startsWith('fotos/') || e.img.startsWith('http') || e.img.startsWith('data:image'))).length;
-        console.log('%c✅ data.json carregado: ' + total + ' eventos', 'color:#10b981;font-weight:bold');
-        return true;
+        // Tenta múltiplas vezes para evitar cache
+        for (let attempt = 0; attempt < 2; attempt++) {
+            const res = await fetch('data.json?t=' + Date.now() + Math.random(), { cache: 'no-store', headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' } });
+            if (!res.ok) { if (attempt === 0) continue; return false; }
+            const json = await res.json();
+            if (!json || !json.eventos) return false;
+            adminData = json;
+            useAdmin = true;
+            try { localStorage.setItem('agendaShowsMOC_data', JSON.stringify(json)); } catch(e) {}
+            applyConfig();
+            renderEventosFromAdmin();
+            renderEstabelecimentosFromAdmin();
+            renderCategoriasFromAdmin();
+            renderBlogFromAdmin();
+            renderDepoimentosFromAdmin();
+            renderCalendar();
+            updateCountdown();
+            const total = json.eventos.length;
+            console.log('%c✅ data.json carregado: ' + total + ' eventos', 'color:#10b981;font-weight:bold');
+            return true;
+        }
+        return false;
     } catch (e) {
         console.warn('❌ Falha ao carregar data.json remoto:', e.message);
         return false;
@@ -791,16 +791,9 @@ $('.news-form').addEventListener('submit', e => {
 });
 
 // ============== APLICAR DADOS DO ADMIN ==============
-if (useAdmin) {
-    applyConfig();
-    renderEventosFromAdmin();
-    renderEstabelecimentosFromAdmin();
-    renderCategoriasFromAdmin();
-    renderBlogFromAdmin();
-    renderDepoimentosFromAdmin();
-}
-
-// Tenta carregar data.json publicado no GitHub (prioridade para visitantes)
+// SEMPRE busca do GitHub (fonte da verdade) - ignora localStorage
+adminData = null;
+useAdmin = false;
 loadRemote();
 
 console.log('%c🎶 Agenda Shows MOC', 'color:#ff3d6e;font-size:24px;font-weight:bold;');
