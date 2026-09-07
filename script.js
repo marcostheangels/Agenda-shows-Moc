@@ -92,7 +92,7 @@ let useAdmin = adminData !== null;
 
 async function loadRemote() {
     try {
-        const res = await fetch('data.json?v=' + Date.now(), { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
+        const res = await fetch('data.json?t=' + Date.now(), { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
         if (!res.ok) return false;
         const json = await res.json();
         if (!json || !json.eventos) return false;
@@ -120,21 +120,23 @@ async function loadRemote() {
 function applyConfig() {
     if (!adminData) return;
     const cfg = adminData.config;
+
     if (cfg.whatsapp) {
         const num = cfg.whatsapp.replace(/\D/g, '');
         document.querySelectorAll('a[href*="wa.me"]').forEach(a => {
             a.href = `https://wa.me/55${num}`;
         });
-        // Atualiza textos visiveis
         document.querySelectorAll('[data-cfg="whatsapp"]').forEach(el => {
-            el.textContent = el.textContent.startsWith('📱') ? '📱 ' + cfg.whatsapp : cfg.whatsapp;
+            const hasEmoji = el.textContent.includes('📱');
+            el.textContent = hasEmoji ? '📱 ' + cfg.whatsapp : cfg.whatsapp;
         });
     }
     if (cfg.email) {
         const m = document.querySelector('a[href^="mailto:"]');
         if (m) m.href = 'mailto:' + cfg.email;
         document.querySelectorAll('[data-cfg="email"]').forEach(el => {
-            el.textContent = el.textContent.startsWith('✉') ? '✉ ' + cfg.email : cfg.email;
+            const hasEmoji = el.textContent.includes('✉');
+            el.textContent = hasEmoji ? '✉ ' + cfg.email : cfg.email;
         });
     }
     if (cfg.countdownTitulo) {
