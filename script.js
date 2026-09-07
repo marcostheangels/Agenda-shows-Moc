@@ -56,9 +56,8 @@ const isImgSrc = s => s && (s.startsWith('data:image') || s.startsWith('http') |
 const bgStyle = img => {
     if (!img) return 'background:linear-gradient(135deg,#ff3d6e,#ff8a3d)';
     if (isImgSrc(img)) {
-        // Bare filename sem pasta: adiciona fotos/ (o navegador interpreta como caminho relativo)
         const src = (img.includes('/') || img.startsWith('data:') || img.startsWith('http') || img.startsWith('blob:')) ? img : 'fotos/' + img;
-        return `background-image:url("${src}");background-size:cover;background-position:center`;
+        return `background:linear-gradient(135deg,#ff3d6e55,#ff8a3d55),url("${src}");background-size:cover;background-position:center`;
     }
     return `background:${img}`;
 };
