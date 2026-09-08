@@ -516,14 +516,20 @@ function handleEventClick(e) {
     // URL única no histórico (sem recarregar a página)
     try { history.replaceState(null, '', eventUrl); } catch (err) {}
 
-    modal.classList.add('open');
+    openDialog(modal, openBtn);
 }
 
 // ============== MENU MOBILE ==============
 const menuToggle = $('#menuToggle');
 const nav = $('#nav');
-menuToggle.addEventListener('click', () => nav.classList.toggle('open'));
-$$('.nav a').forEach(link => link.addEventListener('click', () => nav.classList.remove('open')));
+const setMenuAria = () => { if (menuToggle) menuToggle.setAttribute('aria-expanded', String(nav.classList.contains('open'))); };
+if (menuToggle) menuToggle.addEventListener('click', () => { nav.classList.toggle('open'); setMenuAria(); });
+$$('.nav a').forEach(link => link.addEventListener('click', () => { nav.classList.remove('open'); setMenuAria(); }));
+document.addEventListener('click', e => {
+    if (nav.classList.contains('open') && !e.target.closest('.nav') && !e.target.closest('.menu-toggle')) {
+        nav.classList.remove('open'); setMenuAria();
+    }
+});
 
 // ============== HEADER SCROLL ==============
 const header = $('.header');
@@ -617,6 +623,32 @@ const renderFavPanel = () => {
     }));
 };
 
+// ============== ACESSIBILIDADE / DIÁLOGOS ==============
+const FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+let currentDialog = null;
+
+const focusables = root => Array.from((root || document).querySelectorAll(FOCUSABLE))
+    .filter(el => el.offsetParent !== null || el === document.activeElement);
+
+function openDialog(box, trigger) {
+    if (!box) return;
+    currentDialog = box;
+    box._trigger = trigger || document.activeElement;
+    box.classList.add('open');
+    const fs = focusables(box);
+    const toFocus = fs[0] || box;
+    setTimeout(() => { try { toFocus.focus({ preventScroll: true }); } catch (e) { toFocus.focus && toFocus.focus(); } }, 30);
+    document.body.style.overflow = 'hidden';
+}
+function closeDialog(box) {
+    if (!box) return;
+    box.classList.remove('open');
+    if (currentDialog === box) currentDialog = null;
+    const trig = box._trigger;
+    if (trig && trig.focus) { try { trig.focus({ preventScroll: true }); } catch (e) { trig.focus(); } }
+    if (!document.querySelector('.modal-overlay.open')) document.body.style.overflow = '';
+}
+
 // ============== MODAL DE EVENTO ==============
 const modal = $('#eventModal');
 const modalClose = $('#modalClose');
@@ -640,15 +672,68 @@ function handleHash() {
 }
 window.addEventListener('hashchange', handleHash);
 
-modalClose.addEventListener('click', () => { modal.classList.remove('open'); clearEventHash(); });
-modal.addEventListener('click', e => { if (e.target === modal) { modal.classList.remove('open'); clearEventHash(); } });
+function closeEventModal() { closeDialog(modal); clearEventHash(); }
+modalClose.addEventListener('click', closeEventModal);
+modal.addEventListener('click', e => { if (e.target === modal) closeEventModal(); });
+
+// Escape fecha qualquer diálogo; Tab fica preso dentro do diálogo aberto
 document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
-        modal.classList.remove('open');
+        const ab = document.querySelector('.modal-overlay.open');
+        if (ab) {
+            if (ab.id === 'eventModal') closeEventModal();
+            else closeDialog(ab);
+        }
         favPanel.classList.remove('open');
-        clearEventHash();
+        return;
+    }
+    if (e.key === 'Tab' && currentDialog) {
+        const fs = focusables(currentDialog);
+        if (!fs.length) return;
+        const first = fs[0], last = fs[fs.length - 1];
+        const act = document.activeElement;
+        if (e.shiftKey && (act === first || !currentDialog.contains(act))) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && (act === last || !currentDialog.contains(act))) { e.preventDefault(); first.focus(); }
     }
 });
+
+// ============== MODAL ANUNCIE (abre WhatsApp) ==============
+const anuncieModal = $('#anuncieModal');
+function getWhatsNum() {
+    const raw = (adminData && adminData.config && adminData.config.whatsapp) || '(38) 998558528';
+    return '55' + raw.replace(/\D/g, '');
+}
+document.addEventListener('click', e => {
+    const ab = e.target.closest('.open-anuncie');
+    if (ab) { e.preventDefault(); openDialog(anuncieModal, ab); return; }
+    const cb = e.target.closest('#anuncieClose');
+    if (cb) { closeDialog(anuncieModal); return; }
+});
+if (anuncieModal) anuncieModal.addEventListener('click', e => { if (e.target === anuncieModal) closeDialog(anuncieModal); });
+
+const anuncieForm = $('#formAnuncie');
+if (anuncieForm) anuncieForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const fd = new FormData(anuncieForm);
+    const nome = (fd.get('nome') || '').trim();
+    const contato = (fd.get('contato') || '').trim();
+    const tipo = (fd.get('tipo') || '').trim();
+    const msg = (fd.get('mensagem') || '').trim();
+    if (!nome || !contato) { showToast('⚠️ Preencha seu nome e WhatsApp/e-mail para continuar'); return; }
+    const texto = `Olá! Gostaria de anunciar no Agenda Shows MOC.\n\n` +
+        `👤 Nome: ${nome}\n` +
+        `📞 Contato: ${contato}\n` +
+        `🏷️ Tipo de negócio: ${tipo || 'Não informado'}\n` +
+        `📝 Mensagem: ${msg || '-'}`;
+    const url = `https://wa.me/${getWhatsNum()}?text=${encodeURIComponent(texto)}`;
+    window.open(url, '_blank', 'noopener');
+    closeDialog(anuncieModal);
+    showToast('✅ Abrindo WhatsApp para enviar sua solicitação');
+});
+
+// Rodapé: ano automático
+const copyYearEl = $('#copyYear');
+if (copyYearEl) copyYearEl.textContent = new Date().getFullYear();
 
 // ============== BUSCA E FILTROS ==============
 const searchInput = $('#searchInput');

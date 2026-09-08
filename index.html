@@ -7,6 +7,24 @@
     <meta name="description" content="A agenda mais completa de shows, forró, bares, restaurantes e festas de Montes Claros - MOC. Fique por dentro de todos os eventos da cidade!">
     <meta name="keywords" content="shows Montes Claros, forró MOC, bares MOC, restaurantes Montes Claros, agenda shows moc, eventos MOC, festas Montes Claros, sertanejo MOC">
     <meta name="author" content="Agenda Shows MOC">
+    <meta name="theme-color" content="#0a0a14">
+
+    <!-- 🔑 Google Analytics 4: substitua 'G-XXXXXXXXXX' pelo seu Measurement ID -->
+    <script>
+        window.GA4_ID = 'G-XXXXXXXXXX'; // TODO: cole aqui o seu Measurement ID
+        (function () {
+            var id = window.GA4_ID;
+            if (!id || id.indexOf('XXXX') !== -1) return; // ativa só quando houver ID real
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            window.gtag = gtag;
+            var s = document.createElement('script'); s.async = true;
+            s.src = 'https://www.googletagmanager.com/gtag/js?id=' + id;
+            document.head.appendChild(s);
+            gtag('js', new Date());
+            gtag('config', id);
+        })();
+    </script>
     <meta name="robots" content="index, follow">
 
     <!-- Open Graph / Facebook -->
@@ -45,7 +63,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=39">
+    <link rel="stylesheet" href="styles.css?v=40">
 </head>
 <body>
     <!-- HEADER -->
@@ -74,7 +92,7 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                     <span class="fav-count" id="favCount">0</span>
                 </button>
-                <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">
+                <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="nav">
                     <span></span><span></span><span></span>
                 </button>
             </div>
@@ -761,7 +779,7 @@
                     <li>✓ Posts nas redes sociais</li>
                     <li>✓ Pacotes a partir de R$ 49/mês</li>
                 </ul>
-                <a href="#contato" class="btn btn-primary btn-lg" data-cfg="anuncieTexto">Quero Anunciar</a>
+                <a href="#contato" class="btn btn-primary btn-lg open-anuncie" data-cfg="anuncieTexto">Quero Anunciar</a>
             </div>
             <div class="cta-visual">
                 <div class="cta-card c1">
@@ -863,11 +881,11 @@
             </div>
             <div class="footer-col">
                 <h4>Empresa</h4>
-                <a href="#sobre">Sobre nós</a>
+                <a href="#home">Sobre nós</a>
                 <a href="#anuncie">Anuncie</a>
                 <a href="#contato">Contato</a>
-                <a href="#politica">Política de Privacidade</a>
-                <a href="#termos">Termos de Uso</a>
+                <a href="privacidade.html">Política de Privacidade</a>
+                <a href="termos.html">Termos de Uso</a>
             </div>
             <div class="footer-col">
                 <h4>Contato</h4>
@@ -877,8 +895,15 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p data-cfg="footerCopyright">© 2026 Agenda Shows MOC. Todos os direitos reservados.</p>
+            <p>© <span id="copyYear">2026</span> Agenda Shows MOC — Todos os direitos reservados.</p>
             <p data-cfg="footerCredito">Feito com ❤️ em Montes Claros - MG</p>
+            <p class="footer-legal">
+                <a href="privacidade.html">Política de Privacidade</a>
+                <span>•</span>
+                <a href="termos.html">Termos de Uso</a>
+                <span>•</span>
+                <a href="#anuncie" class="open-anuncie">Quero Anunciar</a>
+            </p>
             <p style="margin-top:8px"><a href="admin.html" style="color:var(--gray);font-size:11px;opacity:0.5">⚙ Área restrita</a></p>
         </div>
     </footer>
@@ -893,8 +918,40 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
     </button>
 
+    <!-- MODAL ANUNCIE -->
+    <div class="modal-overlay" id="anuncieModal" role="dialog" aria-modal="true" aria-labelledby="anuncieTitle">
+        <div class="modal">
+            <button class="modal-close" id="anuncieClose" aria-label="Fechar">×</button>
+            <div class="modal-body">
+                <span class="section-tag">🚀 Para Proprietários</span>
+                <h2 id="anuncieTitle" style="font-family:'Bebas Neue',sans-serif;font-size:30px;color:#fff;margin:12px 0 6px;letter-spacing:1px;line-height:1.1">Divulgue seu evento ou estabelecimento</h2>
+                <p style="color:#8a8aa3;font-size:14px;margin-bottom:20px">Preencha e envie direto pelo WhatsApp. Respondemos em instantes!</p>
+                <form id="formAnuncie" class="anuncie-form" onsubmit="return false">
+                    <label class="af-label" for="afNome">Seu nome *</label>
+                    <input type="text" id="afNome" name="nome" class="af-input" placeholder="Seu nome" required>
+                    <label class="af-label" for="afContato">WhatsApp ou e-mail *</label>
+                    <input type="text" id="afContato" name="contato" class="af-input" placeholder="(38) 9 9999-9999" required>
+                    <label class="af-label" for="afTipo">Tipo de negócio</label>
+                    <select id="afTipo" name="tipo" class="af-input">
+                        <option value="">Selecione...</option>
+                        <option>Casa de Forró</option>
+                        <option>Bar / Boteco</option>
+                        <option>Restaurante</option>
+                        <option>Casa de Show</option>
+                        <option>Balada / Festa</option>
+                        <option>Outro</option>
+                    </select>
+                    <label class="af-label" for="afMsg">Mensagem (opcional)</label>
+                    <textarea id="afMsg" name="mensagem" class="af-input" rows="3" placeholder="Conte brevemente sobre seu evento ou local..."></textarea>
+                    <button type="submit" class="btn btn-primary" style="width:100%">Enviar pelo WhatsApp 💬</button>
+                </form>
+                <p class="af-note">🔒 Seus dados são usados apenas para te responder. Veja nossa <a href="privacidade.html">Política de Privacidade</a>.</p>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL DE EVENTO -->
-    <div class="modal-overlay" id="eventModal">
+    <div class="modal-overlay" id="eventModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
         <div class="modal">
             <button class="modal-close" id="modalClose">×</button>
             <div class="modal-img" id="modalImg"></div>
@@ -940,6 +997,6 @@
     <!-- TOAST -->
     <div class="toast" id="toast"></div>
 
-    <script src="script.js?v=27"></script>
+    <script src="script.js?v=28"></script>
 </body>
 </html>
