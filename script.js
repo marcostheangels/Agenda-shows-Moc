@@ -316,7 +316,7 @@ const CAT_COVER = {
     show: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=900&q=80',
     'show-ao-vivo': 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=900&q=80',
     sertanejo: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=900&q=80',
-    pagode: 'https://images.unsplash.com/photo-1571266028243-d220c6a35277?w=900&q=80',
+    pagode: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=1200&q=80',
     rock: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=900&q=80',
     festa: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=900&q=80'
 };
