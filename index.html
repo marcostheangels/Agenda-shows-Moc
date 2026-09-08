@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agenda Shows MOC - Shows, Forró, Bares e Restaurantes em Montes Claros</title>
+        <title>Agenda Shows MOC - Shows, Forró, Bares e Restaurantes em Montes Claros</title>
     <meta name="description" content="A agenda mais completa de shows, forró, bares, restaurantes e festas de Montes Claros - MOC. Fique por dentro de todos os eventos da cidade!">
     <meta name="keywords" content="shows Montes Claros, forró MOC, bares MOC, restaurantes Montes Claros, agenda shows moc, eventos MOC, festas Montes Claros, sertanejo MOC">
     <meta name="author" content="Agenda Shows MOC">
-        <meta name="theme-color" content="#0a0a14">
+    <meta name="theme-color" content="#0a0a14">
 
     <!-- ============================================================
          🔎 GOOGLE SEARCH CONSOLE (verificação do site)
@@ -16,34 +16,17 @@
          → Deixe essa linha COMENTADA até você obter o código no
          Search Console (search.google.com/search-console). Depois,
          descomente e substitua o content pelo SEU código.
-         ============================================================ -->
+                  ============================================================ -->
     <!-- <meta name="google-site-verification" content="COLE_AQUI_SEU_CODIGO_DE_VERIFICACAO" /> -->
 
-    <!-- ============================================================
-         🔑 GOOGLE ANALYTICS 4 (GA4)
-         Para ativar as estatísticas de visitas, cole abaixo o seu
-         MEASUREMENT ID real (formato G-XXXXXXXXXX). Ele é único e
-         fica em: analytics.google.com → Admin → Fluxo de dados.
-         ⚠️ Enquanto estiver 'G-XXXXXXXXXX' (com X), o rastreamento
-         fica DESATIVADO para não enviar dados a nenhuma conta.
-         ============================================================ -->
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JKDH8V8Y81"></script>
     <script>
-        // 👇 TROQUE pelo seu Measurement ID real. Ex.: 'G-AB12CDE345'
-        window.GA4_ID = 'G-XXXXXXXXXX';
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
 
-        (function () {
-            var id = window.GA4_ID;
-            if (!id || id.indexOf('XXXX') !== -1) return; // só ativa com ID real
-            window.dataLayer = window.dataLayer || [];
-            function gtag() { dataLayer.push(arguments); }
-            window.gtag = gtag;
-            var s = document.createElement('script');
-            s.async = true;
-            s.src = 'https://www.googletagmanager.com/gtag/js?id=' + id;
-            document.head.appendChild(s);
-            gtag('js', new Date());
-            gtag('config', id, { 'anonymize_ip': true });
-        })();
+        gtag('config', 'G-JKDH8V8Y81');
     </script>
     <meta name="robots" content="index, follow">
 
@@ -408,7 +391,7 @@
                 <div class="events-count" id="eventsCount">Mostrando 6 eventos</div>
             </div>
             <div class="event-grid" id="eventGrid">
-                <article class="event-card" data-id="1" data-cat="Casa de Forró" data-bairro="Centro" data-preco="30" data-titulo="Forró do Bom — Wesley Safadão Cover" data-local="Villa Forró - Centro" data-data="15 SET" data-hora="Sábado, 22h" data-desc="A noite mais esperada do forró em MOC! Cerveja gelada, ambiente climatizado e a melhor sanfona da cidade tocando os maiores sucessos do momento.">
+                <article class="event-card" data-id="1" data-cat="Casa de Forró" data-bairro="Centro" data-preco="30" data-titulo="Forró do Bom — Wesley Safadão Cover" data-local="Villa Forró - Centro" data-data="15 SET" data-hora="Terça, 22h" data-desc="A noite mais esperada do forró em MOC! Cerveja gelada, ambiente climatizado e a melhor sanfona da cidade tocando os maiores sucessos do momento.">
                     <button class="fav-card" data-fav="1" aria-label="Favoritar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                     </button>
@@ -420,11 +403,11 @@
                         <span class="event-cat">Casa de Forró</span>
                         <h3 class="event-title">Forró do Bom — Wesley Safadão Cover</h3>
                         <p class="event-local">📍 Villa Forró - Centro</p>
-                        <p class="event-time">⏰ Sábado, 22h • R$ 30</p>
+                        <p class="event-time">⏰ Terça, 22h • R$ 30</p>
                         <a href="#" class="event-btn open-modal" data-id="1">Ver Detalhes</a>
                     </div>
                 </article>
-                <article class="event-card" data-id="2" data-cat="Barzinho" data-bairro="Independência" data-preco="0" data-titulo="Rock Night — Bandas Locais" data-local="Boteco do Rock - Av. Independência" data-data="17 SET" data-hora="Terça, 21h" data-desc="Noite de rock com bandas autorais e clássicos inesquecíveis. Chopp em dobro e petiscos especiais.">
+                <article class="event-card" data-id="2" data-cat="Barzinho" data-bairro="Independência" data-preco="0" data-titulo="Rock Night — Bandas Locais" data-local="Boteco do Rock - Av. Independência" data-data="17 SET" data-hora="Quinta, 21h" data-desc="Noite de rock com bandas autorais e clássicos inesquecíveis. Chopp em dobro e petiscos especiais.">
                     <button class="fav-card" data-fav="2" aria-label="Favoritar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                     </button>
@@ -435,11 +418,11 @@
                         <span class="event-cat">Barzinho</span>
                         <h3 class="event-title">Rock Night — Bandas Locais</h3>
                         <p class="event-local">📍 Boteco do Rock - Av. Independência</p>
-                        <p class="event-time">⏰ Terça, 21h • Entrada Franca</p>
+                        <p class="event-time">⏰ Quinta, 21h • Entrada Franca</p>
                         <a href="#" class="event-btn open-modal" data-id="2">Ver Detalhes</a>
                     </div>
                 </article>
-                <article class="event-card" data-id="3" data-cat="Restaurante" data-bairro="Centro" data-preco="89" data-titulo="Sertanejo & Vinho — Jantar Musical" data-local="Restaurante Sabor da Terra" data-data="20 SET" data-hora="Sexta, 20h" data-desc="Jantar harmonizado com pratos da culinária regional e show de sertanejo ao vivo. Reservas limitadas.">
+                <article class="event-card" data-id="3" data-cat="Restaurante" data-bairro="Centro" data-preco="89" data-titulo="Sertanejo & Vinho — Jantar Musical" data-local="Restaurante Sabor da Terra" data-data="20 SET" data-hora="Domingo, 20h" data-desc="Jantar harmonizado com pratos da culinária regional e show de sertanejo ao vivo. Reservas limitadas.">
                     <button class="fav-card" data-fav="3" aria-label="Favoritar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                     </button>
@@ -451,11 +434,11 @@
                         <span class="event-cat">Restaurante</span>
                         <h3 class="event-title">Sertanejo &amp; Vinho — Jantar Musical</h3>
                         <p class="event-local">📍 Restaurante Sabor da Terra</p>
-                        <p class="event-time">⏰ Sexta, 20h • R$ 89</p>
+                        <p class="event-time">⏰ Domingo, 20h • R$ 89</p>
                         <a href="#" class="event-btn open-modal" data-id="3">Ver Detalhes</a>
                     </div>
                 </article>
-                <article class="event-card" data-id="4" data-cat="Show ao Vivo" data-bairro="Todos os Santos" data-preco="40" data-titulo="Pagode do MOC — Grupo Revelação Cover" data-local="Arena MOC - Bairro Todos os Santos" data-data="22 SET" data-hora="Domingo, 20h" data-desc="O melhor pagode da região com a banda cover mais requisitada do momento. Open de chopp até meia-noite.">
+                <article class="event-card" data-id="4" data-cat="Show ao Vivo" data-bairro="Todos os Santos" data-preco="40" data-titulo="Pagode do MOC — Grupo Revelação Cover" data-local="Arena MOC - Bairro Todos os Santos" data-data="22 SET" data-hora="Terça, 20h" data-desc="O melhor pagode da região com a banda cover mais requisitada do momento. Open de chopp até meia-noite.">
                     <button class="fav-card" data-fav="4" aria-label="Favoritar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                     </button>
@@ -466,11 +449,11 @@
                         <span class="event-cat">Show ao Vivo</span>
                         <h3 class="event-title">Pagode do MOC — Grupo Revelação Cover</h3>
                         <p class="event-local">📍 Arena MOC - Bairro Todos os Santos</p>
-                        <p class="event-time">⏰ Domingo, 20h • R$ 40</p>
+                        <p class="event-time">⏰ Terça, 20h • R$ 40</p>
                         <a href="#" class="event-btn open-modal" data-id="4">Ver Detalhes</a>
                     </div>
                 </article>
-                <article class="event-card" data-id="5" data-cat="Festa" data-bairro="Centro" data-preco="25" data-titulo="Festa Universitária — DJ Marcos" data-local="Lounge Club - Avenida MOC" data-data="27 SET" data-hora="Sábado, 23h" data-desc="A balada mais badalada da cidade com DJ Marcos e convidados. Open de vodka para o primeiro lote.">
+                <article class="event-card" data-id="5" data-cat="Festa" data-bairro="Centro" data-preco="25" data-titulo="Festa Universitária — DJ Marcos" data-local="Lounge Club - Avenida MOC" data-data="27 SET" data-hora="Domingo, 23h" data-desc="A balada mais badalada da cidade com DJ Marcos e convidados. Open de vodka para o primeiro lote.">
                     <button class="fav-card" data-fav="5" aria-label="Favoritar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                     </button>
@@ -481,11 +464,11 @@
                         <span class="event-cat">Festa</span>
                         <h3 class="event-title">Festa Universitária — DJ Marcos</h3>
                         <p class="event-local">📍 Lounge Club - Avenida MOC</p>
-                        <p class="event-time">⏰ Sábado, 23h • R$ 25</p>
+                        <p class="event-time">⏰ Domingo, 23h • R$ 25</p>
                         <a href="#" class="event-btn open-modal" data-id="5">Ver Detalhes</a>
                     </div>
                 </article>
-                <article class="event-card" data-id="6" data-cat="Show ao Vivo" data-bairro="Centro" data-preco="35" data-titulo="Samba de Roda — Noite Especial" data-local="Casa do Samba - Centro Histórico" data-data="29 SET" data-hora="Domingo, 21h" data-desc="Roda de samba com clássicos que marcaram época. Participação especial do mestre Cavaco.">
+                <article class="event-card" data-id="6" data-cat="Show ao Vivo" data-bairro="Centro" data-preco="35" data-titulo="Samba de Roda — Noite Especial" data-local="Casa do Samba - Centro Histórico" data-data="29 SET" data-hora="Terça, 21h" data-desc="Roda de samba com clássicos que marcaram época. Participação especial do mestre Cavaco.">
                     <button class="fav-card" data-fav="6" aria-label="Favoritar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                     </button>
@@ -497,18 +480,18 @@
                         <span class="event-cat">Show ao Vivo</span>
                         <h3 class="event-title">Samba de Roda — Noite Especial</h3>
                         <p class="event-local">📍 Casa do Samba - Centro Histórico</p>
-                        <p class="event-time">⏰ Domingo, 21h • R$ 35</p>
+                        <p class="event-time">⏰ Terça, 21h • R$ 35</p>
                         <a href="#" class="event-btn open-modal" data-id="6">Ver Detalhes</a>
                     </div>
                 </article>
 
                 <!-- Eventos extras para o calendário -->
-                <article class="event-card" data-id="7" data-cat="Sertanejo" data-bairro="Cidade Nova" data-preco="40" data-titulo="Sertanejo Universitário — Marília Cover" data-local="Arena MOC - Cidade Nova" data-data="06 SET" data-hora="Sábado, 22h" data-desc="A noite mais sertaneja de MOC com a banda cover mais requisitada do momento.">
+                <article class="event-card" data-id="7" data-cat="Sertanejo" data-bairro="Cidade Nova" data-preco="40" data-titulo="Sertanejo Universitário — Marília Cover" data-local="Arena MOC - Cidade Nova" data-data="19 SET" data-hora="Sábado, 22h" data-desc="A noite mais sertaneja de MOC com a banda cover mais requisitada do momento.">
                     <button class="fav-card" data-fav="7" aria-label="Favoritar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                     </button>
                     <div class="event-img" style="background-image:linear-gradient(135deg,#f59e0b,#fbbf24)">
-                        <span class="event-date">06 SET</span>
+                        <span class="event-date">19 SET</span>
                     </div>
                     <div class="event-info">
                         <span class="event-cat">Sertanejo</span>
@@ -519,7 +502,7 @@
                     </div>
                 </article>
 
-                <article class="event-card" data-id="8" data-cat="Casa de Forró" data-bairro="São José" data-preco="25" data-titulo="Quarta do Forró — Trio Pé-de-Serra" data-local="Boteco São José" data-data="10 SET" data-hora="Quarta, 21h" data-desc="A tradicional quarta do forró com o melhor trio pé-de-serra da cidade. Cerveja em dobro.">
+                <article class="event-card" data-id="8" data-cat="Casa de Forró" data-bairro="São José" data-preco="25" data-titulo="Quarta do Forró — Trio Pé-de-Serra" data-local="Boteco São José" data-data="10 SET" data-hora="Quinta, 21h" data-desc="A tradicional quarta do forró com o melhor trio pé-de-serra da cidade. Cerveja em dobro.">
                     <button class="fav-card" data-fav="8" aria-label="Favoritar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                     </button>
@@ -530,12 +513,12 @@
                         <span class="event-cat">Casa de Forró</span>
                         <h3 class="event-title">Quarta do Forró — Trio Pé-de-Serra</h3>
                         <p class="event-local">📍 Boteco São José</p>
-                        <p class="event-time">⏰ Quarta, 21h • R$ 25</p>
+                        <p class="event-time">⏰ Quinta, 21h • R$ 25</p>
                         <a href="#" class="event-btn open-modal" data-id="8">Ver Detalhes</a>
                     </div>
                 </article>
 
-                <article class="event-card" data-id="9" data-cat="Rock" data-bairro="Independência" data-preco="15" data-titulo="Sexta no Rock — Acústico" data-local="Boteco do Rock - Av. Independência" data-data="12 SET" data-hora="Sexta, 22h" data-desc="Versões acústicas dos clássicos do rock nacional e internacional. Open de chopp.">
+                <article class="event-card" data-id="9" data-cat="Rock" data-bairro="Independência" data-preco="15" data-titulo="Sexta no Rock — Acústico" data-local="Boteco do Rock - Av. Independência" data-data="12 SET" data-hora="Sábado, 22h" data-desc="Versões acústicas dos clássicos do rock nacional e internacional. Open de chopp.">
                     <button class="fav-card" data-fav="9" aria-label="Favoritar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                     </button>
@@ -547,12 +530,12 @@
                         <span class="event-cat">Rock</span>
                         <h3 class="event-title">Sexta no Rock — Acústico</h3>
                         <p class="event-local">📍 Boteco do Rock - Av. Independência</p>
-                        <p class="event-time">⏰ Sexta, 22h • R$ 15</p>
+                        <p class="event-time">⏰ Sábado, 22h • R$ 15</p>
                         <a href="#" class="event-btn open-modal" data-id="9">Ver Detalhes</a>
                     </div>
                 </article>
 
-                <article class="event-card" data-id="10" data-cat="Pagode" data-bairro="Centro" data-preco="0" data-titulo="Roda de Samba Gratuita" data-local="Praça da matriz - Centro" data-data="15 SET" data-hora="Domingo, 17h" data-desc="Roda de samba gratuita na praça com participação de vários músicos da cidade.">
+                <article class="event-card" data-id="10" data-cat="Pagode" data-bairro="Centro" data-preco="0" data-titulo="Roda de Samba Gratuita" data-local="Praça da matriz - Centro" data-data="15 SET" data-hora="Terça, 17h" data-desc="Roda de samba gratuita na praça com participação de vários músicos da cidade.">
                     <button class="fav-card" data-fav="10" aria-label="Favoritar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                     </button>
@@ -563,12 +546,12 @@
                         <span class="event-cat">Pagode</span>
                         <h3 class="event-title">Roda de Samba Gratuita</h3>
                         <p class="event-local">📍 Praça da Matriz - Centro</p>
-                        <p class="event-time">⏰ Domingo, 17h • Entrada Franca</p>
+                        <p class="event-time">⏰ Terça, 17h • Entrada Franca</p>
                         <a href="#" class="event-btn open-modal" data-id="10">Ver Detalhes</a>
                     </div>
                 </article>
 
-                <article class="event-card" data-id="11" data-cat="Festa" data-bairro="Centro" data-preco="60" data-titulo="Halloween MOC — Edição 2026" data-local="Lounge Club - Centro" data-data="31 OUT" data-hora="Sexta, 23h" data-desc="A festa de Halloween mais esperada do ano. Fantasia obrigatória, prêmio de melhor roupa.">
+                <article class="event-card" data-id="11" data-cat="Festa" data-bairro="Centro" data-preco="60" data-titulo="Halloween MOC — Edição 2026" data-local="Lounge Club - Centro" data-data="31 OUT" data-hora="Sábado, 23h" data-desc="A festa de Halloween mais esperada do ano. Fantasia obrigatória, prêmio de melhor roupa.">
                     <button class="fav-card" data-fav="11" aria-label="Favoritar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                     </button>
@@ -580,7 +563,7 @@
                         <span class="event-cat">Festa</span>
                         <h3 class="event-title">Halloween MOC — Edição 2026</h3>
                         <p class="event-local">📍 Lounge Club - Centro</p>
-                        <p class="event-time">⏰ Sexta, 23h • R$ 60</p>
+                        <p class="event-time">⏰ Sábado, 23h • R$ 60</p>
                         <a href="#" class="event-btn open-modal" data-id="11">Ver Detalhes</a>
                     </div>
                 </article>
