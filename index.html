@@ -7,22 +7,42 @@
     <meta name="description" content="A agenda mais completa de shows, forró, bares, restaurantes e festas de Montes Claros - MOC. Fique por dentro de todos os eventos da cidade!">
     <meta name="keywords" content="shows Montes Claros, forró MOC, bares MOC, restaurantes Montes Claros, agenda shows moc, eventos MOC, festas Montes Claros, sertanejo MOC">
     <meta name="author" content="Agenda Shows MOC">
-    <meta name="theme-color" content="#0a0a14">
+        <meta name="theme-color" content="#0a0a14">
 
-    <!-- 🔑 Google Analytics 4: substitua 'G-XXXXXXXXXX' pelo seu Measurement ID -->
+    <!-- ============================================================
+         🔎 GOOGLE SEARCH CONSOLE (verificação do site)
+         Cole abaixo a META TAG de verificação que o Google te dá.
+         Formato: <meta name="google-site-verification" content="XXXXXXXXXXXX">
+         → Deixe essa linha COMENTADA até você obter o código no
+         Search Console (search.google.com/search-console). Depois,
+         descomente e substitua o content pelo SEU código.
+         ============================================================ -->
+    <!-- <meta name="google-site-verification" content="COLE_AQUI_SEU_CODIGO_DE_VERIFICACAO" /> -->
+
+    <!-- ============================================================
+         🔑 GOOGLE ANALYTICS 4 (GA4)
+         Para ativar as estatísticas de visitas, cole abaixo o seu
+         MEASUREMENT ID real (formato G-XXXXXXXXXX). Ele é único e
+         fica em: analytics.google.com → Admin → Fluxo de dados.
+         ⚠️ Enquanto estiver 'G-XXXXXXXXXX' (com X), o rastreamento
+         fica DESATIVADO para não enviar dados a nenhuma conta.
+         ============================================================ -->
     <script>
-        window.GA4_ID = 'G-XXXXXXXXXX'; // TODO: cole aqui o seu Measurement ID
+        // 👇 TROQUE pelo seu Measurement ID real. Ex.: 'G-AB12CDE345'
+        window.GA4_ID = 'G-XXXXXXXXXX';
+
         (function () {
             var id = window.GA4_ID;
-            if (!id || id.indexOf('XXXX') !== -1) return; // ativa só quando houver ID real
+            if (!id || id.indexOf('XXXX') !== -1) return; // só ativa com ID real
             window.dataLayer = window.dataLayer || [];
             function gtag() { dataLayer.push(arguments); }
             window.gtag = gtag;
-            var s = document.createElement('script'); s.async = true;
+            var s = document.createElement('script');
+            s.async = true;
             s.src = 'https://www.googletagmanager.com/gtag/js?id=' + id;
             document.head.appendChild(s);
             gtag('js', new Date());
-            gtag('config', id);
+            gtag('config', id, { 'anonymize_ip': true });
         })();
     </script>
     <meta name="robots" content="index, follow">
