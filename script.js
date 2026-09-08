@@ -306,20 +306,39 @@ function categoriaCombina(catEvento, catEstabelecimento) {
     return a.includes(b) || b.includes(a);
 }
 
+// Capas-tema por categoria (usadas quando a categoria ainda não tem foto de evento)
+const CAT_COVER = {
+    forro: 'fotos/forro-coronel-edson-marques.jpeg',
+    'casa-de-forro': 'fotos/forro-coronel-edson-marques.jpeg',
+    bar: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=900&q=80',
+    barzinho: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=900&q=80',
+    restaurante: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=900&q=80',
+    show: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=900&q=80',
+    'show-ao-vivo': 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=900&q=80',
+    sertanejo: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=900&q=80',
+    pagode: 'https://images.unsplash.com/photo-1571266028243-d220c6a35277?w=900&q=80',
+    rock: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=900&q=80',
+    festa: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=900&q=80'
+};
+
 function renderCategoriasFromAdmin() {
     if (!adminData || !adminData.categorias.length) return false;
     const grid = document.querySelector('.cat-grid');
     if (!grid) return false;
     grid.innerHTML = adminData.categorias.map(c => {
         const count = adminData.eventos.filter(e => e.cat === c.nome).length;
+        const catClass = 'cat-' + (c.slug || c.nome.toLowerCase().replace(/\s+/g, '-'));
+        // 1) foto de um evento/estabelecimento da categoria; 2) senão, capa-tema
         const firstEvent = adminData.eventos.find(e => e.cat === c.nome && e.img && isImgSrc(e.img));
         const firstEst = !firstEvent ? adminData.estabelecimentos.find(e => e.cat === c.nome && e.img && isImgSrc(e.img)) : null;
-        const catClass = 'cat-' + (c.slug || c.nome.toLowerCase().replace(/\s+/g, '-'));
-        const catBg = firstEvent
-            ? `background-image:linear-gradient(135deg,${c.cor}88,${c.cor}44),url('${resolveImgSrc(firstEvent.img)}');background-size:cover;background-position:center;`
+        const img = firstEvent
+            ? resolveImgSrc(firstEvent.img)
             : firstEst
-            ? `background-image:linear-gradient(135deg,${c.cor}88,${c.cor}44),url('${resolveImgSrc(firstEst.img)}');background-size:cover;background-position:center;`
-            : '';
+            ? resolveImgSrc(firstEst.img)
+            : (CAT_COVER[c.slug] || CAT_COVER[normalizarCat(c.nome)] || '');
+        const catBg = img
+            ? `background-image:linear-gradient(135deg,${c.cor}88,${c.cor}44),url('${img}');background-size:cover;background-position:center;`
+            : `background:${c.cor}44;background-size:cover;background-position:center;`;
         return `
         <a href="#" class="cat-card ${catClass}">
             <div class="cat-img" style="${catBg}"></div>
