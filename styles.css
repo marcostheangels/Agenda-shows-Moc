@@ -1625,18 +1625,25 @@ ul { list-style: none; }
     overflow: hidden;
 }
 
-/* Flyer/foto completa: exibe a imagem inteira, sem cortar */
+/* Flyer/foto completa: centralizado, cabendo inteiro sem cortar */
 .modal-img.has-photo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     height: auto !important;
     min-height: 0 !important;
     max-height: none !important;
+    background-color: var(--dark-2);
     background-image: none !important;
 }
 .modal-img-photo {
     display: block;
-    width: 100%;
+    width: auto;
+    max-width: 100%;
     height: auto;
-    border-radius: 20px 20px 0 0;
+    max-height: 78vh;
+    object-fit: contain;
+    margin: 0 auto;
 }
 
 .modal-body { padding: 30px; }
