@@ -68,7 +68,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=41">
+    <link rel="stylesheet" href="styles.css?v=42">
 </head>
 <body>
     <!-- HEADER -->
@@ -108,7 +108,7 @@
     <section class="hero" id="home">
         <div class="container hero-container">
             <div class="hero-img-wrapper">
-                <img class="hero-img" src="fotos/capa-show.jpg" alt="Shows e eventos em Montes Claros - Agenda Shows MOC" decoding="async">
+                <img class="hero-img" src="fotos/capa-show.jpg" alt="Shows e eventos em Montes Claros - Agenda Shows MOC" decoding="async" width="1200" height="675" fetchpriority="high">
             </div>
             <div class="hero-content">
                 <span class="hero-badge" data-cfg="heroBadge">MOC • Montes Claros</span>
@@ -123,6 +123,7 @@
                     <div class="stat"><strong data-target="80">0</strong><span>Estabelecimentos</span></div>
                     <div class="stat"><strong data-target="20">0</strong><span>Mil seguidores</span></div>
                     <div class="stat"><strong data-target="50">0</strong><strong style="margin-left:-2px">k+</strong><span>Visualizações</span></div>
+                    <div class="stat stat-visitas"><strong id="heroVisitCount">···</strong><span>Visitas no site</span></div>
                 </div>
             </div>
         </div>
@@ -221,7 +222,7 @@
                 </a>
 
                 <a href="#" class="cat-card cat-bar">
-                    <div class="cat-img" style="background-image:linear-gradient(135deg,rgba(0,0,0,0.35),rgba(0,0,0,0.55)),url('https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=900&q=80')"></div>
+                    <div class="cat-img" style="background-image:linear-gradient(135deg,rgba(0,0,0,0.35),rgba(0,0,0,0.55)),url('https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=600&q=70')"></div>
                     <div class="cat-body">
                         <div class="cat-badge">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8h1a4 4 0 0 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/><line x1="6" y1="2" x2="6" y2="5"/><line x1="10" y1="2" x2="10" y2="5"/><line x1="14" y1="2" x2="14" y2="5"/></svg>
@@ -237,7 +238,7 @@
                 </a>
 
                 <a href="#" class="cat-card cat-rest">
-                    <div class="cat-img" style="background-image:linear-gradient(135deg,rgba(0,0,0,0.35),rgba(0,0,0,0.55)),url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=900&q=80')"></div>
+                    <div class="cat-img" style="background-image:linear-gradient(135deg,rgba(0,0,0,0.35),rgba(0,0,0,0.55)),url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=70')"></div>
                     <div class="cat-body">
                         <div class="cat-badge">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>
@@ -253,7 +254,7 @@
                 </a>
 
                 <a href="#" class="cat-card cat-show">
-                    <div class="cat-img" style="background-image:linear-gradient(135deg,rgba(0,0,0,0.35),rgba(0,0,0,0.55)),url('https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=900&q=80')"></div>
+                    <div class="cat-img" style="background-image:linear-gradient(135deg,rgba(0,0,0,0.35),rgba(0,0,0,0.55)),url('https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=600&q=70')"></div>
                     <div class="cat-body">
                         <div class="cat-badge">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
@@ -269,7 +270,7 @@
                 </a>
 
                 <a href="#" class="cat-card cat-sertanejo">
-                    <div class="cat-img" style="background-image:linear-gradient(135deg,rgba(0,0,0,0.35),rgba(0,0,0,0.55)),url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=900&q=80')"></div>
+                    <div class="cat-img" style="background-image:linear-gradient(135deg,rgba(0,0,0,0.35),rgba(0,0,0,0.55)),url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&q=70')"></div>
                     <div class="cat-body">
                         <div class="cat-badge">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
@@ -285,7 +286,7 @@
                 </a>
 
                 <a href="#" class="cat-card cat-pagode">
-                    <div class="cat-img" style="background-image:linear-gradient(135deg,rgba(0,0,0,0.35),rgba(0,0,0,0.55)),url('https://images.unsplash.com/photo-1571266028243-d220c6a35277?w=900&q=80')"></div>
+                    <div class="cat-img" style="background-image:linear-gradient(135deg,rgba(0,0,0,0.35),rgba(0,0,0,0.55)),url('https://images.unsplash.com/photo-1571266028243-d220c6a35277?w=600&q=70')"></div>
                     <div class="cat-body">
                         <div class="cat-badge">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
@@ -301,7 +302,7 @@
                 </a>
 
                 <a href="#" class="cat-card cat-rock">
-                    <div class="cat-img" style="background-image:linear-gradient(135deg,rgba(0,0,0,0.35),rgba(0,0,0,0.55)),url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=900&q=80')"></div>
+                    <div class="cat-img" style="background-image:linear-gradient(135deg,rgba(0,0,0,0.35),rgba(0,0,0,0.55)),url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&q=70')"></div>
                     <div class="cat-body">
                         <div class="cat-badge">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
@@ -317,7 +318,7 @@
                 </a>
 
                 <a href="#" class="cat-card cat-festa">
-                    <div class="cat-img" style="background-image:linear-gradient(135deg,rgba(0,0,0,0.35),rgba(0,0,0,0.55)),url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=900&q=80')"></div>
+                    <div class="cat-img" style="background-image:linear-gradient(135deg,rgba(0,0,0,0.35),rgba(0,0,0,0.55)),url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=70')"></div>
                     <div class="cat-body">
                         <div class="cat-badge">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5.8 11.3 2 22l10.7-3.79"/><path d="M4 3h.01"/><path d="M22 8h.01"/><path d="M15 2h.01"/><path d="M22 20h.01"/><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10"/><path d="m22 13-1.7-.74a2.9 2.9 0 0 0-3.79 1.27l-.17.33a2.9 2.9 0 0 1-3.79 1.27L12 14.7"/></svg>
@@ -721,7 +722,7 @@
             </div>
             <div class="blog-grid">
                 <article class="blog-card blog-destaque">
-                    <div class="blog-img" style="background-image:linear-gradient(135deg,rgba(255,61,110,0.5),rgba(124,58,237,0.5)),url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&q=80')">
+                    <div class="blog-img" style="background-image:linear-gradient(135deg,rgba(255,61,110,0.5),rgba(124,58,237,0.5)),url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&q=70')">
                         <span class="blog-cat">Cobertura</span>
                     </div>
                     <div class="blog-body">
@@ -732,7 +733,7 @@
                     </div>
                 </article>
                 <article class="blog-card">
-                    <div class="blog-img" style="background-image:linear-gradient(135deg,rgba(245,158,11,0.5),rgba(239,68,68,0.5)),url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80')">
+                    <div class="blog-img" style="background-image:linear-gradient(135deg,rgba(245,158,11,0.5),rgba(239,68,68,0.5)),url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=70')">
                         <span class="blog-cat">Gastronomia</span>
                     </div>
                     <div class="blog-body">
@@ -743,7 +744,7 @@
                     </div>
                 </article>
                 <article class="blog-card">
-                    <div class="blog-img" style="background-image:linear-gradient(135deg,rgba(124,58,237,0.5),rgba(59,130,246,0.5)),url('https://images.unsplash.com/photo-1493676304819-0d7a8d026dcf?w=800&q=80')">
+                    <div class="blog-img" style="background-image:linear-gradient(135deg,rgba(124,58,237,0.5),rgba(59,130,246,0.5)),url('https://images.unsplash.com/photo-1493676304819-0d7a8d026dcf?w=600&q=70')">
                         <span class="blog-cat">Dicas</span>
                     </div>
                     <div class="blog-body">
@@ -754,7 +755,7 @@
                     </div>
                 </article>
                 <article class="blog-card">
-                    <div class="blog-img" style="background-image:linear-gradient(135deg,rgba(16,185,129,0.5),rgba(5,150,105,0.5)),url('https://images.unsplash.com/photo-1538488749019-edaaee8060dc?w=800&q=80')">
+                    <div class="blog-img" style="background-image:linear-gradient(135deg,rgba(16,185,129,0.5),rgba(5,150,105,0.5)),url('https://images.unsplash.com/photo-1538488749019-edaaee8060dc?w=600&q=70')">
                         <span class="blog-cat">Bares</span>
                     </div>
                     <div class="blog-body">
@@ -1023,6 +1024,6 @@
     <!-- TOAST -->
     <div class="toast" id="toast"></div>
 
-    <script src="script.js?v=33"></script>
+    <script src="script.js?v=36"></script>
 </body>
 </html>

@@ -259,6 +259,7 @@ function renderEventosFromAdmin() {
                 <p class="event-local">📍 ${ev.local}</p>
                 <p class="event-time">⏰ ${ev.hora} • ${ev.preco === 0 ? 'Entrada Franca' : 'R$ ' + ev.preco}</p>
                 <a href="#" class="event-btn open-modal" data-id="${ev.id}">Ver Detalhes</a>
+                <span class="event-views" data-views-id="${ev.id}">👁 ···</span>
             </div>
         </article>
     `}).join('');
@@ -266,6 +267,7 @@ function renderEventosFromAdmin() {
 
     bindEventActions();
     updateFilters();
+    if (typeof initEventViews === 'function') initEventViews();
     return true;
 }
 
@@ -472,6 +474,9 @@ function handleEventClick(e) {
     const id = +openBtn.dataset.id;
     const card = document.querySelector(`.event-card[data-id="${id}"]`);
     if (!card) return;
+
+    // Conta 1 visualização deste evento (1× por aba)
+    countEventView(id, card);
 
     $('#modalTitle').textContent = card.dataset.titulo;
     $('#modalCat').textContent = card.dataset.cat;
@@ -779,6 +784,9 @@ const VISIT_READ_URL = 'https://abacus.jasoncameron.dev/get/agendashowsmoc/visit
     function show(n) {
         digitsEl.classList.remove('loading');
         digitsEl.textContent = fmt(n);
+        // Atualiza também o contador do topo (hero)
+        const heroEl = $('#heroVisitCount');
+        if (heroEl) heroEl.textContent = fmt(n);
     }
 
     function load() {
@@ -796,6 +804,54 @@ const VISIT_READ_URL = 'https://abacus.jasoncameron.dev/get/agendashowsmoc/visit
         .then(d => show(d.value))
         .catch(load);
 })();
+
+// =========================
+// VISUALIZAÇÕES POR EVENTO (Abacus)
+// =========================
+// 1 hit por abertura do modal (detalhes), 1× por aba para não inflar o número.
+// Nome do contador: evento-<id>
+const eventViewSessions = new Set();
+
+function countEventView(id, card) {
+    if (!id || eventViewSessions.has(id)) return;
+    eventViewSessions.add(id);
+    const badge = card.querySelector('.event-views');
+    fetch(`https://abacus.jasoncameron.dev/hit/agendashowsmoc/evento-${id}`)
+        .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(d => {
+            if (badge) badge.textContent = '👁 ' + Number(d.value).toLocaleString('pt-BR');
+            // Atualiza os demais cards do mesmo evento (filtros re-renderizam)
+            document.querySelectorAll(`.event-views[data-views-id="${id}"]`).forEach(b => {
+                if (b !== badge) b.textContent = '👁 ' + Number(d.value).toLocaleString('pt-BR');
+            });
+        })
+        .catch(() => { if (badge) badge.textContent = ''; });
+}
+
+// Preenche os badges dos cards (cria no estático se faltar) e lê o total sem incrementar.
+// É função (não IIFE) porque a grade é re-renderizada quando o data.json do admin carrega.
+function initEventViews() {
+    // Garante o badge em todos os cards (inclusive os estáticos do HTML)
+    document.querySelectorAll('.event-card').forEach(card => {
+        if (card.querySelector('.event-views')) return;
+        const info = card.querySelector('.event-info');
+        if (!info || !card.dataset.id) return;
+        const b = document.createElement('span');
+        b.className = 'event-views';
+        b.dataset.viewsId = card.dataset.id;
+        b.textContent = '👁 ···';
+        info.appendChild(b);
+    });
+
+    document.querySelectorAll('.event-views[data-views-id]').forEach(badge => {
+        const id = badge.dataset.viewsId;
+        fetch(`https://abacus.jasoncameron.dev/get/agendashowsmoc/evento-${id}`)
+            .then(r => r.ok ? r.json() : (r.status === 404 ? { value: 0 } : Promise.reject(new Error('HTTP ' + r.status))))
+            .then(d => { badge.textContent = '👁 ' + Number(d.value).toLocaleString('pt-BR'); })
+            .catch(() => { badge.textContent = ''; });
+    });
+}
+initEventViews();
 
 // ============== LEITURA DO BLOG ==============
 const blogModal = $('#blogModal');
