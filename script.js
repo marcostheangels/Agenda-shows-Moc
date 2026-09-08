@@ -762,6 +762,41 @@ if (anuncieForm) anuncieForm.addEventListener('submit', e => {
 const copyYearEl = $('#copyYear');
 if (copyYearEl) copyYearEl.textContent = new Date().getFullYear();
 
+// =========================
+// CONTADOR DE VISITAS (Abacus)
+// =========================
+// Conta 1 visita por aba aberta (hit) e lê o total sem incrementar (hit?noIncrease=1).
+// Valores fixados por aba até o usuário fechar/recarregar — sem spam a cada troca de seção.
+const VISIT_HIT_URL = 'https://abacus.jasoncameron.dev/hit/agendashowsmoc/visitas';
+const VISIT_READ_URL = 'https://abacus.jasoncameron.dev/get/agendashowsmoc/visitas';
+
+(function () {
+    const digitsEl = $('#visitCount');
+    if (!digitsEl) return;
+
+    const fmt = n => Number(n).toLocaleString('pt-BR');
+
+    function show(n) {
+        digitsEl.classList.remove('loading');
+        digitsEl.textContent = fmt(n);
+    }
+
+    function load() {
+        fetch(VISIT_READ_URL)
+            .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+            .then(d => show(d.value))
+            .catch(() => {
+                digitsEl.classList.remove('loading');
+                digitsEl.textContent = '—';
+            });
+    }
+
+    fetch(VISIT_HIT_URL)
+        .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(d => show(d.value))
+        .catch(load);
+})();
+
 // ============== LEITURA DO BLOG ==============
 const blogModal = $('#blogModal');
 function openBlogPost(card) {

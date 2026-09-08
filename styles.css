@@ -969,6 +969,38 @@ ul { list-style: none; }
 }
 .footer-bottom p { color: var(--gray); font-size: 13px; }
 
+/* ============== CONTADOR DE VISITAS ============== */
+.visit-counter {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 8px 18px;
+    background: rgba(255, 61, 110, 0.08);
+    border: 1px solid rgba(255, 61, 110, 0.35);
+    border-radius: 999px;
+    color: var(--gray);
+    font-size: 13px;
+    user-select: none;
+}
+.visit-counter svg { width: 18px; height: 18px; color: var(--primary); animation: vcPulse 2.4s ease-in-out infinite; }
+.visit-counter .vc-label { letter-spacing: 0.5px; }
+.visit-counter .vc-digits {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    line-height: 1;
+    letter-spacing: 2px;
+    color: #fff;
+    text-shadow: 0 0 8px rgba(255, 61, 110, 0.8), 0 0 18px rgba(255, 61, 110, 0.4);
+    min-width: 64px;
+    text-align: center;
+}
+.visit-counter .vc-digits.loading { color: var(--gray); text-shadow: none; font-family: 'Montserrat', sans-serif; font-size: 14px; }
+@keyframes vcPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.55; transform: scale(0.9); }
+}
+
 /* ============== WHATSAPP FLOAT ============== */
 .whatsapp-float {
     position: fixed;
