@@ -11,6 +11,7 @@ Site profissional para divulgação de shows, forró, bares e restaurantes de Mo
 - `admin.js` - JavaScript do painel
 - `sitemap.xml` - Mapa do site (SEO)
 - `robots.txt` - Instruções para robôs de busca
+- `data.json` - Dados do site (eventos, categorias, configurações)
 
 ## 🚀 Como usar
 1. **Site público:** Abra `index.html`
@@ -28,6 +29,7 @@ Site profissional para divulgação de shows, forró, bares e restaurantes de Mo
 - Definir título, categoria, bairro, data, horário, preço
 - Adicionar descrição, cor de fundo, tags (HOT/NOVO/VIP)
 - Marcar eventos como destaque
+- Upload de fotos (flyer + galeria até 6 fotos extras)
 
 ### 🏪 Estabelecimentos
 - Cadastrar bares, restaurantes e casas
@@ -46,18 +48,27 @@ Site profissional para divulgação de shows, forró, bares e restaurantes de Mo
 - Controlar avaliação (estrelas), avatar e texto
 
 ### ⚙️ Configurações
-- Nome do site, WhatsApp, e-mail, Instagram
-- Estatísticas (eventos/mês, seguidores, visualizações)
-- Contagem regressiva (próximo grande evento)
-- Pacotes de divulgação
+- **Identidade do site:** Nome, WhatsApp, e-mail, Instagram, Facebook, YouTube
+- **SEO:** Título da página, meta description, meta keywords
+- **Hero (topo):** Badge, título (com *destaque* rosa), subtítulo
+- **Estatísticas do Hero:** Eventos/mês, seguidores, visualizações
+- **Textos de todas as seções:** Tags, títulos e subtítulos (Categorias, Calendário, Eventos, Estabelecimentos, Depoimentos, Blog, Contato)
+- **Contagem regressiva:** Título, data/hora, local do próximo grande evento
+- **CTA "Divulgue":** Tag, título, descrição, lista de benefícios, 3 cards de estatísticas com emojis
+- **Estatísticas dos Depoimentos:** 4 stats personalizáveis (valor + label)
+- **Newsletter:** Título e descrição
+- **Rodapé:** Descrição, copyright, crédito
+- **Pacotes:** Preço inicial, texto do botão Anuncie
 - **Alterar senha do admin**
 - **Exportar/Importar backup** (JSON)
+- **Publicação automática no GitHub** via Personal Access Token
 
 ## 💾 Sobre os dados
-- Todos os dados ficam salvos no navegador (localStorage)
+- Todos os dados ficam salvos no navegador (localStorage) e sincronizados com `data.json` no GitHub
 - Faça backup regularmente em "Dashboard > Backup"
 - Funciona offline (sem precisar de internet)
 - Para usar em vários dispositivos, exporte e importe o JSON
+- **O `data.json` no GitHub é a fonte da verdade** — o site público sempre carrega dele
 
 ## 💰 Como monetizar
 - Pacotes premium de divulgação para bares/restaurantes (R$ 49+/mês)
@@ -67,5 +78,6 @@ Site profissional para divulgação de shows, forró, bares e restaurantes de Mo
 - Posts patrocinados no blog
 
 ## 📞 Contato
-WhatsApp: (38) 99999-9999
-E-mail: contato@agendashowsmoc.com
+WhatsApp: (38) 998558528
+E-mail: agendashowsmoc@gmail.com
+Instagram: @agendashowsmoc

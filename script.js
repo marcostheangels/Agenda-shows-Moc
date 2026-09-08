@@ -144,14 +144,23 @@ function applyConfig() {
             el.textContent = hasEmoji ? '✉ ' + cfg.email : cfg.email;
         });
     }
-    if (cfg.countdownTitulo) {
-        const t = document.querySelector('.cd-title');
-        if (t) t.textContent = cfg.countdownTitulo;
+    if (cfg.instagramUrl) {
+        document.querySelectorAll('[data-social="instagram"]').forEach(a => {
+            a.href = cfg.instagramUrl;
+        });
     }
-    if (cfg.countdownLocal) {
-        const i = document.querySelector('.cd-info');
-        if (i) i.textContent = '📍 ' + cfg.countdownLocal;
+    if (cfg.facebookUrl) {
+        document.querySelectorAll('[data-social="facebook"]').forEach(a => {
+            a.href = cfg.facebookUrl;
+        });
     }
+    if (cfg.youtubeUrl) {
+        document.querySelectorAll('[data-social="youtube"]').forEach(a => {
+            a.href = cfg.youtubeUrl;
+        });
+    }
+
+    // Contadores do hero
     if (cfg.eventosMes) {
         const el = document.querySelector('[data-target="150"]');
         if (el) el.setAttribute('data-target', cfg.eventosMes);
@@ -164,6 +173,18 @@ function applyConfig() {
         const el = document.querySelector('[data-target="50"]');
         if (el) el.setAttribute('data-target', cfg.visualizacoes);
     }
+
+    // Countdown
+    if (cfg.countdownTitulo) {
+        const t = document.querySelector('.cd-title');
+        if (t) t.textContent = cfg.countdownTitulo;
+    }
+    if (cfg.countdownLocal) {
+        const i = document.querySelector('.cd-info');
+        if (i) i.textContent = '📍 ' + cfg.countdownLocal;
+    }
+
+    // CTA
     if (cfg.pacotePreco) {
         const els = document.querySelectorAll('.cta-list li:last-child');
         els.forEach(el => { if (el.textContent.includes('R$')) el.textContent = '✓ Pacotes a partir de ' + cfg.pacotePreco + '/mês'; });
@@ -171,6 +192,46 @@ function applyConfig() {
     if (cfg.anuncieTexto) {
         const els = document.querySelectorAll('a[href="#contato"].btn');
         els.forEach(el => el.textContent = cfg.anuncieTexto);
+    }
+    // CTA Emojis
+    if (cfg.cta1Emoji) {
+        const el = document.querySelector('.cta-card.c1 .cta-emoji');
+        if (el) el.textContent = cfg.cta1Emoji;
+    }
+    if (cfg.cta2Emoji) {
+        const el = document.querySelector('.cta-card.c2 .cta-emoji');
+        if (el) el.textContent = cfg.cta2Emoji;
+    }
+    if (cfg.cta3Emoji) {
+        const el = document.querySelector('.cta-card.c3 .cta-emoji');
+        if (el) el.textContent = cfg.cta3Emoji;
+    }
+
+    // Aplicação genérica de todos [data-cfg] (exceto os especiais já tratados)
+    const handled = new Set(['whatsapp','email','instagram']);
+    document.querySelectorAll('[data-cfg]').forEach(el => {
+        const key = el.dataset.cfg;
+        if (!key || handled.has(key) || cfg[key] == null) return;
+        const val = String(cfg[key]);
+        if (key === 'heroTitulo') {
+            el.innerHTML = val.replace(/\*([^*]+)\*/g, '<span>$1</span>');
+        } else if (key === 'ctaList') {
+            const list = document.getElementById('ctaList');
+            if (list) list.innerHTML = val.split('\n').map(s => `<li>${s}</li>`).join('');
+        } else {
+            el.textContent = val;
+        }
+    });
+
+    // SEO meta tags
+    if (cfg.seoTitulo) document.title = cfg.seoTitulo;
+    if (cfg.seoDesc) {
+        const m = document.querySelector('meta[name="description"]');
+        if (m) m.setAttribute('content', cfg.seoDesc);
+    }
+    if (cfg.seoKeywords) {
+        const m = document.querySelector('meta[name="keywords"]');
+        if (m) m.setAttribute('content', cfg.seoKeywords);
     }
 }
 
@@ -323,6 +384,15 @@ function updateFilters() {
     const current = sel.value;
     sel.innerHTML = '<option value="">Todas as categorias</option>' +
         adminData.categorias.map(c => `<option ${current === c.nome ? 'selected' : ''}>${c.nome}</option>`).join('');
+
+    // Bairros dinâmicos
+    const bairroSel = $('#filterBairro');
+    if (bairroSel && adminData.eventos) {
+        const currentBairro = bairroSel.value;
+        const bairros = [...new Set(adminData.eventos.map(e => e.bairro).filter(Boolean))].sort();
+        bairroSel.innerHTML = '<option value="">Todos os bairros</option>' +
+            bairros.map(b => `<option ${currentBairro === b ? 'selected' : ''}>${b}</option>`).join('');
+    }
 }
 
 function renderModalGallery(card) {
@@ -344,59 +414,73 @@ function renderModalGallery(card) {
 }
 
 function bindEventActions() {
-    $$('.fav-card').forEach(btn => btn.addEventListener('click', e => {
-        e.preventDefault();
-        e.stopPropagation();
-        const id = +btn.dataset.fav;
-        toggleFav(id);
-        showToast(favorites.includes(id) ? '❤️ Adicionado aos favoritos' : '💔 Removido');
-    }));
-    $$('.open-modal').forEach(btn => btn.addEventListener('click', e => {
-        e.preventDefault();
-        const id = +btn.dataset.id;
-        const card = document.querySelector(`.event-card[data-id="${id}"]`);
-        if (!card) return;
-        $('#modalTitle').textContent = card.dataset.titulo;
-        $('#modalCat').textContent = card.dataset.cat;
-        $('#modalCat').style.cssText = 'display:inline-block;background:rgba(255,61,110,0.12);color:#ff3d6e;padding:4px 12px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:1px;';
-        $('#modalData').textContent = '📅 ' + card.dataset.data;
-        $('#modalHora').textContent = '⏰ ' + card.dataset.hora;
-        $('#modalLocal').textContent = '📍 ' + card.dataset.local;
-        $('#modalPreco').textContent = '💰 ' + (card.dataset.preco === '0' ? 'Entrada Franca' : 'R$ ' + card.dataset.preco);
-        $('#modalDesc').textContent = card.dataset.desc;
+    // Usar delegação de eventos para evitar duplicatas
+    document.removeEventListener('click', handleEventClick);
+    document.addEventListener('click', handleEventClick);
 
-        // Imagem do modal - pegar a imagem real (sem cortando)
-        const realImg = card.querySelector('.event-img-real');
-        const evImgStyle = card.querySelector('.event-img').getAttribute('style') || '';
-        if (realImg && realImg.src) {
-            // Tem imagem real - usar object-fit: contain para não cortar
-            $('#modalImg').innerHTML = `<img src="${realImg.src}" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;" alt="${card.dataset.titulo}">`;
-            $('#modalImg').setAttribute('style', `background:${evImgStyle.includes('background:') ? evImgStyle.split('background:')[1].split(';')[0] : 'var(--dark-2)'};background-size:cover;background-position:center;`);
-        } else {
-            // Sem imagem real - usar o style do card (gradient)
-            $('#modalImg').innerHTML = '';
-            $('#modalImg').setAttribute('style', evImgStyle);
-        }
-        renderModalGallery(card);
-        const url = encodeURIComponent(window.location.href);
-        const text = encodeURIComponent(`🎶 ${card.dataset.titulo}\n📅 ${card.dataset.data}\n📍 ${card.dataset.local}\nConfira: `);
-        $('#shareWpp').href = `https://wa.me/?text=${text}${url}`;
-        $('#shareFb').href = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
-        $('#shareTw').href = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
-        $('#shareCp').onclick = e => { e.preventDefault(); navigator.clipboard.writeText(window.location.href); showToast('🔗 Link copiado!'); };
-    const mapQuery = card.dataset.endereco
-        ? card.dataset.endereco + ' Montes Claros MG'
-        : card.dataset.local + ' Montes Claros';
-    $('#modalMap').href = `https://www.google.com/maps/search/${encodeURIComponent(mapQuery)}`;
-    $('#modalMap').style.display = 'inline-flex';
-        const favBtn2 = $('#modalFav');
+    // Favoritos
+    $$('.fav-card').forEach(btn => {
+        btn.removeEventListener('click', handleFavClick);
+        btn.addEventListener('click', handleFavClick);
+    });
+}
+
+function handleFavClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const id = +e.currentTarget.dataset.fav;
+    toggleFav(id);
+    showToast(favorites.includes(id) ? '❤️ Adicionado aos favoritos' : '💔 Removido');
+}
+
+function handleEventClick(e) {
+    const openBtn = e.target.closest('.open-modal');
+    if (!openBtn) return;
+    e.preventDefault();
+    const id = +openBtn.dataset.id;
+    const card = document.querySelector(`.event-card[data-id="${id}"]`);
+    if (!card) return;
+
+    $('#modalTitle').textContent = card.dataset.titulo;
+    $('#modalCat').textContent = card.dataset.cat;
+    $('#modalCat').style.cssText = 'display:inline-block;background:rgba(255,61,110,0.12);color:#ff3d6e;padding:4px 12px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:1px;';
+    $('#modalData').textContent = '📅 ' + card.dataset.data;
+    $('#modalHora').textContent = '⏰ ' + card.dataset.hora;
+    $('#modalLocal').textContent = '📍 ' + card.dataset.local;
+    if (card.dataset.endereco) {
+        const endEl = $('#modalEndereco');
+        if (endEl) { endEl.textContent = '🏠 ' + card.dataset.endereco; endEl.style.display = 'block'; }
+    } else {
+        const endEl = $('#modalEndereco');
+        if (endEl) { endEl.textContent = ''; endEl.style.display = 'none'; }
+    }
+    $('#modalPreco').textContent = '💰 ' + (card.dataset.preco === '0' ? 'Entrada Franca' : 'R$ ' + card.dataset.preco);
+    $('#modalDesc').textContent = card.dataset.desc;
+
+    // Imagem do modal - usar o style do card (gradient ou bg-image)
+    const evImgStyle = card.querySelector('.event-img').getAttribute('style') || '';
+    $('#modalImg').innerHTML = '';
+    $('#modalImg').setAttribute('style', evImgStyle);
+    renderModalGallery(card);
+
+    const url = encodeURIComponent(window.location.href);
+    const text = encodeURIComponent(`🎶 ${card.dataset.titulo}\n📅 ${card.dataset.data}\n📍 ${card.dataset.local}\nConfira em: `);
+    $('#shareWpp').href = `https://wa.me/?text=${text}${url}`;
+    $('#shareFb').href = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+    $('#shareTw').href = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+    $('#shareCp').onclick = ev => { ev.preventDefault(); navigator.clipboard.writeText(window.location.href); showToast('🔗 Link copiado!'); };
+
+    $('#modalMap').href = `https://www.google.com/maps/search/${encodeURIComponent((card.dataset.endereco || card.dataset.local) + ' Montes Claros')}`;
+
+    const favBtn2 = $('#modalFav');
+    favBtn2.textContent = favorites.includes(id) ? '❤️ Favoritado' : '🤍 Favoritar';
+    favBtn2.onclick = () => {
+        toggleFav(id);
         favBtn2.textContent = favorites.includes(id) ? '❤️ Favoritado' : '🤍 Favoritar';
-        favBtn2.onclick = () => {
-            toggleFav(id);
-            favBtn2.textContent = favorites.includes(id) ? '❤️ Favoritado' : '🤍 Favoritar';
-        };
-        modal.classList.add('open');
-    }));
+        showToast(favorites.includes(id) ? '❤️ Adicionado!' : '💔 Removido!');
+    };
+
+    modal.classList.add('open');
 }
 
 // ============== MENU MOBILE ==============
@@ -457,14 +541,6 @@ const syncFavCards = () => {
 };
 syncFavCards();
 
-$$('.fav-card').forEach(btn => btn.addEventListener('click', e => {
-    e.preventDefault();
-    e.stopPropagation();
-    const id = +btn.dataset.fav;
-    toggleFav(id);
-    showToast(favorites.includes(id) ? '❤️ Adicionado aos favoritos' : '💔 Removido dos favoritos');
-}));
-
 // ============== PAINEL DE FAVORITOS ==============
 const favPanel = $('#favPanel');
 const favBtn = $('#favBtn');
@@ -508,58 +584,6 @@ const renderFavPanel = () => {
 // ============== MODAL DE EVENTO ==============
 const modal = $('#eventModal');
 const modalClose = $('#modalClose');
-const openModalBtns = $$('.open-modal');
-
-openModalBtns.forEach(btn => btn.addEventListener('click', e => {
-    e.preventDefault();
-    const id = +btn.dataset.id;
-    const card = document.querySelector(`.event-card[data-id="${id}"]`);
-    if (!card) return;
-
-    $('#modalTitle').textContent = card.dataset.titulo;
-    $('#modalCat').textContent = card.dataset.cat;
-    $('#modalCat').style.cssText = 'display:inline-block;background:rgba(255,61,110,0.12);color:#ff3d6e;padding:4px 12px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:1px;';
-    $('#modalData').textContent = '📅 ' + card.dataset.data;
-    $('#modalHora').textContent = '⏰ ' + card.dataset.hora;
-    $('#modalLocal').textContent = '📍 ' + card.dataset.local;
-    if (card.dataset.endereco) {
-        const endEl = $('#modalEndereco');
-        if (endEl) { endEl.textContent = '🏠 ' + card.dataset.endereco; endEl.style.display = 'block'; }
-    }
-    $('#modalPreco').textContent = '💰 ' + (card.dataset.preco === '0' ? 'Entrada Franca' : 'R$ ' + card.dataset.preco);
-    $('#modalDesc').textContent = card.dataset.desc;
-    // Imagem do modal - pegar a imagem real (sem cortando)
-    const realImg = card.querySelector('.event-img-real');
-    const evImgStyle = card.querySelector('.event-img').getAttribute('style') || '';
-    if (realImg && realImg.src) {
-        $('#modalImg').innerHTML = `<img src="${realImg.src}" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;" alt="${card.dataset.titulo}">`;
-        const bgColor = evImgStyle.includes('background:') ? evImgStyle.split('background:')[1].split(';')[0] : 'var(--dark-2)';
-        $('#modalImg').setAttribute('style', `background:${bgColor};background-size:cover;background-position:center;`);
-    } else {
-        $('#modalImg').innerHTML = '';
-        $('#modalImg').setAttribute('style', evImgStyle);
-    }
-    renderModalGallery(card);
-
-    const url = encodeURIComponent(window.location.href);
-    const text = encodeURIComponent(`🎶 ${card.dataset.titulo}\n📅 ${card.dataset.data}\n📍 ${card.dataset.local}\nConfira em: `);
-    $('#shareWpp').href = `https://wa.me/?text=${text}${url}`;
-    $('#shareFb').href = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
-    $('#shareTw').href = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
-    $('#shareCp').onclick = e => { e.preventDefault(); navigator.clipboard.writeText(window.location.href); showToast('🔗 Link copiado!'); };
-
-    $('#modalMap').href = `https://www.google.com/maps/search/${encodeURIComponent(card.dataset.local + ' Montes Claros')}`;
-
-    const favBtn2 = $('#modalFav');
-    favBtn2.textContent = favorites.includes(id) ? '❤️ Favoritado' : '🤍 Favoritar';
-    favBtn2.onclick = () => {
-        toggleFav(id);
-        favBtn2.textContent = favorites.includes(id) ? '❤️ Favoritado' : '🤍 Favoritar';
-        showToast(favorites.includes(id) ? '❤️ Adicionado!' : '💔 Removido!');
-    };
-
-    modal.classList.add('open');
-}));
 
 modalClose.addEventListener('click', () => modal.classList.remove('open'));
 modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
@@ -622,9 +646,10 @@ searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') applyFilte
 const calGrid = $('#calGrid');
 const calMonth = $('#calMonth');
 
-let calDate = new Date(2026, 8, 1);
+let calDate = new Date();
+calDate.setDate(1);
 
-const parseData = (dataStr) => {
+const parseData = (dataStr, year) => {
     if (!dataStr) return null;
     const m = dataStr.match(/(\d+)\s+([A-Z]{3})/);
     if (!m) return null;
@@ -632,7 +657,7 @@ const parseData = (dataStr) => {
     const dia = parseInt(m[1]);
     const mes = meses[m[2]];
     if (mes === undefined) return null;
-    return new Date(2026, mes, dia);
+    return new Date(year, mes, dia);
 };
 
 const renderCalendar = () => {
@@ -651,7 +676,7 @@ const renderCalendar = () => {
     }
     for (let d = 1; d <= daysInMonth; d++) {
         const eventsOnDay = (adminData && adminData.eventos) ? adminData.eventos.filter(ev => {
-            const dt = parseData(ev.data);
+            const dt = parseData(ev.data, year);
             return dt && dt.getFullYear() === year && dt.getMonth() === month && dt.getDate() === d;
         }) : [];
         const hasEvents = eventsOnDay.length > 0;
@@ -681,7 +706,7 @@ const renderCalendar = () => {
 const showDayEvents = (year, month, day) => {
     if (!adminData) return;
     const eventsOnDay = adminData.eventos.filter(ev => {
-        const dt = parseData(ev.data);
+        const dt = parseData(ev.data, year);
         return dt && dt.getFullYear() === year && dt.getMonth() === month && dt.getDate() === day;
     });
     if (eventsOnDay.length === 0) return;

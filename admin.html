@@ -23,11 +23,11 @@
             <div id="loginForm">
                 <div class="form-group">
                     <label>Usuário</label>
-                    <input type="text" id="loginUser" value="markim" autocomplete="username">
+                    <input type="text" id="loginUser" placeholder="Digite seu usuário" autocomplete="username">
                 </div>
                 <div class="form-group">
                     <label>Senha</label>
-                    <input type="password" id="loginPass" value="admin123" autocomplete="current-password">
+                    <input type="password" id="loginPass" placeholder="Digite sua senha" autocomplete="current-password">
                 </div>
                 <button type="button" class="btn-primary" id="btnLoginSubmit">Entrar no Painel</button>
                 <p class="login-hint">🔐 Acesso do administrador do site</p>
@@ -301,64 +301,171 @@
             <!-- CONFIGURAÇÕES -->
             <section class="admin-section" id="sec-config">
                 <form id="configForm" class="config-form" onsubmit="return false">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Nome do site</label>
-                            <input type="text" name="siteName" required>
+                    
+                    <fieldset style="margin-bottom:24px;padding:16px;border:1px solid #2a2a4a;border-radius:8px">
+                        <legend style="font-weight:600;color:#ff3d6e;padding:0 8px">🏷️ Identidade do Site</legend>
+                        <div class="form-row">
+                            <div class="form-group"><label>Nome do site</label><input type="text" name="siteName" required></div>
+                            <div class="form-group"><label>WhatsApp</label><input type="text" name="whatsapp" placeholder="(38) 99999-9999"></div>
                         </div>
-                        <div class="form-group">
-                            <label>WhatsApp</label>
-                            <input type="text" name="whatsapp" placeholder="(38) 99999-9999">
+                        <div class="form-row">
+                            <div class="form-group"><label>E-mail de contato</label><input type="email" name="email" placeholder="contato@..."></div>
+                            <div class="form-group"><label>Instagram (@)</label><input type="text" name="instagram" placeholder="@agendashowsmoc"></div>
                         </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>E-mail de contato</label>
-                            <input type="email" name="email" placeholder="contato@...">
+                        <div class="form-row">
+                            <div class="form-group"><label>Instagram URL</label><input type="url" name="instagramUrl" placeholder="https://instagram.com/agendashowsmoc"></div>
+                            <div class="form-group"><label>Facebook URL</label><input type="url" name="facebookUrl" placeholder="https://facebook.com/agendashowsmoc"></div>
                         </div>
-                        <div class="form-group">
-                            <label>Instagram</label>
-                            <input type="text" name="instagram" placeholder="@agendashowsmoc">
+                        <div class="form-row">
+                            <div class="form-group"><label>YouTube URL</label><input type="url" name="youtubeUrl" placeholder="https://youtube.com/@agendashowsmoc"></div>
                         </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Eventos por mês</label>
-                            <input type="number" name="eventosMes">
+                    </fieldset>
+
+                    <fieldset style="margin-bottom:24px;padding:16px;border:1px solid #2a2a4a;border-radius:8px">
+                        <legend style="font-weight:600;color:#ff3d6e;padding:0 8px">🔍 SEO</legend>
+                        <div class="form-group"><label>Título da página (title)</label><input type="text" name="seoTitulo" placeholder="Agenda Shows MOC - A agenda mais completa de Montes Claros"></div>
+                        <div class="form-group"><label>Meta Description</label><textarea name="seoDesc" rows="2" placeholder="Descubra shows, forró, bares e restaurantes imperdíveis em Montes Claros. Tudo em um só lugar!"></textarea></div>
+                        <div class="form-group"><label>Meta Keywords</label><input type="text" name="seoKeywords" placeholder="shows Montes Claros, forró MOC, bares MOC, restaurantes Montes Claros, agenda shows moc, eventos MOC, festas Montes Claros, sertanejo MOC"></div>
+                    </fieldset>
+
+                    <fieldset style="margin-bottom:24px;padding:16px;border:1px solid #2a2a4a;border-radius:8px">
+                        <legend style="font-weight:600;color:#ff3d6e;padding:0 8px">🎯 Hero (Topo do site)</legend>
+                        <div class="form-group"><label>Badge</label><input type="text" name="heroBadge" placeholder="MOC • Montes Claros"></div>
+                        <div class="form-group"><label>Título principal (use *palavra* para destaque rosa)</label><input type="text" name="heroTitulo" placeholder="A agenda mais *completa* de shows da cidade"></div>
+                        <div class="form-group"><label>Subtítulo</label><input type="text" name="heroSub" placeholder="Descubra forrós, bares, restaurantes e shows imperdíveis. Tudo em um só lugar."></div>
+                    </fieldset>
+
+                    <fieldset style="margin-bottom:24px;padding:16px;border:1px solid #2a2a4a;border-radius:8px">
+                        <legend style="font-weight:600;color:#ff3d6e;padding:0 8px">📊 Estatísticas do Hero</legend>
+                        <div class="form-row">
+                            <div class="form-group"><label>Eventos por mês</label><input type="number" name="eventosMes"></div>
+                            <div class="form-group"><label>Seguidores (mil)</label><input type="number" name="seguidores"></div>
+                            <div class="form-group"><label>Visualizações (k)</label><input type="number" name="visualizacoes"></div>
                         </div>
-                        <div class="form-group">
-                            <label>Seguidores</label>
-                            <input type="number" name="seguidores">
+                    </fieldset>
+
+                    <fieldset style="margin-bottom:24px;padding:16px;border:1px solid #2a2a4a;border-radius:8px">
+                        <legend style="font-weight:600;color:#ff3d6e;padding:0 8px">📑 Textos das Seções</legend>
+                        <div class="form-row">
+                            <div class="form-group"><label>Categorias - Tag</label><input type="text" name="catTag" placeholder="Explore por estilo"></div>
+                            <div class="form-group"><label>Categorias - Título</label><input type="text" name="catTitulo" placeholder="O que você procura hoje?"></div>
                         </div>
-                        <div class="form-group">
-                            <label>Visualizações (k)</label>
-                            <input type="number" name="visualizacoes">
+                        <div class="form-group"><label>Categorias - Subtítulo</label><input type="text" name="catSub" placeholder="Filtros inteligentes para você encontrar exatamente o evento ideal"></div>
+                        <hr style="border-color:#2a2a4a;margin:12px 0">
+                        <div class="form-row">
+                            <div class="form-group"><label>Calendário - Tag</label><input type="text" name="calTag" placeholder="Planeje sua semana"></div>
+                            <div class="form-group"><label>Calendário - Título</label><input type="text" name="calTitulo" placeholder="Calendário de Eventos"></div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Descrição da próxima contagem regressiva</label>
-                        <input type="text" name="countdownTitulo">
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Data do próximo grande evento</label>
-                            <input type="datetime-local" name="countdownData">
+                        <div class="form-group"><label>Calendário - Subtítulo</label><input type="text" name="calSub" placeholder="Clique em qualquer data para ver os eventos do dia"></div>
+                        <hr style="border-color:#2a2a4a;margin:12px 0">
+                        <div class="form-row">
+                            <div class="form-group"><label>Eventos - Tag</label><input type="text" name="evTag" placeholder="Agenda"></div>
+                            <div class="form-group"><label>Eventos - Título</label><input type="text" name="evTitulo" placeholder="Próximos Eventos"></div>
                         </div>
-                        <div class="form-group">
-                            <label>Local do evento</label>
-                            <input type="text" name="countdownLocal">
+                        <div class="form-group"><label>Eventos - Subtítulo</label><input type="text" name="evSub" placeholder="Os melhores shows da semana em MOC"></div>
+                        <hr style="border-color:#2a2a4a;margin:12px 0">
+                        <div class="form-row">
+                            <div class="form-group"><label>Estabelecimentos - Tag</label><input type="text" name="estTag" placeholder="Parceiros"></div>
+                            <div class="form-group"><label>Estabelecimentos - Título</label><input type="text" name="estTitulo" placeholder="Estabelecimentos em Destaque"></div>
                         </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Preço inicial dos pacotes</label>
-                            <input type="text" name="pacotePreco" placeholder="R$ 49">
+                        <div class="form-group"><label>Estabelecimentos - Subtítulo</label><input type="text" name="estSub" placeholder="Os melhores lugares de MOC para curtir"></div>
+                        <hr style="border-color:#2a2a4a;margin:12px 0">
+                        <div class="form-row">
+                            <div class="form-group"><label>Depoimentos - Tag</label><input type="text" name="depTag" placeholder="Confiança"></div>
+                            <div class="form-group"><label>Depoimentos - Título</label><input type="text" name="depTitulo" placeholder="Quem anuncia, aprova"></div>
                         </div>
-                        <div class="form-group">
-                            <label>Texto do botão Anuncie</label>
-                            <input type="text" name="anuncieTexto">
+                        <div class="form-group"><label>Depoimentos - Subtítulo</label><input type="text" name="depSub" placeholder="Donos de bares e restaurantes que cresceram com a gente"></div>
+                        <hr style="border-color:#2a2a4a;margin:12px 0">
+                        <div class="form-row">
+                            <div class="form-group"><label>Blog - Tag</label><input type="text" name="blogTag" placeholder="Conteúdo"></div>
+                            <div class="form-group"><label>Blog - Título</label><input type="text" name="blogTitulo" placeholder="Blog & Notícias"></div>
                         </div>
-                    </div>
+                        <div class="form-group"><label>Blog - Subtítulo</label><input type="text" name="blogSub" placeholder="Tudo sobre a cena cultural e noturna de Montes Claros"></div>
+                    </fieldset>
+
+                    <fieldset style="margin-bottom:24px;padding:16px;border:1px solid #2a2a4a;border-radius:8px">
+                        <legend style="font-weight:600;color:#ff3d6e;padding:0 8px">⏳ Contagem Regressiva</legend>
+                        <div class="form-group"><label>Título do evento</label><input type="text" name="countdownTitulo" placeholder="Festival de Forró de MOC — 3ª Edição"></div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Data e hora</label><input type="datetime-local" name="countdownData"></div>
+                            <div class="form-group"><label>Local</label><input type="text" name="countdownLocal" placeholder="Arena MOC • 15 de Outubro, 2026 • 20h"></div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset style="margin-bottom:24px;padding:16px;border:1px solid #2a2a4a;border-radius:8px">
+                        <legend style="font-weight:600;color:#ff3d6e;padding:0 8px">📢 CTA - Divulgue seu Estabelecimento</legend>
+                        <div class="form-row">
+                            <div class="form-group"><label>Tag</label><input type="text" name="ctaTag" placeholder="Para Proprietários"></div>
+                            <div class="form-group"><label>Título</label><input type="text" name="ctaTitulo" placeholder="Divulgue seu estabelecimento aqui!"></div>
+                        </div>
+                        <div class="form-group"><label>Descrição</label><textarea name="ctaSub" rows="2" placeholder="Milhares de pessoas procuram shows e eventos em MOC todos os dias..."></textarea></div>
+                        <div class="form-group"><label>Lista de benefícios (um por linha)</label><textarea name="ctaList" rows="4" placeholder="✓ Seu evento na página inicial&#10;✓ Destaque para +20 mil seguidores&#10;✓ Posts nas redes sociais&#10;✓ Pacotes a partir de R$ 49/mês"></textarea></div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Card 1 - Valor</label><input type="text" name="cta1Val" placeholder="+150"></div>
+                            <div class="form-group"><label>Card 1 - Label</label><input type="text" name="cta1Label" placeholder="eventos/mês"></div>
+                            <div class="form-group"><label>Card 1 - Emoji</label><input type="text" name="cta1Emoji" placeholder="🎤"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Card 2 - Valor</label><input type="text" name="cta2Val" placeholder="+300%"></div>
+                            <div class="form-group"><label>Card 2 - Label</label><input type="text" name="cta2Label" placeholder="mais público"></div>
+                            <div class="form-group"><label>Card 2 - Emoji</label><input type="text" name="cta2Emoji" placeholder="📈"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Card 3 - Valor</label><input type="text" name="cta3Val" placeholder="+20k"></div>
+                            <div class="form-group"><label>Card 3 - Label</label><input type="text" name="cta3Label" placeholder="seguidores"></div>
+                            <div class="form-group"><label>Card 3 - Emoji</label><input type="text" name="cta3Emoji" placeholder="❤️"></div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset style="margin-bottom:24px;padding:16px;border:1px solid #2a2a4a;border-radius:8px">
+                        <legend style="font-weight:600;color:#ff3d6e;padding:0 8px">⭐ Estatísticas dos Depoimentos</legend>
+                        <div class="form-row">
+                            <div class="form-group"><label>Stat 1 - Valor</label><input type="text" name="dep1Val" placeholder="98%"></div>
+                            <div class="form-group"><label>Stat 1 - Label</label><input type="text" name="dep1Label" placeholder="de satisfação"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Stat 2 - Valor</label><input type="text" name="dep2Val" placeholder="+300"></div>
+                            <div class="form-group"><label>Stat 2 - Label</label><input type="text" name="dep2Label" placeholder="eventos divulgados"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Stat 3 - Valor</label><input type="text" name="dep3Val" placeholder="+80"></div>
+                            <div class="form-group"><label>Stat 3 - Label</label><input type="text" name="dep3Label" placeholder="parceiros ativos"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Stat 4 - Valor</label><input type="text" name="dep4Val" placeholder="4.9★"></div>
+                            <div class="form-group"><label>Stat 4 - Label</label><input type="text" name="dep4Label" placeholder="avaliação média"></div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset style="margin-bottom:24px;padding:16px;border:1px solid #2a2a4a;border-radius:8px">
+                        <legend style="font-weight:600;color:#ff3d6e;padding:0 8px">📧 Newsletter</legend>
+                        <div class="form-group"><label>Título</label><input type="text" name="newsTitulo" placeholder="Não perca nenhum show!"></div>
+                        <div class="form-group"><label>Descrição</label><input type="text" name="newsSub" placeholder="Receba a agenda semanal direto no seu WhatsApp ou e-mail."></div>
+                    </fieldset>
+
+                    <fieldset style="margin-bottom:24px;padding:16px;border:1px solid #2a2a4a;border-radius:8px">
+                        <legend style="font-weight:600;color:#ff3d6e;padding:0 8px">📞 Contato</legend>
+                        <div class="form-row">
+                            <div class="form-group"><label>Tag</label><input type="text" name="contTag" placeholder="Fale com a gente"></div>
+                            <div class="form-group"><label>Título</label><input type="text" name="contTitulo" placeholder="Contato"></div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset style="margin-bottom:24px;padding:16px;border:1px solid #2a2a4a;border-radius:8px">
+                        <legend style="font-weight:600;color:#ff3d6e;padding:0 8px">🦶 Rodapé</legend>
+                        <div class="form-group"><label>Descrição</label><input type="text" name="footerDesc" placeholder="A agenda mais completa de shows, forró, bares e restaurantes de Montes Claros."></div>
+                        <div class="form-group"><label>Copyright</label><input type="text" name="footerCopyright" placeholder="© 2026 Agenda Shows MOC. Todos os direitos reservados."></div>
+                        <div class="form-group"><label>Crédito</label><input type="text" name="footerCredito" placeholder="Feito com ❤️ em Montes Claros - MG"></div>
+                    </fieldset>
+
+                    <fieldset style="margin-bottom:24px;padding:16px;border:1px solid #2a2a4a;border-radius:8px">
+                        <legend style="font-weight:600;color:#ff3d6e;padding:0 8px">💰 Pacotes e Botões</legend>
+                        <div class="form-row">
+                            <div class="form-group"><label>Preço inicial dos pacotes</label><input type="text" name="pacotePreco" placeholder="R$ 49"></div>
+                            <div class="form-group"><label>Texto do botão Anuncie</label><input type="text" name="anuncieTexto" placeholder="Quero Anunciar"></div>
+                        </div>
+                    </fieldset>
+
                     <div style="display:flex;gap:12px;align-items:center;margin-top:20px;flex-wrap:wrap">
                         <button type="button" class="btn-primary" style="width:auto" id="btnSaveConfig">💾 Salvar Configurações</button>
                         <button type="button" class="btn-secondary" id="btnChangePass">🔐 Alterar Senha</button>

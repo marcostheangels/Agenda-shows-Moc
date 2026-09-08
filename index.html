@@ -14,7 +14,7 @@
     <meta property="og:url" content="https://agendashowsmoc.com/">
     <meta property="og:title" content="Agenda Shows MOC - A agenda mais completa de Montes Claros">
     <meta property="og:description" content="Descubra shows, forró, bares e restaurantes imperdíveis em Montes Claros. Tudo em um só lugar!">
-    <meta property="og:image" content="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1200&q=80">
+    <meta property="og:image" content="https://agendashowsmoc.com/AgendaShowsMoc.jpeg">
     <meta property="og:locale" content="pt_BR">
     <meta property="og:site_name" content="Agenda Shows MOC">
 
@@ -45,8 +45,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=34">
-    <link rel="stylesheet" href="admin.css?v=7">
+    <link rel="stylesheet" href="styles.css?v=35">
 </head>
 <body>
     <!-- HEADER -->
@@ -89,9 +88,9 @@
                 <img class="hero-img" src="fotos/AgendaShowsMoc.jpeg" alt="Agenda Shows MOC">
             </div>
             <div class="hero-content">
-                <span class="hero-badge">MOC • Montes Claros</span>
-                <h1 class="hero-title">A agenda mais <span>completa</span> de shows da cidade</h1>
-                <p class="hero-sub">Descubra forrós, bares, restaurantes e shows imperdíveis. Tudo em um só lugar.</p>
+                <span class="hero-badge" data-cfg="heroBadge">MOC • Montes Claros</span>
+                <h1 class="hero-title" data-cfg="heroTitulo">A agenda mais <span>completa</span> de shows da cidade</h1>
+                <p class="hero-sub" data-cfg="heroSub">Descubra forrós, bares, restaurantes e shows imperdíveis. Tudo em um só lugar.</p>
                 <div class="hero-actions">
                     <a href="#eventos" class="btn btn-primary">Ver Eventos</a>
                     <a href="#anuncie" class="btn btn-ghost">Divulgue seu Evento</a>
@@ -167,9 +166,9 @@
     <section class="section categorias" id="categorias">
         <div class="container">
             <div class="section-head">
-                <span class="section-tag">Explore por estilo</span>
-                <h2 class="section-title">O que você procura hoje?</h2>
-                <p class="section-sub">Filtros inteligentes para você encontrar exatamente o evento ideal</p>
+                <span class="section-tag" data-cfg="catTag">Explore por estilo</span>
+                <h2 class="section-title" data-cfg="catTitulo">O que você procura hoje?</h2>
+                <p class="section-sub" data-cfg="catSub">Filtros inteligentes para você encontrar exatamente o evento ideal</p>
             </div>
 
             <div class="cat-tabs">
@@ -321,9 +320,9 @@
     <section class="section calendario" id="calendario">
         <div class="container">
             <div class="section-head">
-                <span class="section-tag">Planeje sua semana</span>
-                <h2 class="section-title">Calendário de Eventos</h2>
-                <p class="section-sub">Clique em qualquer data para ver os eventos do dia</p>
+                <span class="section-tag" data-cfg="calTag">Planeje sua semana</span>
+                <h2 class="section-title" data-cfg="calTitulo">Calendário de Eventos</h2>
+                <p class="section-sub" data-cfg="calSub">Clique em qualquer data para ver os eventos do dia</p>
             </div>
             <div class="cal-wrap">
                 <div class="cal-header">
@@ -363,9 +362,9 @@
     <section class="section eventos" id="eventos">
         <div class="container">
             <div class="section-head">
-                <span class="section-tag">Agenda</span>
-                <h2 class="section-title">Próximos Eventos</h2>
-                <p class="section-sub">Os melhores shows da semana em MOC</p>
+                <span class="section-tag" data-cfg="evTag">Agenda</span>
+                <h2 class="section-title" data-cfg="evTitulo">Próximos Eventos</h2>
+                <p class="section-sub" data-cfg="evSub">Os melhores shows da semana em MOC</p>
                 <div class="events-count" id="eventsCount">Mostrando 6 eventos</div>
             </div>
             <div class="event-grid" id="eventGrid">
@@ -573,9 +572,9 @@
     <section class="section estabelecimentos" id="estabelecimentos">
         <div class="container">
             <div class="section-head">
-                <span class="section-tag">Parceiros</span>
-                <h2 class="section-title">Estabelecimentos em Destaque</h2>
-                <p class="section-sub">Os melhores lugares de MOC para curtir</p>
+                <span class="section-tag" data-cfg="estTag">Parceiros</span>
+                <h2 class="section-title" data-cfg="estTitulo">Estabelecimentos em Destaque</h2>
+                <p class="section-sub" data-cfg="estSub">Os melhores lugares de MOC para curtir</p>
             </div>
             <div class="est-grid">
                 <a href="#" class="est-card">
@@ -626,9 +625,9 @@
     <section class="section depoimentos" id="depoimentos">
         <div class="container">
             <div class="section-head">
-                <span class="section-tag">Confiança</span>
-                <h2 class="section-title">Quem anuncia, aprova</h2>
-                <p class="section-sub">Donos de bares e restaurantes que cresceram com a gente</p>
+                <span class="section-tag" data-cfg="depTag">Confiança</span>
+                <h2 class="section-title" data-cfg="depTitulo">Quem anuncia, aprova</h2>
+                <p class="section-sub" data-cfg="depSub">Donos de bares e restaurantes que cresceram com a gente</p>
             </div>
             <div class="dep-grid">
                 <article class="dep-card">
@@ -677,10 +676,10 @@
                 </article>
             </div>
             <div class="dep-stats">
-                <div class="dep-stat"><strong>98%</strong><span>de satisfação</span></div>
-                <div class="dep-stat"><strong>+300</strong><span>eventos divulgados</span></div>
-                <div class="dep-stat"><strong>+80</strong><span>parceiros ativos</span></div>
-                <div class="dep-stat"><strong>4.9★</strong><span>avaliação média</span></div>
+                <div class="dep-stat"><strong data-cfg="dep1Val">98%</strong><span data-cfg="dep1Label">de satisfação</span></div>
+                <div class="dep-stat"><strong data-cfg="dep2Val">+300</strong><span data-cfg="dep2Label">eventos divulgados</span></div>
+                <div class="dep-stat"><strong data-cfg="dep3Val">+80</strong><span data-cfg="dep3Label">parceiros ativos</span></div>
+                <div class="dep-stat"><strong data-cfg="dep4Val">4.9★</strong><span data-cfg="dep4Label">avaliação média</span></div>
             </div>
         </div>
     </section>
@@ -689,9 +688,9 @@
     <section class="section blog" id="blog">
         <div class="container">
             <div class="section-head">
-                <span class="section-tag">Conteúdo</span>
-                <h2 class="section-title">Blog &amp; Notícias</h2>
-                <p class="section-sub">Tudo sobre a cena cultural e noturna de Montes Claros</p>
+                <span class="section-tag" data-cfg="blogTag">Conteúdo</span>
+                <h2 class="section-title" data-cfg="blogTitulo">Blog &amp; Notícias</h2>
+                <p class="section-sub" data-cfg="blogSub">Tudo sobre a cena cultural e noturna de Montes Claros</p>
             </div>
             <div class="blog-grid">
                 <article class="blog-card blog-destaque">
@@ -749,32 +748,32 @@
     <section class="cta-anuncie" id="anuncie">
         <div class="container cta-inner">
             <div class="cta-text">
-                <span class="section-tag light">Para Proprietários</span>
-                <h2>Divulgue seu estabelecimento aqui!</h2>
-                <p>Milhares de pessoas procuram shows e eventos em MOC todos os dias. Coloque seu bar, restaurante ou casa de show na agenda e atraia muito mais clientes.</p>
-                <ul class="cta-list">
+                <span class="section-tag light" data-cfg="ctaTag">Para Proprietários</span>
+                <h2 data-cfg="ctaTitulo">Divulgue seu estabelecimento aqui!</h2>
+                <p data-cfg="ctaSub">Milhares de pessoas procuram shows e eventos em MOC todos os dias. Coloque seu bar, restaurante ou casa de show na agenda e atraia muito mais clientes.</p>
+                <ul class="cta-list" id="ctaList">
                     <li>✓ Seu evento na página inicial</li>
                     <li>✓ Destaque para +20 mil seguidores</li>
                     <li>✓ Posts nas redes sociais</li>
                     <li>✓ Pacotes a partir de R$ 49/mês</li>
                 </ul>
-                <a href="#contato" class="btn btn-primary btn-lg">Quero Anunciar</a>
+                <a href="#contato" class="btn btn-primary btn-lg" data-cfg="anuncieTexto">Quero Anunciar</a>
             </div>
             <div class="cta-visual">
                 <div class="cta-card c1">
                     <div class="cta-emoji">🎤</div>
-                    <strong>+150</strong>
-                    <span>eventos/mês</span>
+                    <strong data-cfg="cta1Val">+150</strong>
+                    <span data-cfg="cta1Label">eventos/mês</span>
                 </div>
                 <div class="cta-card c2">
                     <div class="cta-emoji">📈</div>
-                    <strong>+300%</strong>
-                    <span>mais público</span>
+                    <strong data-cfg="cta2Val">+300%</strong>
+                    <span data-cfg="cta2Label">mais público</span>
                 </div>
                 <div class="cta-card c3">
                     <div class="cta-emoji">❤️</div>
-                    <strong>+20k</strong>
-                    <span>seguidores</span>
+                    <strong data-cfg="cta3Val">+20k</strong>
+                    <span data-cfg="cta3Label">seguidores</span>
                 </div>
             </div>
         </div>
@@ -784,8 +783,8 @@
     <section class="newsletter">
         <div class="container news-inner">
             <div class="news-text">
-                <h2>Não perca nenhum show!</h2>
-                <p>Receba a agenda semanal direto no seu WhatsApp ou e-mail.</p>
+                <h2 data-cfg="newsTitulo">Não perca nenhum show!</h2>
+                <p data-cfg="newsSub">Receba a agenda semanal direto no seu WhatsApp ou e-mail.</p>
             </div>
             <form class="news-form" onsubmit="return false;">
                 <input type="email" placeholder="Seu melhor e-mail">
@@ -798,8 +797,8 @@
     <section class="section contato" id="contato">
         <div class="container">
             <div class="section-head">
-                <span class="section-tag">Fale com a gente</span>
-                <h2 class="section-title">Contato</h2>
+                <span class="section-tag" data-cfg="contTag">Fale com a gente</span>
+                <h2 class="section-title" data-cfg="contTitulo">Contato</h2>
             </div>
             <div class="contato-grid">
                 <a class="contato-card" href="https://wa.me/5538998558528" target="_blank">
@@ -807,7 +806,7 @@
                     <h3>WhatsApp</h3>
                     <p data-cfg="whatsapp">(38) 998558528</p>
                 </a>
-                <a class="contato-card" href="https://instagram.com" target="_blank">
+                <a class="contato-card" href="https://instagram.com" data-social="instagram" target="_blank">
                     <div class="contato-icon" style="background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);">📸</div>
                     <h3>Instagram</h3>
                     <p data-cfg="instagram">@agendashowsmoc</p>
@@ -832,12 +831,12 @@
                         <span class="logo-sub">MOC</span>
                     </div>
                 </a>
-                <p>A agenda mais completa de shows, forró, bares e restaurantes de Montes Claros.</p>
+                <p data-cfg="footerDesc">A agenda mais completa de shows, forró, bares e restaurantes de Montes Claros.</p>
                 <div class="footer-social">
-                    <a href="https://instagram.com" aria-label="Instagram"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16zm0 5.5a4.34 4.34 0 100 8.68 4.34 4.34 0 000-8.68zm5.41-.87a1.01 1.01 0 100 2.03 1.01 1.01 0 000-2.03zM12 9.16a2.84 2.84 0 110 5.68 2.84 2.84 0 010-5.68z"/></svg></a>
-                    <a href="https://wa.me/5538998558528" aria-label="WhatsApp"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.94.55 3.74 1.5 5.27L2 22l4.83-1.46C8.31 21.45 10.1 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm5.6 14.6c-.24.67-1.41 1.32-2.06 1.42-.52.08-1.18.13-1.91-.12-.45-.15-1.03-.34-1.78-.67-3.13-1.35-5.18-4.5-5.34-4.71-.16-.21-1.28-1.71-1.28-3.26 0-1.55.81-2.31 1.1-2.63.29-.32.63-.4.85-.4.21 0 .42 0 .61.01.2.01.47-.08.73.56.28.68.95 2.34 1.03 2.51.08.17.13.37.02.6-.11.23-.17.37-.33.57-.16.2-.34.45-.49.6-.16.16-.33.34-.14.66.19.32.84 1.39 1.81 2.25 1.25 1.11 2.3 1.45 2.63 1.62.32.16.51.13.7-.08.19-.21.81-.94 1.03-1.27.22-.32.43-.27.73-.16.3.11 1.92.91 2.25 1.07.32.16.54.24.62.37.08.13.08.76-.16 1.43z"/></svg></a>
-                    <a href="https://facebook.com" aria-label="Facebook"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg></a>
-                    <a href="https://youtube.com" aria-label="YouTube"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M21.58 7.19c-.23-.86-.91-1.54-1.77-1.77C18.25 5 12 5 12 5s-6.25 0-7.81.42c-.86.23-1.54.91-1.77 1.77C2 8.75 2 12 2 12s0 3.25.42 4.81c.23.86.91 1.54 1.77 1.77C5.75 19 12 19 12 19s6.25 0 7.81-.42c.86-.23 1.54-.91 1.77-1.77C22 15.25 22 12 22 12s0-3.25-.42-4.81zM10 15V9l5.2 3-5.2 3z"/></svg></a>
+                    <a href="https://instagram.com" data-social="instagram" aria-label="Instagram"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16zm0 5.5a4.34 4.34 0 100 8.68 4.34 4.34 0 000-8.68zm5.41-.87a1.01 1.01 0 100 2.03 1.01 1.01 0 000-2.03zM12 9.16a2.84 2.84 0 110 5.68 2.84 2.84 0 010-5.68z"/></svg></a>
+                    <a href="https://wa.me/5538998558528" data-social="whatsapp" aria-label="WhatsApp"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.94.55 3.74 1.5 5.27L2 22l4.83-1.46C8.31 21.45 10.1 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm5.6 14.6c-.24.67-1.41 1.32-2.06 1.42-.52.08-1.18.13-1.91-.12-.45-.15-1.03-.34-1.78-.67-3.13-1.35-5.18-4.5-5.34-4.71-.16-.21-1.28-1.71-1.28-3.26 0-1.55.81-2.31 1.1-2.63.29-.32.63-.4.85-.4.21 0 .42 0 .61.01.2.01.47-.08.73.56.28.68.95 2.34 1.03 2.51.08.17.13.37.02.6-.11.23-.17.37-.33.57-.16.2-.34.45-.49.6-.16.16-.33.34-.14.66.19.32.84 1.39 1.81 2.25 1.25 1.11 2.3 1.45 2.63 1.62.32.16.51.13.7-.08.19-.21.81-.94 1.03-1.27.22-.32.43-.27.73-.16.3.11 1.92.91 2.25 1.07.32.16.54.24.62.37.08.13.08.76-.16 1.43z"/></svg></a>
+                    <a href="https://facebook.com" data-social="facebook" aria-label="Facebook"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg></a>
+                    <a href="https://youtube.com" data-social="youtube" aria-label="YouTube"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M21.58 7.19c-.23-.86-.91-1.54-1.77-1.77C18.25 5 12 5 12 5s-6.25 0-7.81.42c-.86.23-1.54.91-1.77 1.77C2 8.75 2 12 2 12s0 3.25.42 4.81c.23.86.91 1.54 1.77 1.77C5.75 19 12 19 12 19s6.25 0 7.81-.42c.86-.23 1.54-.91 1.77-1.77C22 15.25 22 12 22 12s0-3.25-.42-4.81zM10 15V9l5.2 3-5.2 3z"/></svg></a>
                 </div>
             </div>
             <div class="footer-col">
@@ -874,8 +873,8 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>© 2026 Agenda Shows MOC. Todos os direitos reservados.</p>
-            <p>Feito com ❤️ em Montes Claros - MG</p>
+            <p data-cfg="footerCopyright">© 2026 Agenda Shows MOC. Todos os direitos reservados.</p>
+            <p data-cfg="footerCredito">Feito com ❤️ em Montes Claros - MG</p>
             <p style="margin-top:8px"><a href="admin.html" style="color:var(--gray);font-size:11px;opacity:0.5">⚙ Área restrita</a></p>
         </div>
     </footer>
