@@ -1330,6 +1330,18 @@ ul { list-style: none; }
     margin-top: 10px;
 }
 
+.event-empty {
+    text-align: center;
+    color: var(--gray);
+    background: var(--card);
+    border: 1px dashed var(--border);
+    border-radius: 16px;
+    padding: 40px 20px;
+    font-size: 15px;
+    margin-top: 20px;
+}
+.event-empty a { color: var(--primary); font-weight: 700; }
+
 .fav-card {
     position: absolute;
     top: 12px; right: 12px;

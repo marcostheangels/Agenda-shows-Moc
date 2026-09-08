@@ -110,6 +110,7 @@ async function loadRemote() {
             renderDepoimentosFromAdmin();
             renderCalendar();
             updateCountdown();
+            buildSeoStructuredData(json.eventos);
             const total = json.eventos.length;
             console.log('%c✅ data.json carregado: ' + total + ' eventos', 'color:#10b981;font-weight:bold');
             return true;
@@ -243,7 +244,7 @@ function renderEventosFromAdmin() {
     grid.innerHTML = adminData.eventos.map(ev => {
         const imgStyle = bgStyle(ev.img);
         return `
-        <article class="event-card" data-id="${ev.id}" data-cat="${ev.cat}" data-bairro="${ev.bairro}" data-preco="${ev.preco}" data-titulo="${ev.titulo.replace(/"/g,'&quot;')}" data-local="${ev.local.replace(/"/g,'&quot;')}" data-endereco="${(ev.endereco || '').replace(/"/g,'&quot;')}" data-data="${ev.data}" data-hora="${ev.hora}" data-desc="${(ev.desc || '').replace(/"/g,'&quot;')}" data-galeria="${JSON.stringify(ev.galeria || []).replace(/"/g,'&quot;')}">
+        <article class="event-card" data-id="${ev.id}" data-cat="${ev.cat}" data-bairro="${ev.bairro}" data-preco="${ev.preco}" data-titulo="${ev.titulo.replace(/"/g,'&quot;')}" data-local="${ev.local.replace(/"/g,'&quot;')}" data-endereco="${(ev.endereco || '').replace(/"/g,'&quot;')}" data-data="${ev.data}" data-hora="${ev.hora}" data-desc="${(ev.desc || '').replace(/"/g,'&quot;')}" data-galeria="${JSON.stringify(ev.galeria || []).replace(/"/g,'&quot;')}" data-tag="${(ev.tag || '').replace(/"/g,'&quot;')}" data-ingresso="${(ev.ingresso || '').replace(/"/g,'&quot;')}">
             <button class="fav-card" data-fav="${ev.id}" aria-label="Favoritar">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             </button>
@@ -479,14 +480,30 @@ function handleEventClick(e) {
     const mScroll = modal.querySelector('.modal');
     if (mScroll) mScroll.scrollTop = 0;
 
-    const url = encodeURIComponent(window.location.href);
+    // Link único / compartilhável deste evento
+    const eventUrl = shareBaseUrl() + '#evento-' + id;
+    const url = encodeURIComponent(eventUrl);
     const text = encodeURIComponent(`🎶 ${card.dataset.titulo}\n📅 ${card.dataset.data}\n📍 ${card.dataset.local}\nConfira em: `);
     $('#shareWpp').href = `https://wa.me/?text=${text}${url}`;
     $('#shareFb').href = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
     $('#shareTw').href = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
-    $('#shareCp').onclick = ev => { ev.preventDefault(); navigator.clipboard.writeText(window.location.href); showToast('🔗 Link copiado!'); };
+    $('#shareCp').onclick = ev => { ev.preventDefault(); navigator.clipboard.writeText(eventUrl); showToast('🔗 Link copiado!'); };
 
     $('#modalMap').href = `https://www.google.com/maps/search/${encodeURIComponent((card.dataset.endereco || card.dataset.local) + ' Montes Claros')}`;
+
+    // Botão de ingresso (opcional, por evento)
+    const ingresso = (card.dataset.ingresso || '').trim();
+    const ticket = $('#modalTicket');
+    if (ticket) {
+        if (ingresso) {
+            ticket.style.display = '';
+            ticket.href = ingresso;
+            ticket.target = '_blank';
+            ticket.rel = 'noopener';
+        } else {
+            ticket.style.display = 'none';
+        }
+    }
 
     const favBtn2 = $('#modalFav');
     favBtn2.textContent = favorites.includes(id) ? '❤️ Favoritado' : '🤍 Favoritar';
@@ -495,6 +512,9 @@ function handleEventClick(e) {
         favBtn2.textContent = favorites.includes(id) ? '❤️ Favoritado' : '🤍 Favoritar';
         showToast(favorites.includes(id) ? '❤️ Adicionado!' : '💔 Removido!');
     };
+
+    // URL única no histórico (sem recarregar a página)
+    try { history.replaceState(null, '', eventUrl); } catch (err) {}
 
     modal.classList.add('open');
 }
@@ -601,12 +621,32 @@ const renderFavPanel = () => {
 const modal = $('#eventModal');
 const modalClose = $('#modalClose');
 
-modalClose.addEventListener('click', () => modal.classList.remove('open'));
-modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
+function clearEventHash() {
+    try { history.replaceState(null, '', window.location.href.split('#')[0]); } catch (err) {}
+}
+function shareBaseUrl() { return window.location.href.split('#')[0]; }
+function openEventById(id) {
+    const card = document.querySelector(`.event-card[data-id="${id}"]`);
+    if (!card) return false;
+    card.style.display = '';
+    const btn = card.querySelector('.open-modal');
+    if (!btn) return false;
+    btn.click();
+    return true;
+}
+function handleHash() {
+    const m = (window.location.hash || '').match(/^#evento-(\d+)$/);
+    if (m) openEventById(+m[1]);
+}
+window.addEventListener('hashchange', handleHash);
+
+modalClose.addEventListener('click', () => { modal.classList.remove('open'); clearEventHash(); });
+modal.addEventListener('click', e => { if (e.target === modal) { modal.classList.remove('open'); clearEventHash(); } });
 document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
         modal.classList.remove('open');
         favPanel.classList.remove('open');
+        clearEventHash();
     }
 });
 
@@ -618,6 +658,45 @@ const filterPreco = $('#filterPreco');
 const searchBtn = $('#searchBtn');
 const eventGrid = $('#eventGrid');
 const eventsCount = $('#eventsCount');
+
+// ============== FILTROS POR DATA / TIPO ==============
+const MONTH_MAP = { JAN: 0, FEV: 1, MAR: 2, ABR: 3, MAI: 4, JUN: 5, JUL: 6, AGO: 7, SET: 8, OUT: 9, NOV: 10, DEZ: 11 };
+let activeTab = 'Todos';
+
+const parseCardDate = card => {
+    const s = (card.dataset.data || '').trim();
+    const m = s.match(/(\d{1,2})\s+([A-Z]{3})/);
+    if (!m) return null;
+    const mo = MONTH_MAP[m[2]];
+    if (mo === undefined) return null;
+    return new Date(new Date().getFullYear(), mo, parseInt(m[1], 10));
+};
+
+// Aba (Hoje / Amanhã / Fim de semana / Gratuitos / VIP)
+const tabOk = card => {
+    const t = activeTab;
+    if (t === 'Todos') return true;
+    const preco = +card.dataset.preco;
+    if (t === 'Gratuitos') return preco === 0;
+    if (t === 'VIP') {
+        const tg = (card.dataset.tag || '').toUpperCase();
+        return tg === 'VIP' || preco >= 100;
+    }
+    const now = new Date();
+    if (t === 'Hoje' || t === 'Amanha') {
+        const target = new Date(now);
+        if (t === 'Amanha') target.setDate(target.getDate() + 1);
+        const d = parseCardDate(card);
+        return !!d && d.getDate() === target.getDate() && d.getMonth() === target.getMonth();
+    }
+    if (t === 'Fim de Semana') {
+        const hora = (card.dataset.hora || '').toLowerCase();
+        if (/s[aá]bado|domingo/.test(hora)) return true;
+        const d = parseCardDate(card);
+        return !!d && (d.getDay() === 6 || d.getDay() === 0);
+    }
+    return true;
+};
 
 const applyFilters = () => {
     const q = searchInput.value.toLowerCase();
@@ -644,19 +723,82 @@ const applyFilters = () => {
         else if (preco === 'Até R$ 100') matchPreco = cPreco <= 100;
         else if (preco === 'Acima de R$ 100') matchPreco = cPreco > 100;
 
-        const show = matchQ && matchCat && matchBairro && matchPreco;
+        const show = matchQ && matchCat && matchBairro && matchPreco && tabOk(card);
         card.style.display = show ? '' : 'none';
         if (show) visible++;
     });
 
     eventsCount.textContent = visible === 0
-        ? '❌ Nenhum evento encontrado'
+        ? '❌ Nenhum evento encontrado com estes filtros'
         : `Mostrando ${visible} evento${visible > 1 ? 's' : ''}`;
+
+    const empty = $('#eventsEmpty');
+    if (empty) {
+        const temFiltro = q || cat || bairro || preco || activeTab !== 'Todos';
+        empty.style.display = (visible === 0 && temFiltro) ? 'block' : 'none';
+    }
+};
+
+const resetFiltersAndShowAll = () => {
+    activeTab = 'Todos';
+    searchInput.value = '';
+    filterCat.value = '';
+    filterBairro.value = '';
+    filterPreco.value = '';
+    $$('.cat-tab').forEach(t => t.classList.toggle('active', t.textContent.trim() === 'Todos'));
+    applyFilters();
+};
+
+const setTab = tabName => {
+    activeTab = tabName;
+    $$('.cat-tab').forEach(t => t.classList.toggle('active', t.textContent.trim() === tabName));
+    applyFilters();
+};
+
+const scrollToEvents = () => { const el = $('#eventos'); if (el) el.scrollIntoView({ behavior: 'smooth' }); };
+
+const setCategoryFilter = name => {
+    activeTab = 'Todos';
+    $$('.cat-tab').forEach(t => t.classList.toggle('active', t.textContent.trim() === 'Todos'));
+    filterCat.value = name || '';
+    applyFilters();
+    scrollToEvents();
 };
 
 [searchInput, filterCat, filterBairro, filterPreco].forEach(el => el.addEventListener('input', applyFilters));
-searchBtn.addEventListener('click', e => { e.preventDefault(); applyFilters(); $('#eventos').scrollIntoView({ behavior: 'smooth' }); });
+searchBtn.addEventListener('click', e => { e.preventDefault(); applyFilters(); scrollToEvents(); });
 searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') applyFilters(); });
+
+// Ações por delegação (botões/cards re-renderizados continuam funcionando)
+document.addEventListener('click', e => {
+    const act = e.target.closest('[data-action]');
+    if (act) {
+        e.preventDefault();
+        const a = act.dataset.action;
+        if (a === 'verTodos') { resetFiltersAndShowAll(); scrollToEvents(); }
+        else if (a === 'todasMaterias') { const el = $('#blog'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }
+        else if (a === 'todasCategorias') { const el = $('#categorias'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }
+        return;
+    }
+    const catCard = e.target.closest('.cat-card');
+    if (catCard) {
+        e.preventDefault();
+        const nome = (catCard.querySelector('h3') || {}).textContent || '';
+        setCategoryFilter(nome.trim());
+        return;
+    }
+    const estCard = e.target.closest('.est-card');
+    if (estCard) {
+        e.preventDefault();
+        const estCat = (estCard.querySelector('.est-cat') || {}).textContent || '';
+        const match = (adminData ? adminData.eventos : [])
+            .map(ev => ev.cat)
+            .find(ec => ec && estCat && categoriaCombina(ec, estCat));
+        if (match) setCategoryFilter(match);
+        else showToast('🔍 Confira os eventos abaixo');
+        return;
+    }
+});
 
 // ============== CALENDÁRIO ==============
 const calGrid = $('#calGrid');
@@ -840,11 +982,11 @@ $$('.cat-card, .event-card, .est-card, .contato-card, .dep-card, .blog-card').fo
     obs.observe(el);
 });
 
-// ============== TABS DE CATEGORIA ==============
-$$('.cat-tab').forEach(tab => tab.addEventListener('click', () => {
-    $$('.cat-tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    showToast('🔍 Filtro: ' + tab.textContent);
+// ============== TABS DE CATEGORIA (filtro por data/tipo) ==============
+$$('.cat-tab').forEach(tab => tab.addEventListener('click', e => {
+    e.preventDefault();
+    setTab(tab.textContent.trim());
+    scrollToEvents();
 }));
 
 // ============== NEWSLETTER ==============
@@ -859,11 +1001,58 @@ $('.news-form').addEventListener('submit', e => {
     }
 });
 
+// ============== SEO: Dados Estruturados de Eventos (JSON-LD) ==============
+function buildSeoStructuredData(eventos) {
+    try {
+        const base = window.location.origin + window.location.pathname;
+        const items = (eventos || []).map(ev => {
+            const obj = {
+                '@type': 'Event',
+                'name': ev.titulo,
+                'eventAttendanceMode': 'https://schema.org/OfflineEventAttendanceMode',
+                'eventStatus': 'https://schema.org/EventScheduled',
+                'location': {
+                    '@type': 'Place',
+                    'name': ev.local,
+                    'address': ev.endereco || ev.bairro || 'Montes Claros, MG'
+                },
+                'url': base + '#evento-' + ev.id
+            };
+            if (ev.data) {
+                const dt = parseData(ev.data, new Date().getFullYear());
+                if (dt) {
+                    const hm = (ev.hora || '').match(/(\d{1,2})\s*h/i);
+                    dt.setHours(hm ? parseInt(hm[1], 10) % 24 : 20, 0, 0, 0);
+                    obj.startDate = dt.toISOString();
+                } else {
+                    obj.startDate = ev.data;
+                }
+            }
+            if (isImgSrc(ev.img)) obj.image = resolveImgSrc(ev.img);
+            if (ev.preco !== undefined && ev.preco !== null) {
+                obj.offers = {
+                    '@type': 'Offer',
+                    'price': ev.preco === 0 ? '0' : String(ev.preco),
+                    'priceCurrency': 'BRL',
+                    'availability': 'https://schema.org/InStock',
+                    'url': base + '#evento-' + ev.id
+                };
+            }
+            return obj;
+        });
+        let el = document.getElementById('eventsJsonLd');
+        if (!el) { el = document.createElement('script'); el.type = 'application/ld+json'; el.id = 'eventsJsonLd'; document.head.appendChild(el); }
+        el.textContent = JSON.stringify(items);
+    } catch (err) {
+        console.warn('SEO json-ld:', err);
+    }
+}
+
 // ============== APLICAR DADOS DO ADMIN ==============
 // SEMPRE busca do GitHub (fonte da verdade) - ignora localStorage
 adminData = null;
 useAdmin = false;
-loadRemote();
+loadRemote().finally(handleHash);
 
 console.log('%c🎶 Agenda Shows MOC', 'color:#ff3d6e;font-size:24px;font-weight:bold;');
 console.log('%cA agenda mais completa de MOC!', 'color:#8a8aa3;font-size:14px;');

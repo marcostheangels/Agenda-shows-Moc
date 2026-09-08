@@ -45,7 +45,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=38">
+    <link rel="stylesheet" href="styles.css?v=39">
 </head>
 <body>
     <!-- HEADER -->
@@ -311,7 +311,7 @@
             </div>
 
             <div class="cat-foot">
-                <a href="#" class="cat-foot-link">+ Ver todas as categorias</a>
+                <a href="#" class="cat-foot-link" data-action="todasCategorias">+ Ver todas as categorias</a>
             </div>
         </div>
     </section>
@@ -562,8 +562,12 @@
                     </div>
                 </article>
             </div>
+            <div class="event-empty" id="eventsEmpty" style="display:none">
+                Nenhum evento encontrado com estes filtros.
+                <a href="#" data-action="verTodos" style="color:#ff3d6e;text-decoration:underline">Ver todos</a>
+            </div>
             <div class="section-foot">
-                <a href="#" class="btn btn-outline">Ver Todos os Eventos →</a>
+                <a href="#" class="btn btn-outline" data-action="verTodos">Ver Todos os Eventos →</a>
             </div>
         </div>
     </section>
@@ -739,7 +743,7 @@
                 </article>
             </div>
             <div class="section-foot">
-                <a href="#" class="btn btn-outline">Ver Todas as Matérias →</a>
+                <a href="#" class="btn btn-outline" data-action="todasMaterias">Ver Todas as Matérias →</a>
             </div>
         </div>
     </section>
@@ -936,6 +940,6 @@
     <!-- TOAST -->
     <div class="toast" id="toast"></div>
 
-    <script src="script.js?v=26"></script>
+    <script src="script.js?v=27"></script>
 </body>
 </html>

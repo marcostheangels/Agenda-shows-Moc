@@ -468,6 +468,11 @@ function eventForm(ev = {}) {
                 <input type="text" name="endereco" required placeholder="Av. Principal, 100 - Montes Claros, MG" value="${(ev.endereco || '').replace(/"/g,'&quot;')}">
             </div>
             <div class="form-group">
+                <label>Link do ingresso (opcional — deixa o botão 🎟 funcionando no site)</label>
+                <input type="url" name="ingresso" placeholder="https://www.sympla.com.br/... ou https://wa.me/55..." value="${(ev.ingresso || '').replace(/"/g,'&quot;')}">
+                <small style="color:#888">Se vazio, o botão "Comprar Ingresso" não aparece.</small>
+            </div>
+            <div class="form-group">
                 <label>Descrição</label>
                 <textarea name="desc" rows="3">${ev.desc || ''}</textarea>
             </div>
