@@ -1616,9 +1616,26 @@ ul { list-style: none; }
 .modal-close:hover { background: var(--primary); transform: rotate(90deg); }
 
 .modal-img {
+    position: relative;
     height: 240px;
+    background-color: var(--dark-2);
     background-size: cover;
     background-position: center;
+    border-radius: 20px 20px 0 0;
+    overflow: hidden;
+}
+
+/* Flyer/foto completa: exibe a imagem inteira, sem cortar */
+.modal-img.has-photo {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    background-image: none !important;
+}
+.modal-img-photo {
+    display: block;
+    width: 100%;
+    height: auto;
     border-radius: 20px 20px 0 0;
 }
 

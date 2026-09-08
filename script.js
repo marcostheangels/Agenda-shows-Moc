@@ -395,6 +395,13 @@ function updateFilters() {
     }
 }
 
+function setModalPhoto(src) {
+    const m = $('#modalImg');
+    m.classList.add('has-photo');
+    m.removeAttribute('style');
+    m.innerHTML = `<img class="modal-img-photo" src="${src}" alt="Flyer do evento" loading="lazy">`;
+}
+
 function renderModalGallery(card) {
     const box = $('#modalGallery');
     if (!box) return;
@@ -404,12 +411,9 @@ function renderModalGallery(card) {
     gal = gal.filter(g => isImgSrc(g)).slice(0, 6);
     box.innerHTML = gal.map((g, i) => `<img src="${String(g).replace(/"/g,'&quot;')}" alt="foto ${i + 2}" loading="lazy">`).join('');
     box.querySelectorAll('img').forEach(img => img.addEventListener('click', () => {
-        const main = $('#modalImg');
-        const cur = main.getAttribute('style');
-        main.setAttribute('style', `background-image:url('${img.src}');background-size:cover;background-position:center`);
+        setModalPhoto(img.src);
         img.style.outline = '2px solid #ff3d6e';
         setTimeout(() => img.style.outline = '', 800);
-        void cur;
     }));
 }
 
@@ -457,11 +461,23 @@ function handleEventClick(e) {
     $('#modalPreco').textContent = '💰 ' + (card.dataset.preco === '0' ? 'Entrada Franca' : 'R$ ' + card.dataset.preco);
     $('#modalDesc').textContent = card.dataset.desc;
 
-    // Imagem do modal - usar o style do card (gradient ou bg-image)
+    // Imagem / flyer do modal
     const evImgStyle = card.querySelector('.event-img').getAttribute('style') || '';
-    $('#modalImg').innerHTML = '';
-    $('#modalImg').setAttribute('style', evImgStyle);
+    const mi = $('#modalImg');
+    mi.classList.remove('has-photo');
+    const srcMatch = evImgStyle.match(/url\(\s*['"]?([^'")]+)['"]?\s*\)/);
+    if (srcMatch && srcMatch[1]) {
+        // Evento com foto/flyer: mostra a imagem inteira
+        setModalPhoto(srcMatch[1]);
+    } else {
+        // Evento sem foto: mantém o fundo (gradiente) decorativo
+        mi.innerHTML = '';
+        mi.setAttribute('style', evImgStyle);
+    }
     renderModalGallery(card);
+
+    const mScroll = modal.querySelector('.modal');
+    if (mScroll) mScroll.scrollTop = 0;
 
     const url = encodeURIComponent(window.location.href);
     const text = encodeURIComponent(`🎶 ${card.dataset.titulo}\n📅 ${card.dataset.data}\n📍 ${card.dataset.local}\nConfira em: `);
