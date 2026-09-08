@@ -11,8 +11,8 @@ const AUTH_KEY = 'agendaShowsMOC_auth';
 const defaultData = {
     config: {
         siteName: 'Agenda Shows MOC',
-        whatsapp: '(38) 99999-9999',
-        email: 'contato@agendashowsmoc.com',
+        whatsapp: '(38) 99855-8528',
+        email: 'agendashowsmoc@gmail.com',
         instagram: '@agendashowsmoc',
         eventosMes: 150,
         seguidores: 20,

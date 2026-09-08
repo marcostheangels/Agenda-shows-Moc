@@ -62,6 +62,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css?v=40">
 </head>
@@ -103,7 +104,7 @@
     <section class="hero" id="home">
         <div class="container hero-container">
             <div class="hero-img-wrapper">
-                <img class="hero-img" src="fotos/AgendaShowsMoc.jpeg" alt="Agenda Shows MOC">
+                <img class="hero-img" src="fotos/AgendaShowsMoc.jpeg" alt="Agenda Shows MOC" decoding="async">
             </div>
             <div class="hero-content">
                 <span class="hero-badge" data-cfg="heroBadge">MOC • Montes Claros</span>
@@ -891,7 +892,8 @@
                 <h4>Contato</h4>
                 <a href="https://wa.me/5538998558528"><span data-cfg="whatsapp">📱 (38) 998558528</span></a>
                 <a href="mailto:agendashowsmoc@gmail.com"><span data-cfg="email">✉ agendashowsmoc@gmail.com</span></a>
-                <a href="#">📍 Montes Claros - MG</a>
+                <a href="https://www.google.com/maps/search/?api=1&query=Montes%20Claros%2C%20MG" target="_blank" rel="noopener">📍 Montes Claros - MG</a>
+                <a href="https://www.google.com/maps/search/?api=1&query=Montes%20Claros%2C%20MG" target="_blank" rel="noopener">🗺 Como chegar</a>
             </div>
         </div>
         <div class="footer-bottom">
@@ -950,6 +952,21 @@
         </div>
     </div>
 
+    <!-- MODAL LEITURA DO BLOG -->
+    <div class="modal-overlay" id="blogModal" role="dialog" aria-modal="true" aria-labelledby="blogModalTitle">
+        <div class="modal">
+            <button class="modal-close" id="blogModalClose" aria-label="Fechar">×</button>
+            <div class="modal-img" id="blogModalImg"></div>
+            <div class="modal-body">
+                <span class="event-cat" id="blogModalCat"></span>
+                <h2 id="blogModalTitle"></h2>
+                <p style="color:#8a8aa3;font-size:13px;margin:0 0 14px" id="blogModalDate"></p>
+                <div class="modal-desc" id="blogModalBody"></div>
+                <a class="btn btn-primary" href="#" id="blogModalWpp" target="_blank" rel="noopener">💬 Compartilhar no WhatsApp</a>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL DE EVENTO -->
     <div class="modal-overlay" id="eventModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
         <div class="modal">
@@ -997,6 +1014,6 @@
     <!-- TOAST -->
     <div class="toast" id="toast"></div>
 
-    <script src="script.js?v=28"></script>
+    <script src="script.js?v=29"></script>
 </body>
 </html>

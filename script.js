@@ -10,8 +10,8 @@ const STORAGE_KEY = 'agendaShowsMOC_data';
 const defaultData = {
     config: {
         siteName: 'Agenda Shows MOC',
-        whatsapp: '(38) 99999-9999',
-        email: 'contato@agendashowsmoc.com',
+        whatsapp: '(38) 99855-8528',
+        email: 'agendashowsmoc@gmail.com',
         instagram: '@agendashowsmoc',
         eventosMes: 150,
         seguidores: 20,
@@ -343,9 +343,17 @@ function renderBlogFromAdmin() {
     if (!grid) return false;
     grid.innerHTML = adminData.blog.map((p, i) => {
         const isDestaque = i === 0 && adminData.blog.length > 3;
+        const imgSrc = isImgSrc(p.img) ? resolveImgSrc(p.img) : '';
+        const data = {
+            t: (p.titulo || '').replace(/"/g, '&quot;'),
+            d: (p.data || '').replace(/"/g, '&quot;'),
+            c: (p.cat || '').replace(/"/g, '&quot;'),
+            r: (p.resumo || '').replace(/"/g, '&quot;'),
+            i: imgSrc
+        };
         return `
-        <article class="blog-card ${isDestaque ? 'blog-destaque' : ''}">
-            <div class="blog-img" style="${isImgSrc(p.img) ? `background-image:linear-gradient(135deg,rgba(0,0,0,0.3),rgba(0,0,0,0.5)),url(&quot;${resolveImgSrc(p.img)}&quot;);background-size:cover;background-position:center;background-color:#222` : `background:${p.img || 'linear-gradient(135deg,#ff3d6e,#7c3aed)'}`}">
+        <article class="blog-card ${isDestaque ? 'blog-destaque' : ''}" tabindex="0" data-btitle="${data.t}" data-bdate="${data.d}" data-bcat="${data.c}" data-bresumo="${data.r}" data-bimg="${data.i}">
+            <div class="blog-img" style="${isImgSrc(p.img) ? `background-image:linear-gradient(135deg,rgba(0,0,0,0.3),rgba(0,0,0,0.5)),url(&quot;${imgSrc}&quot;);background-size:cover;background-position:center;background-color:#222` : `background:${p.img || 'linear-gradient(135deg,#ff3d6e,#7c3aed)'}`}">
                 <span class="blog-cat">${p.cat}</span>
             </div>
             <div class="blog-body">
@@ -734,6 +742,37 @@ if (anuncieForm) anuncieForm.addEventListener('submit', e => {
 // Rodapé: ano automático
 const copyYearEl = $('#copyYear');
 if (copyYearEl) copyYearEl.textContent = new Date().getFullYear();
+
+// ============== LEITURA DO BLOG ==============
+const blogModal = $('#blogModal');
+function openBlogPost(card) {
+    if (!card) return;
+    $('#blogModalCat').textContent = card.dataset.bcat || 'Blog';
+    $('#blogModalTitle').textContent = card.dataset.btitle || '';
+    $('#blogModalDate').textContent = '📅 ' + (card.dataset.bdate || '');
+    $('#blogModalBody').textContent = card.dataset.bresumo || 'Conteúdo em breve.';
+    const imgBox = $('#blogModalImg');
+    if (card.dataset.bimg) {
+        imgBox.style.backgroundImage = `linear-gradient(135deg,rgba(0,0,0,0.2),rgba(0,0,0,0.4)),url('${card.dataset.bimg}')`;
+        imgBox.style.backgroundSize = 'cover';
+        imgBox.style.backgroundPosition = 'center';
+    } else {
+        imgBox.style.backgroundImage = 'linear-gradient(135deg,#ff3d6e,#7c3aed)';
+    }
+    const wpp = $('#blogModalWpp');
+    if (wpp) {
+        const txt = encodeURIComponent(`📰 ${card.dataset.btitle || 'Matéria Agenda Shows MOC'}\nConfira em: ${shareBaseUrl()}`);
+        wpp.href = `https://wa.me/${getWhatsNum()}?text=${txt}`;
+    }
+    openDialog(blogModal, card);
+}
+document.addEventListener('click', e => {
+    const bc = e.target.closest('.blog-card');
+    if (bc && bc.dataset.btitle) { e.preventDefault(); openBlogPost(bc); return; }
+    const bcl = e.target.closest('#blogModalClose');
+    if (bcl) { closeDialog(blogModal); return; }
+});
+if (blogModal) blogModal.addEventListener('click', e => { if (e.target === blogModal) closeDialog(blogModal); });
 
 // ============== BUSCA E FILTROS ==============
 const searchInput = $('#searchInput');
